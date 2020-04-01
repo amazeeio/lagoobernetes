@@ -1,9 +1,9 @@
 ARG NODE_VERSION
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/node:${NODE_VERSION}
+FROM ${IMAGE_REPO:-lagoobernetes}/node:${NODE_VERSION}
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=node
+ENV LAGOOBERNETES=node
 
 RUN apk update \
     && apk upgrade \

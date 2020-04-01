@@ -1,7 +1,7 @@
 {
-  "name": "@lagoon/lagu",
+  "name": "@lagoobernetes/lagu",
   "version": "4.0.0",
-  "description": "Lagoon Command Line Interface",
+  "description": "Lagoobernetes Command Line Interface",
   "main": "./bin/lagu.js",
   "bin": {
     "lagu": "./bin/lagu.js"
@@ -19,7 +19,7 @@
     "version": "yarn run build",
     "postversion": "git push && git push --tags",
     "format": "prettier-eslint --write '**/*.js'",
-    "lint": "../node-packages/eslint-config-lagoon-node/node_modules/.bin/eslint .",
+    "lint": "../node-packages/eslint-config-lagoobernetes-node/node_modules/.bin/eslint .",
     "test": "yarn run lint && jest",
     "test:watch": "jest --watch",
     "build": "rimraf build && babel src -d build",
@@ -28,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/amazeeio/lagoon.git"
+    "url": "git+https://github.com/amazeeio/lagoobernetes.git"
   },
   "author": "amazee.io <hello@amazee.io> (http://www.amazee.io)",
   "contributors": [
@@ -37,9 +37,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/amazeeio/lagoon/issues"
+    "url": "https://github.com/amazeeio/lagoobernetes/issues"
   },
-  "homepage": "https://github.com/amazeeio/lagoon#readme",
+  "homepage": "https://github.com/amazeeio/lagoobernetes#readme",
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.1",
@@ -47,7 +47,7 @@
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/register": "^7.0.0",
-    "@lagoon/commons": "4.0.0",
+    "@lagoobernetes/commons": "4.0.0",
     "babel-jest": "^24.9.0",
     "dotenv-extended": "^2.0.2",
     "jest": "^24.9.0",

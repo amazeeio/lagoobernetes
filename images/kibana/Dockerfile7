@@ -1,17 +1,17 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM docker.elastic.co/kibana/kibana:7.3.0
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=kibana
+ENV LAGOOBERNETES=kibana
 
 USER root
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /home /home
 
@@ -34,9 +34,9 @@ ENV TMPDIR=/tmp \
 RUN fix-permissions /usr/share/kibana
 
 # tells the local development environment on which port we are running
-# ENV LAGOON_LOCALDEV_HTTP_PORT=5601
+# ENV LAGOOBERNETES_LOCALDEV_HTTP_PORT=5601
 
 ENV NODE_OPTIONS="--max-old-space-size=200"
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.bash"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.bash"]
 CMD ["/bin/bash", "/usr/local/bin/kibana-docker"]

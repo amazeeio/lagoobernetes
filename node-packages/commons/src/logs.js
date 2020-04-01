@@ -7,23 +7,23 @@ const rabbitmqPassword = process.env.RABBITMQ_PASSWORD || 'guest';
 
 let channelWrapperLogs;
 
-exports.initSendToLagoonLogs = initSendToLagoonLogs;
-exports.sendToLagoonLogs = sendToLagoonLogs;
+exports.initSendToLagoobernetesLogs = initSendToLagoobernetesLogs;
+exports.sendToLagoobernetesLogs = sendToLagoobernetesLogs;
 
-function initSendToLagoonLogs() {
+function initSendToLagoobernetesLogs() {
   const connection = amqp.connect(
     [`amqp://${rabbitmqUsername}:${rabbitmqPassword}@${rabbitmqHost}`],
     { json: true },
   );
 
   connection.on('connect', ({ url }) =>
-    logger.verbose('lagoon-logs: Connected to %s', url, {
+    logger.verbose('lagoobernetes-logs: Connected to %s', url, {
       action: 'connected',
       url,
     }),
   );
   connection.on('disconnect', params =>
-    logger.error('lagoon-logs: Not connected, error: %s', params.err.code, {
+    logger.error('lagoobernetes-logs: Not connected, error: %s', params.err.code, {
       action: 'disconnected',
       reason: params,
     }),
@@ -33,12 +33,12 @@ function initSendToLagoonLogs() {
   channelWrapperLogs = connection.createChannel({
     setup: channel =>
       Promise.all([
-        channel.assertExchange('lagoon-logs', 'direct', { durable: true }),
+        channel.assertExchange('lagoobernetes-logs', 'direct', { durable: true }),
       ]),
   });
 }
 
-async function sendToLagoonLogs(
+async function sendToLagoobernetesLogs(
   severity,
   project,
   uuid,
@@ -62,12 +62,12 @@ async function sendToLagoonLogs(
       persistent: true,
       appId: packageName,
     };
-    await channelWrapperLogs.publish('lagoon-logs', '', buffer, options);
+    await channelWrapperLogs.publish('lagoobernetes-logs', '', buffer, options);
 
-    logger.log(severity, `lagoon-logs: Send to lagoon-logs: ${message}`);
+    logger.log(severity, `lagoobernetes-logs: Send to lagoobernetes-logs: ${message}`);
   } catch (error) {
     logger.error(
-      `lagoon-logs: Error send to rabbitmq lagoon-logs exchange, error: ${error}`,
+      `lagoobernetes-logs: Error send to rabbitmq lagoobernetes-logs exchange, error: ${error}`,
     );
   }
 }

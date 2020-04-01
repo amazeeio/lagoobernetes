@@ -3,35 +3,35 @@
 const promisify = require('util').promisify;
 const OpenShiftClient = require('openshift-client');
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 const {
   getOpenShiftInfoForProject,
   updateTask
-} = require('@lagoon/commons/src/api');
+} = require('@lagoobernetes/commons/src/api');
 const {
-  sendToLagoonLogs,
-  initSendToLagoonLogs
-} = require('@lagoon/commons/src/logs');
+  sendToLagoobernetesLogs,
+  initSendToLagoobernetesLogs
+} = require('@lagoobernetes/commons/src/logs');
 const {
   consumeTasks,
-  initSendToLagoonTasks,
+  initSendToLagoobernetesTasks,
   createTaskMonitor
-} = require('@lagoon/commons/src/tasks');
+} = require('@lagoobernetes/commons/src/tasks');
 
-const lagoonApiRoute = R.compose(
+const lagoobernetesApiRoute = R.compose(
   // Default to the gateway IP in virtualbox, so pods running in minishift can
   // connect to docker-for-mac containers.
   R.defaultTo('http://10.0.2.2:3000'),
   R.find(R.test(/api-/)),
   R.split(','),
-  R.propOr('', 'LAGOON_ROUTES')
+  R.propOr('', 'LAGOOBERNETES_ROUTES')
 )(process.env);
 
-const lagoonSshHost = R.propOr('ssh.lagoon.svc', 'LAGOON_SSH_HOST', process.env);
-const lagoonSshPort = R.propOr('2020', 'LAGOON_SSH_PORT', process.env);
+const lagoobernetesSshHost = R.propOr('ssh.lagoobernetes.svc', 'LAGOOBERNETES_SSH_HOST', process.env);
+const lagoobernetesSshPort = R.propOr('2020', 'LAGOOBERNETES_SSH_PORT', process.env);
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const failTask = async taskId => {
   try {
@@ -172,15 +172,15 @@ const messageConsumer = async msg => {
     const addTaskEnvVars = R.over(containerEnvLens, R.concat([
       {
         name: 'TASK_API_HOST',
-        value: lagoonApiRoute,
+        value: lagoobernetesApiRoute,
       },
       {
         name: 'TASK_SSH_HOST',
-        value: lagoonSshHost,
+        value: lagoobernetesSshHost,
       },
       {
         name: 'TASK_SSH_PORT',
-        value: lagoonSshPort,
+        value: lagoobernetesSshPort,
       },
       {
         name: 'TASK_DATA_ID',
@@ -192,7 +192,7 @@ const messageConsumer = async msg => {
     const setContainerCommand = R.set(containerCommandLens, [
       '/sbin/tini',
       '--',
-      '/lagoon/entrypoints.sh',
+      '/lagoobernetes/entrypoints.sh',
       '/bin/sh',
       '-c',
       task.command,
@@ -209,7 +209,7 @@ const messageConsumer = async msg => {
     throw new Error(err);
   }
 
-  // Create a new openshift job to run the lagoon task
+  // Create a new openshift job to run the lagoobernetes task
   let openshiftJob;
   try {
     const jobConfigPost = promisify(
@@ -223,7 +223,7 @@ const messageConsumer = async msg => {
     throw new Error();
   }
 
-  // Update lagoon task
+  // Update lagoobernetes task
   let updatedTask;
   try {
     const convertDateFormat = R.init;
@@ -253,7 +253,7 @@ const messageConsumer = async msg => {
     monitorPayload
   );
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'start',
     project.name,
     '',
@@ -268,7 +268,7 @@ const deathHandler = async (msg, lastError) => {
 
   failTask(taskId);
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'error',
     project.name,
     '',
@@ -284,7 +284,7 @@ ${lastError}
 const retryHandler = async (msg, error, retryCount, retryExpirationSecs) => {
   const { project, task } = JSON.parse(msg.content.toString());
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'warn',
     project.name,
     '',

@@ -1,14 +1,14 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM alpine:3.8
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=mongo
+ENV LAGOOBERNETES=mongo
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /sbin/tini /sbin/
 COPY --from=commons /home /home
@@ -30,5 +30,5 @@ RUN mkdir -p /data/db /data/configdb && \
 VOLUME /data/db
 EXPOSE 27017 28017
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]
 CMD [ "mongod", "--bind_ip", "0.0.0.0" ]

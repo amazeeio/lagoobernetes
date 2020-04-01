@@ -15,7 +15,7 @@ Array [
       "AddKeysToAgent=no",
       "-o",
       "IdentitiesOnly=yes",
-      "lagoon@localhost",
+      "lagoobernetes@localhost",
       "token",
     ],
   ],

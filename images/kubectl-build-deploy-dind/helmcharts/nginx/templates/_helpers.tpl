@@ -35,7 +35,7 @@ Common labels
 helm.sh/chart: {{ include "nginx.chart" . }}
 {{ include "nginx.selectorLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{ include "nginx.lagoonLabels" . }}
+{{ include "nginx.lagoobernetesLabels" . }}
 {{- end -}}
 
 {{/*
@@ -48,35 +48,35 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 {{/*
 Create a PriorityClassName.
-(this is based on the Lagoon Environment Type)).
+(this is based on the Lagoobernetes Environment Type)).
 */}}
-{{- define "nginx.lagoonPriority" -}}
-{{- printf "lagoon-priority-%s" .Values.environmentType }}
+{{- define "nginx.lagoobernetesPriority" -}}
+{{- printf "lagoobernetes-priority-%s" .Values.environmentType }}
 {{- end -}}
 
 {{/*
-Lagoon Labels
+Lagoobernetes Labels
 */}}
-{{- define "nginx.lagoonLabels" -}}
-lagoon/service: {{ .Release.Name }}
-lagoon/service-type: {{ .Chart.Name }}
-lagoon/project: {{ .Values.project }}
-lagoon/environment: {{ .Values.environment }}
-lagoon/environmentType: {{ .Values.environmentType }}
-lagoon/buildType: {{ .Values.buildType }}
+{{- define "nginx.lagoobernetesLabels" -}}
+lagoobernetes/service: {{ .Release.Name }}
+lagoobernetes/service-type: {{ .Chart.Name }}
+lagoobernetes/project: {{ .Values.project }}
+lagoobernetes/environment: {{ .Values.environment }}
+lagoobernetes/environmentType: {{ .Values.environmentType }}
+lagoobernetes/buildType: {{ .Values.buildType }}
 {{- end -}}
 
 {{/*
 Annotations
 */}}
 {{- define "nginx.annotations" -}}
-lagoon/version: {{ .Values.lagoonVersion | quote }}
+lagoobernetes/version: {{ .Values.lagoobernetesVersion | quote }}
 {{- if .Values.branch }}
-lagoon/branch: {{ .Values.branch | quote }}
+lagoobernetes/branch: {{ .Values.branch | quote }}
 {{- end }}
 {{- if .Values.prNumber }}
-lagoon/prNumber: {{ .Values.prNumber | quote }}
-lagoon/prHeadBranch: {{ .Values.prHeadBranch | quote }}
-lagoon/prBaseBranch: {{ .Values.prBaseBranch | quote }}
+lagoobernetes/prNumber: {{ .Values.prNumber | quote }}
+lagoobernetes/prHeadBranch: {{ .Values.prHeadBranch | quote }}
+lagoobernetes/prBaseBranch: {{ .Values.prBaseBranch | quote }}
 {{- end }}
 {{- end -}}

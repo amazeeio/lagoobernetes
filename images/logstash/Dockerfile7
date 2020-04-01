@@ -1,17 +1,17 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM docker.elastic.co/logstash/logstash:7.3.0
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=logstash
+ENV LAGOOBERNETES=logstash
 
 USER root
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /home /home
 
@@ -36,4 +36,4 @@ RUN fix-permissions /usr/share/logstash/data \
 
 ENV LS_JAVA_OPTS "-Xms400m -Xmx400m"
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.bash", "/usr/local/bin/docker-entrypoint"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.bash", "/usr/local/bin/docker-entrypoint"]

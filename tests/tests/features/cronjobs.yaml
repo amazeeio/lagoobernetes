@@ -62,13 +62,13 @@
   tasks:
   - include: ../../checks/check-url-content.yaml
 
-# This is where we need to modify the lagoon versions and do another deploy
-- name: "{{ testname }} - change .lagoon.yml to remove cron, git push"
+# This is where we need to modify the lagoobernetes versions and do another deploy
+- name: "{{ testname }} - change .lagoobernetes.yml to remove cron, git push"
   hosts: localhost
   serial: 1
   vars:
     git_files: "features/"
-    overwrite_lagoon_yml: ".lagoon-no-cronjobs.yml"
+    overwrite_lagoobernetes_yml: ".lagoobernetes-no-cronjobs.yml"
   tasks:
   - include: ../../tasks/git-add-commit-push.yaml
 

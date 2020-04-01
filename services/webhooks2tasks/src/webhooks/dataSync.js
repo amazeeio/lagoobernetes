@@ -1,7 +1,7 @@
 // @flow
 
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
 const gitlabGroupCreate = require('../handlers/gitlabGroupCreate');
 const gitlabGroupUpdate = require('../handlers/gitlabGroupUpdate');
 const gitlabGroupDelete = require('../handlers/gitlabGroupDelete');
@@ -121,7 +121,7 @@ async function unhandled(webhook: WebhookRequestData, fullEvent: string) {
   const meta = {
     fullEvent: fullEvent
   };
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'info',
     '',
     uuid,

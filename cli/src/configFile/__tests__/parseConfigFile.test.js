@@ -10,7 +10,7 @@ fs.writeFile = jest.fn();
 
 describe('parseConfig', () => {
   it('should parse the config correctly', async () => {
-    const yamlContent = await fs.readFile(path.join(__dirname, 'lagoon.yml'));
+    const yamlContent = await fs.readFile(path.join(__dirname, 'lagoobernetes.yml'));
 
     const config = parseConfigFile(yamlContent.toString());
 

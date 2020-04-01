@@ -56,13 +56,13 @@
     branch: "drush-second"
     project: "{{ project }}"
 
-- name: "{{ testname }} - check if we can connect via lagoon user and no service"
+- name: "{{ testname }} - check if we can connect via lagoobernetes user and no service"
   hosts: localhost
   serial: 1
   vars:
-    username: lagoon
+    username: lagoobernetes
     command: rsh ci-drupal-{{ lookup('env','CLUSTER_TYPE') }}-drush-first env
-    expected_content: LAGOON_PROJECT=ci-drupal
+    expected_content: LAGOOBERNETES_PROJECT=ci-drupal
   tasks:
   - include: ../../tasks/ssh/ssh-command.yaml
 
@@ -72,7 +72,7 @@
   vars:
     username: ci-drupal-{{ lookup('env','CLUSTER_TYPE') }}-drush-first
     command: env
-    expected_content: LAGOON=cli-drupal
+    expected_content: LAGOOBERNETES=cli-drupal
   tasks:
   - include: ../../tasks/ssh/ssh-command.yaml
 
@@ -82,7 +82,7 @@
   vars:
     username: ci-drupal-{{ lookup('env','CLUSTER_TYPE') }}-drush-first
     command: service=nginx container=php env
-    expected_content: LAGOON=php
+    expected_content: LAGOOBERNETES=php
   tasks:
   - include: ../../tasks/ssh/ssh-command.yaml
 

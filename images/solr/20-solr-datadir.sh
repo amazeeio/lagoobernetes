@@ -73,7 +73,7 @@ fi
 function fixConfig {
   fail=0
   if cat $1/solrconfig.xml | grep dataDir | grep -qv '<dataDir>/var/solr/${solr.core.name}</dataDir>'; then
-    echo "Found old non lagoon compatible dataDir config in solrconfig.xml:"
+    echo "Found old non lagoobernetes compatible dataDir config in solrconfig.xml:"
     cat $1/solrconfig.xml | grep dataDir
     if [ -w $1/ ]; then
       sed -ibak 's/<dataDir>.*/<dataDir>\/var\/solr\/${solr.core.name}<\/dataDir>/' $1/solrconfig.xml
@@ -90,7 +90,7 @@ function fixConfig {
   fi
   # change lockType to none
   if cat $1/solrconfig.xml | grep lockType | grep -qv '<lockType>${solr.lock.type:none}</lockType>'; then
-    echo "Found old non lagoon compatible lockType config in solrconfig.xml:"
+    echo "Found old non lagoobernetes compatible lockType config in solrconfig.xml:"
     cat $1/solrconfig.xml | grep lockType
     if [ -w $1/ ]; then
       sed -ibak 's/<lockType>\${solr\.lock\.type:native}<\/lockType>/<lockType>${solr.lock.type:none}<\/lockType>/' $1/solrconfig.xml
@@ -115,18 +115,18 @@ if [ -n "$(ls /opt/solr/server/solr/mycores)" ]; then
   # Iterate through all solr cores
   for solrcorepath in $(ls -d /opt/solr/server/solr/mycores/*/) ; do
     corename=$(basename $solrcorepath)
-    # Check and Update the solr config with lagoon compatible config
+    # Check and Update the solr config with lagoobernetes compatible config
     if [ -f /opt/solr/server/solr/mycores/${corename}/conf/solrconfig.xml ]; then
       fixConfig /opt/solr/server/solr/mycores/${corename}/conf
     fi
   done
 else
   # `/opt/solr/server/solr/mycores` is empty, meaning that no `precreate-core` has been called and probably this container is started via `solr-precreate
-  # We try to update the solr configs within `/solr-conf/conf` to the new lagoon default config as this one will most probably be used to create a new core
+  # We try to update the solr configs within `/solr-conf/conf` to the new lagoobernetes default config as this one will most probably be used to create a new core
   if [ -f /solr-conf/conf/solrconfig.xml ]; then
     fixConfig /solr-conf/conf
   else
-    echo "No config found in '/solr-conf/conf' and was not able to automatically update solr config to newest lagoon compatible version."
+    echo "No config found in '/solr-conf/conf' and was not able to automatically update solr config to newest lagoobernetes compatible version."
     echo "Cannot guarantee if this Solr config will work!"
   fi
 fi

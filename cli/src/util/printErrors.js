@@ -32,14 +32,14 @@ export function printErrors(
 export function printNoConfigError(cerr: Cerr): number {
   return printErrors(cerr, {
     message:
-      '.lagoon.yml config file not found. Please create one with "lagoon init".\nOnline documentation: https://github.com/amazeeio/lagoon/blob/master/cli/README.md#lagoon-init',
+      '.lagoobernetes.yml config file not found. Please create one with "lagoobernetes init".\nOnline documentation: https://github.com/amazeeio/lagoobernetes/blob/master/cli/README.md#lagoobernetes-init',
   });
 }
 
 export function printProjectConfigurationError(cerr: Cerr): number {
   return printErrors(cerr, {
     message:
-      'No project configured. Please create a .lagoon.yml config file with "lagoon init" or pass a project to this command via the --project option.\nOnline documentation: https://github.com/amazeeio/lagoon/blob/master/cli/README.md#lagoon-init',
+      'No project configured. Please create a .lagoobernetes.yml config file with "lagoobernetes init" or pass a project to this command via the --project option.\nOnline documentation: https://github.com/amazeeio/lagoobernetes/blob/master/cli/README.md#lagoobernetes-init',
   });
 }
 
@@ -52,13 +52,13 @@ export function printGraphQLErrors(
   ) {
     return printErrors(cerr, {
       message:
-        'No authentication token found. Please log in first with "lagoon login".\nOnline documentation: https://github.com/amazeeio/lagoon/blob/master/cli/README.md#lagoon-login',
+        'No authentication token found. Please log in first with "lagoobernetes login".\nOnline documentation: https://github.com/amazeeio/lagoobernetes/blob/master/cli/README.md#lagoobernetes-login',
     });
   }
   const errorsPluralized = R.length(errors) === 1 ? 'an error' : 'errors';
   return printErrors(
     cerr,
-    `Oops! The Lagoon API returned ${errorsPluralized}:`,
+    `Oops! The Lagoobernetes API returned ${errorsPluralized}:`,
     ...errors,
   );
 }

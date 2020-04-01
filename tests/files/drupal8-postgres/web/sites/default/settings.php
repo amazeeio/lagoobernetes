@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Lagoon Drupal 8 configuration file.
+ * Lagoobernetes Drupal 8 configuration file.
  *
  * You should not edit this file, please use environment specific files!
  * They are loaded in this order:
@@ -25,8 +25,8 @@
  *
  */
 
-### Lagoon Database connection
-if(getenv('LAGOON')){
+### Lagoobernetes Database connection
+if(getenv('LAGOOBERNETES')){
   $databases['default']['default'] = array(
     'driver' => 'pgsql',
     'database' => getenv('POSTGRES_DATABASE') ?: 'drupal',
@@ -38,10 +38,10 @@ if(getenv('LAGOON')){
   );
 }
 
-### Lagoon Solr connection
+### Lagoobernetes Solr connection
 // WARNING: you have to create a search_api server having "solr" machine name at
 // /admin/config/search/search-api/add-server to make this work.
-if (getenv('LAGOON')) {
+if (getenv('LAGOOBERNETES')) {
   $config['search_api.server.solr']['backend_config']['connector_config']['host'] = getenv('SOLR_HOST') ?: 'solr';
   $config['search_api.server.solr']['backend_config']['connector_config']['path'] = '/solr/';
   $config['search_api.server.solr']['backend_config']['connector_config']['core'] = getenv('SOLR_CORE') ?: 'drupal';
@@ -50,11 +50,11 @@ if (getenv('LAGOON')) {
   $config['search_api.server.solr']['backend_config']['connector_config']['http']['http_user'] = (getenv('SOLR_USER') ?: '');
   $config['search_api.server.solr']['backend_config']['connector_config']['http_pass'] = (getenv('SOLR_PASSWORD') ?: '');
   $config['search_api.server.solr']['backend_config']['connector_config']['http']['http_pass'] = (getenv('SOLR_PASSWORD') ?: '');
-  $config['search_api.server.solr']['name'] = 'Lagoon Solr - Environment: ' . getenv('LAGOON_PROJECT');
+  $config['search_api.server.solr']['name'] = 'Lagoobernetes Solr - Environment: ' . getenv('LAGOOBERNETES_PROJECT');
 }
 
-### Lagoon Redis connection
-if (getenv('LAGOON')){
+### Lagoobernetes Redis connection
+if (getenv('LAGOOBERNETES')){
   $settings['redis.connection']['interface'] = 'PhpRedis';
   $settings['redis.connection']['host'] = getenv('REDIS_HOST') ?: 'redis';
   $settings['redis.connection']['port'] = getenv('REDIS_SERVICE_PORT') ?: '6379';
@@ -65,23 +65,23 @@ if (getenv('LAGOON')){
   // }
 }
 
-### Lagoon Varnish & Reverse proxy settings
-if (getenv('LAGOON')) {
+### Lagoobernetes Varnish & Reverse proxy settings
+if (getenv('LAGOOBERNETES')) {
   $settings['reverse_proxy'] = TRUE;
 
   $varnish_hosts = explode(',', getenv('VARNISH_HOSTS') ?: 'varnish');
   array_walk($varnish_hosts, function(&$value, $key) { $value .= ':6082'; });
 
   $config['varnish.settings']['varnish_control_terminal'] = implode($varnish_hosts, " ");
-  $config['varnish.settings']['varnish_control_key'] = getenv('VARNISH_SECRET') ?: 'lagoon_default_secret';
+  $config['varnish.settings']['varnish_control_key'] = getenv('VARNISH_SECRET') ?: 'lagoobernetes_default_secret';
   $config['varnish.settings']['varnish_version'] = 4;
 }
 
 ### Trusted Host Patterns, see https://www.drupal.org/node/2410395 for more information.
 ### If your site runs on multiple domains, you need to add these domains here
-if (getenv('LAGOON_ROUTES')) {
+if (getenv('LAGOOBERNETES_ROUTES')) {
   $settings['trusted_host_patterns'] = array(
-    '^' . str_replace(['.', 'https://', 'http://', ','], ['\.', '', '', '|'], getenv('LAGOON_ROUTES')) . '$', // escape dots, remove schema, use commas as regex separator
+    '^' . str_replace(['.', 'https://', 'http://', ','], ['\.', '', '', '|'], getenv('LAGOOBERNETES_ROUTES')) . '$', // escape dots, remove schema, use commas as regex separator
    );
 }
 
@@ -91,8 +91,8 @@ if (getenv('TMP')) {
 }
 
 ### Hash Salt
-if (getenv('LAGOON')) {
-  $settings['hash_salt'] = hash('sha256', getenv('LAGOON_PROJECT'));
+if (getenv('LAGOOBERNETES')) {
+  $settings['hash_salt'] = hash('sha256', getenv('LAGOOBERNETES_PROJECT'));
 }
 
 // Settings for all environments
@@ -105,15 +105,15 @@ if (file_exists(__DIR__ . '/all.services.yml')) {
   $settings['container_yamls'][] = __DIR__ . '/all.services.yml';
 }
 
-if(getenv('LAGOON_ENVIRONMENT_TYPE')){
+if(getenv('LAGOOBERNETES_ENVIRONMENT_TYPE')){
   // Environment specific settings files.
-  if (file_exists(__DIR__ . '/' . getenv('LAGOON_ENVIRONMENT_TYPE') . '.settings.php')) {
-    include __DIR__ . '/' . getenv('LAGOON_ENVIRONMENT_TYPE') . '.settings.php';
+  if (file_exists(__DIR__ . '/' . getenv('LAGOOBERNETES_ENVIRONMENT_TYPE') . '.settings.php')) {
+    include __DIR__ . '/' . getenv('LAGOOBERNETES_ENVIRONMENT_TYPE') . '.settings.php';
   }
 
   // Environment specific services files.
-  if (file_exists(__DIR__ . '/' . getenv('LAGOON_ENVIRONMENT_TYPE') . '.services.yml')) {
-    $settings['container_yamls'][] = __DIR__ . '/' . getenv('LAGOON_ENVIRONMENT_TYPE') . '.services.yml';
+  if (file_exists(__DIR__ . '/' . getenv('LAGOOBERNETES_ENVIRONMENT_TYPE') . '.services.yml')) {
+    $settings['container_yamls'][] = __DIR__ . '/' . getenv('LAGOOBERNETES_ENVIRONMENT_TYPE') . '.services.yml';
   }
 }
 

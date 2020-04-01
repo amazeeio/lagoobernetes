@@ -17,13 +17,13 @@
   tasks:
   - include: ../../tasks/api/deploy-no-sha.yaml
 
-- name: "{{ testname }} - check if {{ project }} is deployed with accessing the custom domain and searching for the environment variable LAGOON_ROUTES"
+- name: "{{ testname }} - check if {{ project }} is deployed with accessing the custom domain and searching for the environment variable LAGOOBERNETES_ROUTES"
   hosts: localhost
   serial: 1
   vars:
     url: "{{ check_url }}"
     host: "customdomain.com"
-    expected_content: "LAGOON_ROUTES=https://customdomain.com"
+    expected_content: "LAGOOBERNETES_ROUTES=https://customdomain.com"
   tasks:
   - include: ../../checks/check-url-content-host.yaml
 

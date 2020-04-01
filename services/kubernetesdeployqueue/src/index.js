@@ -1,24 +1,24 @@
 const promisify = require('util').promisify;
 const KubernetesClient = require('kubernetes-client');
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 const {
   getOpenShiftInfoForProject,
   updateDeployment
-} = require('@lagoon/commons/src/api');
+} = require('@lagoobernetes/commons/src/api');
 
 const {
-  sendToLagoonLogs,
-  initSendToLagoonLogs
-} = require('@lagoon/commons/src/logs');
+  sendToLagoobernetesLogs,
+  initSendToLagoobernetesLogs
+} = require('@lagoobernetes/commons/src/logs');
 const {
   consumeTaskMonitor,
-  initSendToLagoonTasks,
+  initSendToLagoobernetesTasks,
   createTaskMonitor
-} = require('@lagoon/commons/src/tasks');
+} = require('@lagoobernetes/commons/src/tasks');
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const pause = duration => new Promise(res => setTimeout(res, duration));
 
@@ -179,7 +179,7 @@ const messageConsumer = async msg => {
     logMessage = `\`${branchName}\``;
   }
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'start',
     projectName,
     '',
@@ -208,7 +208,7 @@ const deathHandler = async (msg, lastError) => {
 
   const task = 'task:builddeploy-kubernetes:error';
   const errorMsg = `*[${projectName}]* ${logMessage} Build \`${buildName}\` ERROR: \`\`\` ${lastError} \`\`\``;
-  sendToLagoonLogs('error', projectName, '', task, {}, errorMsg);
+  sendToLagoobernetesLogs('error', projectName, '', task, {}, errorMsg);
 };
 
 consumeTaskMonitor('queuedeploy-kubernetes', messageConsumer, deathHandler);

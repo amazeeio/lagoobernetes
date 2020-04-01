@@ -26,7 +26,7 @@ spec:
         - name: {{ .Values.persistentStorage.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistentStorage.name }}
-      priorityClassName: {{ include "node-persistent.lagoonPriority" . }}
+      priorityClassName: {{ include "node-persistent.lagoobernetesPriority" . }}
       enableServiceLinks: false
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -49,16 +49,16 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 10
           env:
-            ## LAGOON_GIT_SHA is injected directly and not loaded via `lagoon-env` config
+            ## LAGOOBERNETES_GIT_SHA is injected directly and not loaded via `lagoobernetes-env` config
             ## This will cause the pod to redeploy on every deployment, even the files have not changed
-            - name: LAGOON_GIT_SHA
+            - name: LAGOOBERNETES_GIT_SHA
               value: {{ .Values.gitSha | quote }}
             - name: CRONJOBS
               value: |
                 {{- toYaml .Values.inPodCronjobs | nindent 16 }}
           envFrom:
             - configMapRef:
-                name: lagoon-env
+                name: lagoobernetes-env
           volumeMounts:
             - name: {{ .Values.persistentStorage.name }}
               mountPath: {{ .Values.persistentStorage.path | quote }}

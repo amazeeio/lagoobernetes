@@ -2,12 +2,12 @@ apiVersion: v1
 kind: RoleBinding
 metadata:
   name: shared-resource-viewers
-  namespace: lagoon
+  namespace: lagoobernetes
 groupNames:
 - system:authenticated
 roleRef:
   name: shared-resource-viewer
-  namespace: lagoon
+  namespace: lagoobernetes
 subjects:
 - kind: SystemGroup
   name: system:authenticated

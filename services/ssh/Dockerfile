@@ -1,11 +1,11 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM ubuntu:latest
 
 LABEL maintainer="amazee.io"
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /home /home
 
@@ -20,7 +20,7 @@ ENV TMPDIR=/tmp \
     # When Bash is invoked as non-interactive (like `bash -c command`) it sources a file that is given in `BASH_ENV`
     BASH_ENV=/home/.bashrc
 
-ENV LAGOON=ssh \
+ENV LAGOOBERNETES=ssh \
     OC_VERSION=v3.11.0 \
     OC_HASH=0cbc58b \
     OC_SHA256=4b0f07428ba854174c58d2e38287e5402964c9a9355f6c359d1242efd0990da3
@@ -84,13 +84,13 @@ RUN touch /authorize.env && fix-permissions /authorize.env
 RUN mkdir -p /home/.kube && fix-permissions /home/.kube
 
 # This will set the username of the random generated user by openshift to 'api' (see 10-passwd.sh)
-ENV USER_NAME lagoon
+ENV USER_NAME lagoobernetes
 
 # Entrypoint file which will replace some environment variables into
 # hardcoded values every time the container is started
-COPY services/ssh/docker-entrypoint.sh /lagoon/entrypoints/99-envplate.sh
+COPY services/ssh/docker-entrypoint.sh /lagoobernetes/entrypoints/99-envplate.sh
 
-# Global lagoon default environment variables
+# Global lagoobernetes default environment variables
 COPY .env.defaults .
 
 ENV AUTH_SERVER=http://auth-server:3000 \
@@ -98,5 +98,5 @@ ENV AUTH_SERVER=http://auth-server:3000 \
 
 EXPOSE 2020
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]
 CMD ["/usr/sbin/sshd", "-e", "-D", "-f", "/etc/ssh/sshd_config"]

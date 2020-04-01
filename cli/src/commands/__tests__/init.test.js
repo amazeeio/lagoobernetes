@@ -67,7 +67,7 @@ describe('handler', () => {
     expect(cerr.mock.calls).toMatchSnapshot();
   });
 
-  it('should write default yaml to given cwd + .lagoon.yml', async () => {
+  it('should write default yaml to given cwd + .lagoobernetes.yml', async () => {
     _castMockForFlow(fileExists).mockImplementationOnce(() =>
       Promise.resolve(false),
     );

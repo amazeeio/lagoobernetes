@@ -2,10 +2,10 @@
 
 const {
   logger
-} = require('@lagoon/commons/src/local-logging');
+} = require('@lagoobernetes/commons/src/local-logging');
 const {
-  sendToLagoonLogs
-} = require('@lagoon/commons/src/logs');
+  sendToLagoobernetesLogs
+} = require('@lagoobernetes/commons/src/logs');
 const resticbackupSnapshotFinished = require('../handlers/resticbackupSnapshotFinished');
 const resticbackupSnapshotSync = require('../handlers/resticbackupSnapshotSync');
 const resticbackupRestoreFinished = require('../handlers/resticbackupRestoreFinished');
@@ -73,7 +73,7 @@ async function unhandled(webhook: WebhookRequestData, fullEvent: string) {
   const meta = {
     fullEvent: fullEvent
   };
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'info',
     '',
     uuid,

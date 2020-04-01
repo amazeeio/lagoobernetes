@@ -1,6 +1,6 @@
 # Storybook
 
-Storybook has been added to `services/ui`. Storybook is a set of web pages that can be browsed to see an example of all the components in the Lagoon UI.
+Storybook has been added to `services/ui`. Storybook is a set of web pages that can be browsed to see an example of all the components in the Lagoobernetes UI.
 
 To build a static set of webpages in `services/ui/storybook-static`, run:
 ```

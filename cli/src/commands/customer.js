@@ -34,7 +34,7 @@ export function builder(yargs: Yargs) {
     })
     .example(
       `$0 ${command}`,
-      'Show customer details for the project configured in .lagoon.yml',
+      'Show customer details for the project configured in .lagoobernetes.yml',
     )
     .example(
       `$0 ${command} --${PROJECT} myproject`,

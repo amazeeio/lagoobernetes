@@ -1,9 +1,9 @@
 // @flow
 
 const R = require('ramda');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { getSshKey } = require('@lagoon/commons/src/gitlabApi');
-const { addSshKey } = require('@lagoon/commons/src/api');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { getSshKey } = require('@lagoobernetes/commons/src/gitlabApi');
+const { addSshKey } = require('@lagoobernetes/commons/src/api');
 
 import type { WebhookRequestData } from '../types';
 
@@ -47,7 +47,7 @@ async function gitlabSshKeyAdd(webhook: WebhookRequestData) {
 
     await addSshKey(null, name, keyValue, keyType, user_email);
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -58,7 +58,7 @@ async function gitlabSshKeyAdd(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

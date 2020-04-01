@@ -7,10 +7,10 @@ export default {
   title: 'Home/Welcome',
 };
 
-export const toLagoon = () => (
+export const toLagoobernetes = () => (
   <StatusLayout>
-    <h1>Lagoon UI</h1>
-    <p>This is the style guide for Lagoon.</p>
+    <h1>Lagoobernetes UI</h1>
+    <p>This is the style guide for Lagoobernetes.</p>
     <h4>Keyboard shortcuts</h4>
     <p>
       To toggle the display of the “add-ons” panel, press the <kbd>A</kbd> key.
@@ -26,7 +26,7 @@ export const toLagoon = () => (
     </p>
   </StatusLayout>
 );
-toLagoon.story = {
-  name: 'to Lagoon',
+toLagoobernetes.story = {
+  name: 'to Lagoobernetes',
   decorators: [ withAnonymousUser ],
 };

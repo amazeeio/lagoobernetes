@@ -1,17 +1,17 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/kubectl
+FROM ${IMAGE_REPO:-lagoobernetes}/kubectl
 
 # the kubectl image comes with an HOME=/home which is needed to run as unpriviledged, but kubectl-build-deploy-dind will run as root
 RUN rm -rf /root && ln -s /home /root
-ENV LAGOON=kubectl-build-deploy-dind
+ENV LAGOOBERNETES=kubectl-build-deploy-dind
 
 RUN  mkdir -p /kubectl-build-deploy/git
 RUN  mkdir -p /kubectl-build-deploy/tug
-RUN  mkdir -p /kubectl-build-deploy/lagoon
+RUN  mkdir -p /kubectl-build-deploy/lagoobernetes
 
 WORKDIR /kubectl-build-deploy/git
 
-COPY docker-entrypoint.sh /lagoon/entrypoints/100-docker-entrypoint.sh
+COPY docker-entrypoint.sh /lagoobernetes/entrypoints/100-docker-entrypoint.sh
 COPY build-deploy.sh /kubectl-build-deploy/build-deploy.sh
 COPY build-deploy-docker-compose.sh /kubectl-build-deploy/build-deploy-docker-compose.sh
 COPY tug.sh /kubectl-build-deploy/tug.sh

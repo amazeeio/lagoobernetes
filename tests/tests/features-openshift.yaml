@@ -67,16 +67,16 @@
     git_repo_name: features.git
     project: ci-features-{{ lookup('env','CLUSTER_TYPE') }}
     branch: branch/custom-template
-    expected_template_filename: .lagoon.node.yml
+    expected_template_filename: .lagoobernetes.node.yml
     check_url: "http://node.{{ project | regex_replace('_', '-') }}.{{ branch | regex_replace('/', '-') }}.{{ lookup('env','ROUTE_SUFFIX_HTTP') }}:{{ lookup('env','ROUTE_SUFFIX_HTTP_PORT') }}"
 
 - include: features/environment-templates.yaml
   vars:
-    testname: "ENVIRIONMENT SPECIFIC CUSTOM DEPLOYMENT TEMPLATES {{ lookup('env','CLUSTER_TYPE')|upper }} .lagoon.yml"
+    testname: "ENVIRIONMENT SPECIFIC CUSTOM DEPLOYMENT TEMPLATES {{ lookup('env','CLUSTER_TYPE')|upper }} .lagoobernetes.yml"
     git_repo_name: features.git
     project: ci-features-{{ lookup('env','CLUSTER_TYPE') }}
     branch: branch/env-specific-template
-    expected_template_filename: .lagoon.node-env-specific.yml
+    expected_template_filename: .lagoobernetes.node-env-specific.yml
     check_url: "http://node.{{ project | regex_replace('_', '-') }}.{{ branch | regex_replace('/', '-') }}.{{ lookup('env','ROUTE_SUFFIX_HTTP') }}:{{ lookup('env','ROUTE_SUFFIX_HTTP_PORT') }}"
 
 - include: features/environment-type.yaml
@@ -130,7 +130,7 @@
     branch: subfolder
     check_url: "http://node.{{ project | regex_replace('_', '-') }}.{{ branch | regex_replace('/', '-') }}.{{ lookup('env','ROUTE_SUFFIX_HTTP') }}:{{ lookup('env','ROUTE_SUFFIX_HTTP_PORT') }}"
 
-# @TODO: Enable again, see https://github.com/amazeeio/lagoon/issues/1099
+# @TODO: Enable again, see https://github.com/amazeeio/lagoobernetes/issues/1099
 # - include: features/limits.yaml
 #   vars:
 #     testname: "limits"
@@ -138,10 +138,10 @@
 #     project: ci-env-limit
 #     check_url: "http://node.{{ project | regex_replace('_', '-') }}.{{ branch | regex_replace('/', '-') }}.{{ lookup('env','ROUTE_SUFFIX_HTTP') }}:{{ lookup('env','ROUTE_SUFFIX_HTTP_PORT') }}"
 
-- include: features/lagoon-api-variables.yaml
+- include: features/lagoobernetes-api-variables.yaml
   vars:
-    testname: "LAGOON API VARIABLES {{ lookup('env','CLUSTER_TYPE')|upper }}"
+    testname: "LAGOOBERNETES API VARIABLES {{ lookup('env','CLUSTER_TYPE')|upper }}"
     git_repo_name: features.git
     project: ci-features-{{ lookup('env','CLUSTER_TYPE') }}
-    branch: lagoon-api-variables
+    branch: lagoobernetes-api-variables
     check_url: "http://node.{{ project | regex_replace('_', '-') }}.{{ branch | regex_replace('/', '-') }}.{{ lookup('env','ROUTE_SUFFIX_HTTP') }}:{{ lookup('env','ROUTE_SUFFIX_HTTP_PORT') }}"

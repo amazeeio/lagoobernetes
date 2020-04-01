@@ -10,7 +10,7 @@ import typeof Yargs from 'yargs';
 import type { CommandHandlerArgsWithOptions } from '../types/Command';
 
 export const command = 'login';
-export const description = 'Authenticate with lagoon via an SSH key';
+export const description = 'Authenticate with lagoobernetes via an SSH key';
 
 const IDENTITY: 'identity' = 'identity';
 const TOKEN: 'token' = 'token';
@@ -42,7 +42,7 @@ export async function handler({
 Args): Promise<number> {
   const { username, host, port } = getSshConfig();
 
-  console.log(`Logging in to lagoon at ${username}@${host}:${port}...`);
+  console.log(`Logging in to lagoobernetes at ${username}@${host}:${port}...`);
 
   let token;
 
@@ -55,7 +55,7 @@ Args): Promise<number> {
   if (!token) {
     return printErrors(
       cerr,
-      'Empty token returned from Lagoon authentication server.',
+      'Empty token returned from Lagoobernetes authentication server.',
     );
   }
 

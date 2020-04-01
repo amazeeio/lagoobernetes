@@ -3,9 +3,9 @@
 const promisify = require('util').promisify;
 const OpenShiftClient = require('openshift-client');
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { getOpenShiftInfoForProject } = require('@lagoon/commons/src/api');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { getOpenShiftInfoForProject } = require('@lagoobernetes/commons/src/api');
 
 async function openshiftBuildCancel(data: Object) {
   const { build, project, environment } = data;
@@ -64,7 +64,7 @@ async function openshiftBuildCancel(data: Object) {
 
   logger.verbose(`${openshiftProject}: Cancelling build: ${buildName}`);
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'info',
     project.name,
     '',

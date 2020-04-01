@@ -5,7 +5,7 @@ import { runSshCommand } from '../runSshCommand';
 
 jest.mock('execa');
 jest.mock('../../config/getSshConfig', () => ({
-  getSshConfig: () => ({ username: 'lagoon', host: 'localhost', port: 2020 }),
+  getSshConfig: () => ({ username: 'lagoobernetes', host: 'localhost', port: 2020 }),
 }));
 
 // Flow does not know which objects are actual mocks

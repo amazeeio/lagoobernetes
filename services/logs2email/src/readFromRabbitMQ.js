@@ -1,8 +1,8 @@
 // @flow
 
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 
-const { getEmailInfoForProject } = require('@lagoon/commons/src/api');
+const { getEmailInfoForProject } = require('@lagoobernetes/commons/src/api');
 
 const nodemailer = require('nodemailer');
 let transporter = nodemailer.createTransport({
@@ -318,7 +318,7 @@ const sendToEmail = async (project, messageMeta, channelWrapperLogs, msg, appId)
     const { emailAddress } = projectEmail;
 
     let info = transporter.sendMail({
-      from: 'lagoon@amazee.io',
+      from: 'lagoobernetes@amazee.io',
       to: emailAddress,
       subject: messageMeta.subject,
       text: messageMeta.plainText,

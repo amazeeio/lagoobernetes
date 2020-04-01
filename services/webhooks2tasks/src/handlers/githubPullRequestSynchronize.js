@@ -1,9 +1,9 @@
 // @flow
 
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { createDeployTask } = require('@lagoon/commons/src/tasks');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { createDeployTask } = require('@lagoobernetes/commons/src/tasks');
 
 import type { WebhookRequestData, removeData, ChannelWrapper, Project } from '../types';
 
@@ -45,7 +45,7 @@ async function githubPullRequestSynchronize(webhook: WebhookRequestData, project
 
     // Don't trigger deploy if only the PR body was edited.
     if (skipRedeploy(body)) {
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
         `*[${project.name}]* PR ${body.number} updated. No deploy task created, reason: Only body changed`
       )
       return;
@@ -53,7 +53,7 @@ async function githubPullRequestSynchronize(webhook: WebhookRequestData, project
 
     // Don't trigger deploy if the head and base repos are different
     if (!R.equals(headRepoId, baseRepoId)) {
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
         `*[${project.name}]* PR ${body.number} updated. No deploy task created, reason: Head/Base not same repo`
       )
       return;
@@ -76,7 +76,7 @@ async function githubPullRequestSynchronize(webhook: WebhookRequestData, project
 
     try {
       const taskResult = await createDeployTask(data);
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:synchronize:handled`, data,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:synchronize:handled`, data,
         `*[${project.name}]* PR <${body.pull_request.html_url}|#${body.number} (${body.pull_request.title})> updated in <${body.repository.html_url}|${body.repository.full_name}>`
       )
       return;
@@ -86,7 +86,7 @@ async function githubPullRequestSynchronize(webhook: WebhookRequestData, project
         case "NoActiveSystemsDefined":
         case "UnknownActiveSystem":
           // These are not real errors and also they will happen many times. We just log them locally but not throw an error
-          sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+          sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
             `*[${project.name}]* PR ${body.number} opened. No deploy task created, reason: ${error}`
           )
           return;

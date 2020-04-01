@@ -1,15 +1,15 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM docker:19.03-dind
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=docker-host
+ENV LAGOOBERNETES=docker-host
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /sbin/tini /sbin/
 COPY --from=commons /home /home
@@ -35,6 +35,6 @@ COPY update-push-images.sh /update-push-images.sh
 COPY prune-images.sh /prune-images.sh
 COPY remove-exited.sh /remove-exited.sh
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]
 
 CMD ["sh", "-c", "sh /usr/local/bin/dind /usr/local/bin/dockerd --host=tcp://0.0.0.0:2375 --host=unix:///var/run/docker.sock --insecure-registry=${REGISTRY} --insecure-registry=172.17.0.1:8084 --bip=${BIP} --storage-driver=overlay2 --storage-opt=overlay2.override_kernel_check=1"]

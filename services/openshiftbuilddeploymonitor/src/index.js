@@ -4,7 +4,7 @@ const Promise = require("bluebird");
 const OpenShiftClient = require('openshift-client');
 const sleep = require("es7-sleep");
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 const {
   getOpenShiftInfoForProject,
   getEnvironmentByName,
@@ -13,10 +13,10 @@ const {
   getDeploymentByName,
   updateDeployment,
   setEnvironmentServices,
-} = require('@lagoon/commons/src/api');
+} = require('@lagoobernetes/commons/src/api');
 
-const { sendToLagoonLogs, initSendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { consumeTaskMonitor, initSendToLagoonTasks } = require('@lagoon/commons/src/tasks');
+const { sendToLagoobernetesLogs, initSendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { consumeTaskMonitor, initSendToLagoobernetesTasks } = require('@lagoobernetes/commons/src/tasks');
 
 class BuildNotCompletedYet extends Error {
   constructor(message: string) {
@@ -25,8 +25,8 @@ class BuildNotCompletedYet extends Error {
   }
 }
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const messageConsumer = async msg => {
   const {
@@ -145,14 +145,14 @@ const messageConsumer = async msg => {
   switch (buildPhase) {
     case "new":
     case "pending":
-      sendToLagoonLogs('info', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
+      sendToLagoobernetesLogs('info', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
         `*[${projectName}]* ${logMessage} Build \`${buildName}\` not yet started`
       )
       throw new BuildNotCompletedYet(`*[${projectName}]* ${logMessage} Build \`${buildName}\` not yet started`)
       break;
 
     case "running":
-      sendToLagoonLogs('info', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
+      sendToLagoobernetesLogs('info', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
         `*[${projectName}]* ${logMessage} Build \`${buildName}\` running`
       )
       throw new BuildNotCompletedYet(`*[${projectName}]* ${logMessage} Build \`${buildName}\` running`)
@@ -160,13 +160,13 @@ const messageConsumer = async msg => {
 
     case "cancelled":
     case "error":
-      sendToLagoonLogs('warn', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
+      sendToLagoobernetesLogs('warn', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
         `*[${projectName}]* ${logMessage} Build \`${buildName}\` cancelled. <${logLink}|Logs>`
       )
       break;
 
     case "failed":
-      sendToLagoonLogs('error', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
+      sendToLagoobernetesLogs('error', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
         `*[${projectName}]* ${logMessage} Build \`${buildName}\` failed. <${logLink}|Logs>`
       )
       break;
@@ -183,31 +183,31 @@ const messageConsumer = async msg => {
       }
 
       try {
-        const configMapGet = Promise.promisify(kubernetes.ns(openshiftProject).configmaps('lagoon-env').get, { context: kubernetes.ns(openshiftProject).configmaps('lagoon-env') })
+        const configMapGet = Promise.promisify(kubernetes.ns(openshiftProject).configmaps('lagoobernetes-env').get, { context: kubernetes.ns(openshiftProject).configmaps('lagoobernetes-env') })
         configMap = await configMapGet()
       } catch (err) {
         if (err.code == 404) {
-          logger.error(`configmap lagoon-env does not exist, continuing without routes information`)
+          logger.error(`configmap lagoobernetes-env does not exist, continuing without routes information`)
         } else {
           logger.error(err)
           throw new Error
         }
       }
 
-      const route = configMap.data.LAGOON_ROUTE
-      const routes = configMap.data.LAGOON_ROUTES.split(',').filter(e => e !== route);
+      const route = configMap.data.LAGOOBERNETES_ROUTE
+      const routes = configMap.data.LAGOOBERNETES_ROUTES.split(',').filter(e => e !== route);
       meta.route = route
       meta.routes = routes
-      sendToLagoonLogs('info', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
+      sendToLagoobernetesLogs('info', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
         `*[${projectName}]* ${logMessage} Build \`${buildName}\` complete. <${logLink}|Logs> \n ${route}\n ${routes.join("\n")}`
       )
       try {
         const updateEnvironmentResult = await updateEnvironment(
           environment.id,
           `{
-            route: "${configMap.data.LAGOON_ROUTE}",
-            routes: "${configMap.data.LAGOON_ROUTES}",
-            monitoringUrls: "${configMap.data.LAGOON_MONITORING_URLS}",
+            route: "${configMap.data.LAGOOBERNETES_ROUTE}",
+            routes: "${configMap.data.LAGOOBERNETES_ROUTES}",
+            monitoringUrls: "${configMap.data.LAGOOBERNETES_MONITORING_URLS}",
             project: ${project.id}
           }`)
         } catch (err) {
@@ -243,7 +243,7 @@ const messageConsumer = async msg => {
       break;
 
     default:
-      sendToLagoonLogs('info', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
+      sendToLagoobernetesLogs('info', projectName, "", `task:builddeploy-openshift:${buildPhase}`, meta,
         `*[${projectName}]* ${logMessage} Build \`${buildName}\` phase ${buildPhase}`
       )
       throw new BuildNotCompletedYet(`*[${projectName}]* ${logMessage} Build \`${buildName}\` phase ${buildPhase}`)
@@ -269,7 +269,7 @@ const deathHandler = async (msg, lastError) => {
     logMessage = `\`${branchName}\``
   }
 
-  sendToLagoonLogs('error', projectName, "", "task:builddeploy-openshift:error",  {},
+  sendToLagoobernetesLogs('error', projectName, "", "task:builddeploy-openshift:error",  {},
 `*[${projectName}]* ${logMessage} Build \`${buildName}\` ERROR:
 \`\`\`
 ${lastError}

@@ -14,11 +14,11 @@
     dest: /{{git_repo_name}}/
   when: docker_files is defined
 
-- name: "{{ testname }} - removing cronjobs from .lagoon.yml"
+- name: "{{ testname }} - removing cronjobs from .lagoobernetes.yml"
   copy:
-    src: /{{git_repo_name}}/{{overwrite_lagoon_yml}}
-    dest: /{{git_repo_name}}/.lagoon.yml
-  when: overwrite_lagoon_yml is defined
+    src: /{{git_repo_name}}/{{overwrite_lagoobernetes_yml}}
+    dest: /{{git_repo_name}}/.lagoobernetes.yml
+  when: overwrite_lagoobernetes_yml is defined
 
 - name: "{{ testname }} - git adding all files from {{git_files}} to git repo {{git_repo_name}}"
   command: git add .

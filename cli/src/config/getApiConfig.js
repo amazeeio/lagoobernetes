@@ -34,13 +34,13 @@ export const getApiConfig: () => { hostname: string, port: number } = (() => {
         // API URL from config
         R.prop('api', getConfig()) ||
         // Default API URL
-        'https://api.lagoon.amazeeio.cloud';
+        'https://api.lagoobernetes.amazeeio.cloud';
 
       const { protocol, hostname, port } = url.parse(apiUrl);
 
       if (!hostname) {
         throw new Error(
-          'API URL configured under the "api" key in .lagoon.yml doesn\'t contain a valid hostname.',
+          'API URL configured under the "api" key in .lagoobernetes.yml doesn\'t contain a valid hostname.',
         );
       }
 

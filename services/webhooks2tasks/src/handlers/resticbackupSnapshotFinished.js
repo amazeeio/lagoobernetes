@@ -2,12 +2,12 @@
 
 const moment = require('moment');
 
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 const {
   addBackup,
   getEnvironmentByOpenshiftProjectName
-} = require('@lagoon/commons/src/api');
+} = require('@lagoobernetes/commons/src/api');
 const R = require('ramda');
 
 import type { WebhookRequestData } from '../types';
@@ -59,7 +59,7 @@ import type { WebhookRequestData } from '../types';
 
 //     return;
 //   } catch (error) {
-//     sendToLagoonLogs(
+//     sendToLagoobernetesLogs(
 //       'error',
 //       '',
 //       uuid,
@@ -142,7 +142,7 @@ async function resticbackupSnapshotFinished(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

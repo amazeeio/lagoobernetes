@@ -1,8 +1,8 @@
 // @flow
 
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 
-const { getRocketChatInfoForProject } = require('@lagoon/commons/src/api');
+const { getRocketChatInfoForProject } = require('@lagoobernetes/commons/src/api');
 
 const { URL } = require('url');
 const http = require('https');

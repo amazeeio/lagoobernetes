@@ -1,7 +1,7 @@
 const amqp = require('amqp-connection-manager');
 const { logger } = require('./local-logging');
 
-exports.initSendToLagoonTasks = initSendToLagoonTasks;
+exports.initSendToLagoobernetesTasks = initSendToLagoobernetesTasks;
 exports.createDeployTask = createDeployTask;
 exports.createPromoteTask = createPromoteTask;
 exports.createRemoveTask = createRemoveTask;
@@ -17,7 +17,7 @@ const {
   getEnvironmentsForProject,
 } = require('./api');
 
-let sendToLagoonTasks = (exports.sendToLagoonTasks = function sendToLagoonTasks(
+let sendToLagoobernetesTasks = (exports.sendToLagoobernetesTasks = function sendToLagoobernetesTasks(
   task,
   payload,
 ) {
@@ -25,7 +25,7 @@ let sendToLagoonTasks = (exports.sendToLagoonTasks = function sendToLagoonTasks(
   return payload && undefined;
 });
 
-let sendToLagoonTasksMonitor = (exports.sendToLagoonTasksMonitor = function sendToLagoonTasksMonitor(
+let sendToLagoobernetesTasksMonitor = (exports.sendToLagoobernetesTasksMonitor = function sendToLagoobernetesTasksMonitor(
   task,
   payload,
 ) {
@@ -73,20 +73,20 @@ class EnvironmentLimit extends Error {
   }
 }
 
-function initSendToLagoonTasks() {
+function initSendToLagoobernetesTasks() {
   connection = amqp.connect(
     [`amqp://${rabbitmqUsername}:${rabbitmqPassword}@${rabbitmqHost}`],
     { json: true },
   );
 
   connection.on('connect', ({ url }) =>
-    logger.verbose('lagoon-tasks: Connected to %s', url, {
+    logger.verbose('lagoobernetes-tasks: Connected to %s', url, {
       action: 'connected',
       url,
     }),
   );
   connection.on('disconnect', params =>
-    logger.error('lagoon-tasks: Not connected, error: %s', params.err.code, {
+    logger.error('lagoobernetes-tasks: Not connected, error: %s', params.err.code, {
       action: 'disconnected',
       reason: params,
     }),
@@ -95,52 +95,52 @@ function initSendToLagoonTasks() {
   const channelWrapperTasks = connection.createChannel({
     setup(channel) {
       return Promise.all([
-        // Our main Exchange for all lagoon-tasks
-        channel.assertExchange('lagoon-tasks', 'direct', { durable: true }),
+        // Our main Exchange for all lagoobernetes-tasks
+        channel.assertExchange('lagoobernetes-tasks', 'direct', { durable: true }),
 
-        channel.assertExchange('lagoon-tasks-delay', 'x-delayed-message', {
+        channel.assertExchange('lagoobernetes-tasks-delay', 'x-delayed-message', {
           durable: true,
           arguments: { 'x-delayed-type': 'fanout' },
         }),
-        channel.bindExchange('lagoon-tasks', 'lagoon-tasks-delay', ''),
+        channel.bindExchange('lagoobernetes-tasks', 'lagoobernetes-tasks-delay', ''),
 
         // Exchange for task monitoring
-        channel.assertExchange('lagoon-tasks-monitor', 'direct', {
+        channel.assertExchange('lagoobernetes-tasks-monitor', 'direct', {
           durable: true,
         }),
 
         channel.assertExchange(
-          'lagoon-tasks-monitor-delay',
+          'lagoobernetes-tasks-monitor-delay',
           'x-delayed-message',
           { durable: true, arguments: { 'x-delayed-type': 'fanout' } },
         ),
         channel.bindExchange(
-          'lagoon-tasks-monitor',
-          'lagoon-tasks-monitor-delay',
+          'lagoobernetes-tasks-monitor',
+          'lagoobernetes-tasks-monitor-delay',
           '',
         ),
       ]);
     },
   });
 
-  exports.sendToLagoonTasks = sendToLagoonTasks = async (
+  exports.sendToLagoobernetesTasks = sendToLagoobernetesTasks = async (
     task,
     payload,
   ) => {
     try {
       const buffer = Buffer.from(JSON.stringify(payload));
-      await channelWrapperTasks.publish('lagoon-tasks', task, buffer, {
+      await channelWrapperTasks.publish('lagoobernetes-tasks', task, buffer, {
         persistent: true,
       });
       logger.debug(
-        `lagoon-tasks: Successfully created task '${task}'`,
+        `lagoobernetes-tasks: Successfully created task '${task}'`,
         payload,
       );
-      return `lagoon-tasks: Successfully created task '${task}': ${JSON.stringify(
+      return `lagoobernetes-tasks: Successfully created task '${task}': ${JSON.stringify(
         payload,
       )}`;
     } catch (error) {
-      logger.error('lagoon-tasks: Error send to lagoon-tasks exchange', {
+      logger.error('lagoobernetes-tasks: Error send to lagoobernetes-tasks exchange', {
         payload,
         error,
       });
@@ -148,25 +148,25 @@ function initSendToLagoonTasks() {
     }
   };
 
-  exports.sendToLagoonTasksMonitor = sendToLagoonTasksMonitor = async (
+  exports.sendToLagoobernetesTasksMonitor = sendToLagoobernetesTasksMonitor = async (
     task,
     payload,
   ) => {
     try {
       const buffer = Buffer.from(JSON.stringify(payload));
-      await channelWrapperTasks.publish('lagoon-tasks-monitor', task, buffer, {
+      await channelWrapperTasks.publish('lagoobernetes-tasks-monitor', task, buffer, {
         persistent: true,
       });
       logger.debug(
-        `lagoon-tasks-monitor: Successfully created monitor '${task}'`,
+        `lagoobernetes-tasks-monitor: Successfully created monitor '${task}'`,
         payload,
       );
-      return `lagoon-tasks-monitor: Successfully created task monitor '${task}': ${JSON.stringify(
+      return `lagoobernetes-tasks-monitor: Successfully created task monitor '${task}': ${JSON.stringify(
         payload,
       )}`;
     } catch (error) {
       logger.error(
-        'lagoon-tasks-monitor: Error send to lagoon-tasks-monitor exchange',
+        'lagoobernetes-tasks-monitor: Error send to lagoobernetes-tasks-monitor exchange',
         {
           payload,
           error,
@@ -178,7 +178,7 @@ function initSendToLagoonTasks() {
 }
 
 async function createTaskMonitor(task, payload) {
-  return sendToLagoonTasksMonitor(task, payload);
+  return sendToLagoobernetesTasksMonitor(task, payload);
 }
 
 async function createDeployTask(deployData) {
@@ -206,8 +206,8 @@ async function createDeployTask(deployData) {
   }
 
   switch (project.activeSystemsDeploy) {
-    case 'lagoon_openshiftBuildDeploy':
-    case 'lagoon_kubernetesBuildDeploy':
+    case 'lagoobernetes_openshiftBuildDeploy':
+    case 'lagoobernetes_kubernetesBuildDeploy':
       if (environments.project.productionEnvironment === branchName) {
         logger.debug(
           `projectName: ${projectName}, branchName: ${branchName}, production environment, no environment limits considered`,
@@ -250,10 +250,10 @@ async function createDeployTask(deployData) {
               `projectName: ${projectName}, branchName: ${branchName}, no branches defined in active system, assuming we want all of them`,
             );
             switch (project.activeSystemsDeploy) {
-              case 'lagoon_openshiftBuildDeploy':
-                return sendToLagoonTasks('builddeploy-openshift', deployData);
-              case 'lagoon_kubernetesBuildDeploy':
-                return sendToLagoonTasks('builddeploy-kubernetes', deployData);
+              case 'lagoobernetes_openshiftBuildDeploy':
+                return sendToLagoobernetesTasks('builddeploy-openshift', deployData);
+              case 'lagoobernetes_kubernetesBuildDeploy':
+                return sendToLagoobernetesTasks('builddeploy-kubernetes', deployData);
               default:
                 throw new UnknownActiveSystem(
                   `Unknown active system '${
@@ -266,10 +266,10 @@ async function createDeployTask(deployData) {
               `projectName: ${projectName}, branchName: ${branchName}, all branches active, therefore deploying`,
             );
             switch (project.activeSystemsDeploy) {
-              case 'lagoon_openshiftBuildDeploy':
-                return sendToLagoonTasks('builddeploy-openshift', deployData);
-              case 'lagoon_kubernetesBuildDeploy':
-                return sendToLagoonTasks('builddeploy-kubernetes', deployData);
+              case 'lagoobernetes_openshiftBuildDeploy':
+                return sendToLagoobernetesTasks('builddeploy-openshift', deployData);
+              case 'lagoobernetes_kubernetesBuildDeploy':
+                return sendToLagoobernetesTasks('builddeploy-kubernetes', deployData);
               default:
                 throw new UnknownActiveSystem(
                   `Unknown active system '${
@@ -296,10 +296,10 @@ async function createDeployTask(deployData) {
                 } matched branchname, starting deploy`,
               );
               switch (project.activeSystemsDeploy) {
-                case 'lagoon_openshiftBuildDeploy':
-                  return sendToLagoonTasks('builddeploy-openshift', deployData);
-                case 'lagoon_kubernetesBuildDeploy':
-                  return sendToLagoonTasks('builddeploy-kubernetes', deployData);
+                case 'lagoobernetes_openshiftBuildDeploy':
+                  return sendToLagoobernetesTasks('builddeploy-openshift', deployData);
+                case 'lagoobernetes_kubernetesBuildDeploy':
+                  return sendToLagoobernetesTasks('builddeploy-kubernetes', deployData);
                 default:
                   throw new UnknownActiveSystem(
                     `Unknown active system '${
@@ -327,12 +327,12 @@ async function createDeployTask(deployData) {
             logger.debug(
               `projectName: ${projectName}, pullrequest: ${branchName}, no pullrequest defined in active system, assuming we want all of them`,
             );
-            return sendToLagoonTasks('builddeploy-openshift', deployData);
+            return sendToLagoobernetesTasks('builddeploy-openshift', deployData);
           case 'true':
             logger.debug(
               `projectName: ${projectName}, pullrequest: ${branchName}, all pullrequest active, therefore deploying`,
             );
-            return sendToLagoonTasks('builddeploy-openshift', deployData);
+            return sendToLagoobernetesTasks('builddeploy-openshift', deployData);
           case 'false':
             logger.debug(
               `projectName: ${projectName}, pullrequest: ${branchName}, pullrequest deployments disabled`,
@@ -352,7 +352,7 @@ async function createDeployTask(deployData) {
                   project.pullrequests
                 } matched PR Title '${pullrequestTitle}', starting deploy`,
               );
-              return sendToLagoonTasks('builddeploy-openshift', deployData);
+              return sendToLagoobernetesTasks('builddeploy-openshift', deployData);
             }
             logger.debug(
               `projectName: ${projectName}, branchName: ${branchName}, regex ${
@@ -394,8 +394,8 @@ async function createPromoteTask(promoteData) {
   }
 
   switch (project.activeSystemsPromote) {
-    case 'lagoon_openshiftBuildDeploy':
-      return sendToLagoonTasks('builddeploy-openshift', promoteData);
+    case 'lagoobernetes_openshiftBuildDeploy':
+      return sendToLagoobernetesTasks('builddeploy-openshift', promoteData);
 
     default:
       throw new UnknownActiveSystem(
@@ -441,7 +441,7 @@ async function createRemoveTask(removeData) {
   }
 
   switch (project.activeSystemsRemove) {
-    case 'lagoon_openshiftRemove':
+    case 'lagoobernetes_openshiftRemove':
       if (type === 'branch') {
         // Check to ensure the environment actually exists.
         let foundEnvironment = false;
@@ -461,7 +461,7 @@ async function createRemoveTask(removeData) {
         logger.debug(
           `projectName: ${projectName}, branchName: ${branchName}. Removing branch environment.`,
         );
-        return sendToLagoonTasks('remove-openshift', removeData);
+        return sendToLagoobernetesTasks('remove-openshift', removeData);
 
       } else if (type === 'pullrequest') {
         // Work out the branch name from the PR number.
@@ -486,14 +486,14 @@ async function createRemoveTask(removeData) {
         logger.debug(
           `projectName: ${projectName}, pullrequest: ${branchName}. Removing pullrequest environment.`,
         );
-        return sendToLagoonTasks('remove-openshift', removeData);
+        return sendToLagoobernetesTasks('remove-openshift', removeData);
 
       } else if (type === 'promote') {
-        return sendToLagoonTasks('remove-openshift', removeData);
+        return sendToLagoobernetesTasks('remove-openshift', removeData);
       }
       break;
 
-    case 'lagoon_kubernetesRemove':
+    case 'lagoobernetes_kubernetesRemove':
       if (type === 'branch') {
         // Check to ensure the environment actually exists.
         let foundEnvironment = false;
@@ -513,7 +513,7 @@ async function createRemoveTask(removeData) {
         logger.debug(
           `projectName: ${projectName}, branchName: ${branchName}. Removing branch environment.`,
         );
-        return sendToLagoonTasks('remove-kubernetes', removeData);
+        return sendToLagoobernetesTasks('remove-kubernetes', removeData);
 
       } else if (type === 'pullrequest') {
         // Work out the branch name from the PR number.
@@ -538,10 +538,10 @@ async function createRemoveTask(removeData) {
         logger.debug(
           `projectName: ${projectName}, pullrequest: ${branchName}. Removing pullrequest environment.`,
         );
-        return sendToLagoonTasks('remove-kubernetes', removeData);
+        return sendToLagoobernetesTasks('remove-kubernetes', removeData);
 
       } else if (type === 'promote') {
-        return sendToLagoonTasks('remove-kubernetes', removeData);
+        return sendToLagoobernetesTasks('remove-kubernetes', removeData);
       }
       break;
 
@@ -568,11 +568,11 @@ async function createTaskTask(taskData) {
   }
 
   switch (projectSystem.activeSystemsTask) {
-    case 'lagoon_openshiftJob':
-      return sendToLagoonTasks('job-openshift', taskData);
+    case 'lagoobernetes_openshiftJob':
+      return sendToLagoobernetesTasks('job-openshift', taskData);
 
-    case 'lagoon_kubernetesJob':
-      return sendToLagoonTasks('job-kubernetes', taskData)
+    case 'lagoobernetes_kubernetesJob':
+      return sendToLagoobernetesTasks('job-kubernetes', taskData)
 
     default:
       throw new UnknownActiveSystem(
@@ -592,11 +592,11 @@ async function createMiscTask(taskData) {
   let updatedKey = key;
   let taskId = '';
   switch (data.activeSystemsMisc) {
-    case 'lagoon_openshiftMisc':
+    case 'lagoobernetes_openshiftMisc':
       updatedKey = `openshift:${key}`;
       taskId = 'misc-openshift';
       break;
-    case 'lagoon_kubernetesMisc':
+    case 'lagoobernetes_kubernetesMisc':
       updatedKey = `kubernetes:${key}`
       taskId = 'misc-kubernetes';
       break;
@@ -605,7 +605,7 @@ async function createMiscTask(taskData) {
       break;
   }
 
-  return sendToLagoonTasks(taskId, {...taskData, key: updatedKey});
+  return sendToLagoobernetesTasks(taskId, {...taskData, key: updatedKey});
 }
 
 async function consumeTasks(
@@ -640,7 +640,7 @@ async function consumeTasks(
       } catch (retryError) {
         // intentionally empty as we don't want to fail and not requeue our message just becase the retryHandler fails
         logger.info(
-          `lagoon-tasks: retryHandler for ${taskQueueName} failed with ${retryError}, will continue to retry the message anyway.`,
+          `lagoobernetes-tasks: retryHandler for ${taskQueueName} failed with ${retryError}, will continue to retry the message anyway.`,
         );
       }
 
@@ -658,10 +658,10 @@ async function consumeTasks(
         persistent: true,
       };
 
-      // publishing a new message with the same content as the original message but into the `lagoon-tasks-delay` exchange,
-      // which will send the message into the original exchange `lagoon-tasks` after waiting the x-delay time.
+      // publishing a new message with the same content as the original message but into the `lagoobernetes-tasks-delay` exchange,
+      // which will send the message into the original exchange `lagoobernetes-tasks` after waiting the x-delay time.
       channelWrapperTasks.publish(
-        'lagoon-tasks-delay',
+        'lagoobernetes-tasks-delay',
         msg.fields.routingKey,
         msg.content,
         retryMsgOptions,
@@ -675,14 +675,14 @@ async function consumeTasks(
   const channelWrapperTasks = connection.createChannel({
     setup(channel) {
       return Promise.all([
-        channel.assertQueue(`lagoon-tasks:${taskQueueName}`, { durable: true }),
+        channel.assertQueue(`lagoobernetes-tasks:${taskQueueName}`, { durable: true }),
         channel.bindQueue(
-          `lagoon-tasks:${taskQueueName}`,
-          'lagoon-tasks',
+          `lagoobernetes-tasks:${taskQueueName}`,
+          'lagoobernetes-tasks',
           taskQueueName,
         ),
         channel.prefetch(2),
-        channel.consume(`lagoon-tasks:${taskQueueName}`, onMessage, {
+        channel.consume(`lagoobernetes-tasks:${taskQueueName}`, onMessage, {
           noAck: false,
         }),
       ]);
@@ -729,10 +729,10 @@ async function consumeTaskMonitor(
         persistent: true,
       };
 
-      // publishing a new message with the same content as the original message but into the `lagoon-tasks-delay` exchange,
-      // which will send the message into the original exchange `lagoon-tasks` after waiting the x-delay time.
+      // publishing a new message with the same content as the original message but into the `lagoobernetes-tasks-delay` exchange,
+      // which will send the message into the original exchange `lagoobernetes-tasks` after waiting the x-delay time.
       channelWrapperTaskMonitor.publish(
-        'lagoon-tasks-monitor-delay',
+        'lagoobernetes-tasks-monitor-delay',
         msg.fields.routingKey,
         msg.content,
         retryMsgOptions,
@@ -746,17 +746,17 @@ async function consumeTaskMonitor(
   const channelWrapperTaskMonitor = connection.createChannel({
     setup(channel) {
       return Promise.all([
-        channel.assertQueue(`lagoon-tasks-monitor:${taskMonitorQueueName}`, {
+        channel.assertQueue(`lagoobernetes-tasks-monitor:${taskMonitorQueueName}`, {
           durable: true,
         }),
         channel.bindQueue(
-          `lagoon-tasks-monitor:${taskMonitorQueueName}`,
-          'lagoon-tasks-monitor',
+          `lagoobernetes-tasks-monitor:${taskMonitorQueueName}`,
+          'lagoobernetes-tasks-monitor',
           taskMonitorQueueName,
         ),
         channel.prefetch(1),
         channel.consume(
-          `lagoon-tasks-monitor:${taskMonitorQueueName}`,
+          `lagoobernetes-tasks-monitor:${taskMonitorQueueName}`,
           onMessage,
           { noAck: false },
         ),

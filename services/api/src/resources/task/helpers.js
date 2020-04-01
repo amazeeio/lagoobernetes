@@ -5,8 +5,8 @@ import type MariaSQL from 'mariasql';
 */
 
 const R = require('ramda');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { createTaskTask } = require('@lagoon/commons/src/tasks');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { createTaskTask } = require('@lagoobernetes/commons/src/tasks');
 const { query } = require('../../util/db');
 const { pubSub } = require('../../clients/pubSub');
 const esClient = require('../../clients/esClient');
@@ -25,7 +25,7 @@ const injectLogs = async (task /* : Object */) => {
 
   try {
     const result = await esClient.search({
-      index: 'lagoon-logs-*',
+      index: 'lagoobernetes-logs-*',
       sort: '@timestamp:desc',
       body: {
         query: {
@@ -121,7 +121,7 @@ const Helpers = (sqlClient /* : MariaSQL */) => ({
         environment: environmentData,
       });
     } catch (error) {
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'error',
         projectData.name,
         '',

@@ -9,7 +9,7 @@ const logger = require('./logger');
 const validateToken = require('./util/auth');
 const { generateRoute } = require('./routes');
 
-import type { LagoonErrorWithStatus, $Request, $Response } from 'express';
+import type { LagoobernetesErrorWithStatus, $Request, $Response } from 'express';
 
 declare type keycloakGrant = {
   access_token: string,
@@ -30,11 +30,11 @@ app.use(
 app.use(validateToken);
 
 const port = process.env.PORT || 3000;
-const lagoonKeycloakRoute = R.compose(
+const lagoobernetesKeycloakRoute = R.compose(
   R.defaultTo('http://keycloak:8080'),
   R.find(R.test(/keycloak-/)),
   R.split(','),
-  R.propOr('', 'LAGOON_ROUTES'),
+  R.propOr('', 'LAGOOBERNETES_ROUTES'),
 )(process.env);
 
 const getUserGrant = async (userId: string): Promise<keycloakGrant> => {
@@ -51,7 +51,7 @@ const getUserGrant = async (userId: string): Promise<keycloakGrant> => {
     };
 
     const response = await axios.post(
-      `${lagoonKeycloakRoute}/auth/realms/lagoon/protocol/openid-connect/token`,
+      `${lagoobernetesKeycloakRoute}/auth/realms/lagoobernetes/protocol/openid-connect/token`,
       querystring.stringify(data),
     );
 
@@ -66,7 +66,7 @@ const getUserGrant = async (userId: string): Promise<keycloakGrant> => {
 
 app.post('/generate', ...generateRoute(getUserGrant));
 
-app.use((err: LagoonErrorWithStatus, req: $Request, res: $Response, next: Function) => {
+app.use((err: LagoobernetesErrorWithStatus, req: $Request, res: $Response, next: Function) => {
   logger.error(err.toString());
 
   if (res.headersSent) {

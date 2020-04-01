@@ -1,6 +1,6 @@
 #!/bin/sh
 
-for util in oc svcat jq; do 
+for util in oc svcat jq; do
 which ${util} > /dev/null
 if [ $? -gt 0 ]; then
   echo "please install ${util}"
@@ -14,20 +14,20 @@ usage() {
     This script is useful when needing to change either the class or the plan
     of and existing service broker.
     By default, it will use:
-      'lagoon-dbaas-mariadb-apb' as the class,
+      'lagoobernetes-dbaas-mariadb-apb' as the class,
       'production' as the plan,
       current openshift context as the namespace, and
       first servicebroker in the namespace.
 
     when completed, run with -x to delete migration pvc, dc and serviceaccount.
 
-    e.g: $0 -n mysite-devel -c lagoon-dbaas-mariadb-apb -p development -i mariadb
+    e.g: $0 -n mysite-devel -c lagoobernetes-dbaas-mariadb-apb -p development -i mariadb
          $0 -n mysite-devel -x
 EOF
 }
 
 # n- namespace
-# c- class ( lagoon-dbaas-mariadb-apb )
+# c- class ( lagoobernetes-dbaas-mariadb-apb )
 # p- plan ( production / stage )
 
 args=`getopt n:c:p:i:xh $*`
@@ -39,7 +39,7 @@ fi
 # set some defaults
 NAMESPACE=$(oc project -q)
 PLAN=production
-CLASS=lagoon-dbaas-mariadb-apb
+CLASS=lagoobernetes-dbaas-mariadb-apb
 
 set -- $args
 for i
@@ -102,7 +102,7 @@ oc -n ${NAMESPACE} run --image mariadb --env="MYSQL_RANDOM_ROOT_PASSWORD=yes"  m
 # pause and make some changes
 oc -n ${NAMESPACE} rollout pause deploymentconfig/migrator
 
-# We don't care about the database in /var/lib/mysql; just privilege it and let it do its thing. 
+# We don't care about the database in /var/lib/mysql; just privilege it and let it do its thing.
 oc -n ${NAMESPACE} patch deploymentconfig/migrator -p '{"spec":{"template":{"spec":{"serviceAccountName": "migrator"}}}}'
 oc -n ${NAMESPACE} patch deploymentconfig/migrator -p '{"spec":{"template":{"spec":{"securityContext":{ "privileged": "true",  "runAsUser": 0 }}}}}'
 oc -n ${NAMESPACE} patch deploymentconfig/migrator -p '{"spec":{"strategy":{"type":"Recreate"}}}'
@@ -196,5 +196,5 @@ DB_NAME=$(cat $SECRETS | shyaml get-value data.DB_NAME | base64 -D)
 DB_PORT=$(cat $SECRETS | shyaml get-value data.DB_PORT | base64 -D)
 
 SERVICE_NAME_UPPERCASE=$(echo $INSTANCE | tr [:lower:] [:upper:])
-oc -n $NAMESPACE patch configmap lagoon-env \
+oc -n $NAMESPACE patch configmap lagoobernetes-env \
    -p "{\"data\":{\"${SERVICE_NAME_UPPERCASE}_HOST\":\"${DB_HOST}\", \"${SERVICE_NAME_UPPERCASE}_USERNAME\":\"${DB_USER}\", \"${SERVICE_NAME_UPPERCASE}_PASSWORD\":\"${DB_PASSWORD}\", \"${SERVICE_NAME_UPPERCASE}_DATABASE\":\"${DB_NAME}\", \"${SERVICE_NAME_UPPERCASE}_PORT\":\"${DB_PORT}\"}}"

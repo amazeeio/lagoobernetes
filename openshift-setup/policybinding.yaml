@@ -2,10 +2,10 @@ apiVersion: v1
 kind: PolicyBinding
 metadata:
   creationTimestamp: null
-  name: lagoon:default
+  name: lagoobernetes:default
 policyRef:
   name: default
-  namespace: lagoon
+  namespace: lagoobernetes
 roleBindings:
 - name: shared-resource-viewer
   roleBinding:
@@ -13,10 +13,10 @@ roleBindings:
     - system:authenticated
     metadata:
       name: shared-resource-viewer
-      namespace: lagoon
+      namespace: lagoobernetes
     roleRef:
       name: shared-resource-viewer
-      namespace: lagoon
+      namespace: lagoobernetes
     subjects:
     - kind: SystemGroup
       name: system:authenticated

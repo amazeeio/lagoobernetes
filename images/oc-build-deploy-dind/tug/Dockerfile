@@ -1,7 +1,7 @@
 ARG IMAGE_REPO
 FROM ${IMAGE_REPO:-amazeeio}/oc
 
-ENV LAGOON=oc-build-deploy-tug
+ENV LAGOOBERNETES=oc-build-deploy-tug
 
 RUN	mkdir -p /oc-build-deploy
 

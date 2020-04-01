@@ -10,7 +10,7 @@ IFS=$'\n';
 DUPLICATE_SSHKEY_RECORDS=( $(mysql infrastructure --batch -sse "SELECT count(*) count, key_value FROM ssh_key GROUP BY key_value HAVING count > 1") );
 
 if [ ${#DUPLICATE_SSHKEY_RECORDS[@]} -ne 0 ]; then
-  echo "====== FOUND DUPLICATE SSH KEYS IN LAGOON API DATABASE!"
+  echo "====== FOUND DUPLICATE SSH KEYS IN LAGOOBERNETES API DATABASE!"
   for DUPLICATE_SSHKEY_RECORD in "${DUPLICATE_SSHKEY_RECORDS[@]}";
   do
     echo ""

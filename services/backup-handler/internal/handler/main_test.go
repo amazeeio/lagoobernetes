@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/amazeeio/lagoon-cli/pkg/api"
+	"github.com/amazeeio/lagoobernetes-cli/pkg/api"
 )
 
 func checkEqual(t *testing.T, got, want interface{}, msgs ...interface{}) {
@@ -66,8 +66,8 @@ func TestProcessBackups(t *testing.T) {
 	// broker := RabbitBroker{
 	// 	Hostname:     "127.0.0.1",
 	// 	Port:         "35672",
-	// 	QueueName:    "lagoon-webhooks:queue",
-	// 	ExchangeName: "lagoon-webhooks",
+	// 	QueueName:    "lagoobernetes-webhooks:queue",
+	// 	ExchangeName: "lagoobernetes-webhooks",
 	// }
 	// graphQL := GraphQLEndpoint{
 	// 	Endpoint:        srv.URL,

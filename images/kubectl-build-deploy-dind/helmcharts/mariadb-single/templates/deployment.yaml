@@ -43,11 +43,11 @@ spec:
           env:
             - name: CRONJOBS
               value: {{ .Values.inPodCronjobs | quote }}
-            - name: LAGOON_GIT_SHA
+            - name: LAGOOBERNETES_GIT_SHA
               value: {{ .Values.gitSha | quote }}
           envFrom:
             - configMapRef:
-                name: lagoon-env
+                name: lagoobernetes-env
           ports:
           - containerPort: 3306
             protocol: TCP

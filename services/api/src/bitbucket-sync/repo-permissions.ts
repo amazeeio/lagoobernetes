@@ -1,12 +1,12 @@
 import * as R from 'ramda';
-import * as bitbucketApi from '@lagoon/commons/src/bitbucketApi';
-import * as api from '@lagoon/commons/src/api';
-import { logger } from '@lagoon/commons/src/local-logging';
+import * as bitbucketApi from '@lagoobernetes/commons/src/bitbucketApi';
+import * as api from '@lagoobernetes/commons/src/api';
+import { logger } from '@lagoobernetes/commons/src/local-logging';
 
-// The lagoon group that has all of the projects needing to be synced
-const LAGOON_SYNC_GROUP = R.propOr(
+// The lagoobernetes group that has all of the projects needing to be synced
+const LAGOOBERNETES_SYNC_GROUP = R.propOr(
   'bitbucket-sync',
-  'BITBUCKET_SYNC_LAGOON_GROUP',
+  'BITBUCKET_SYNC_LAGOOBERNETES_GROUP',
   process.env
 );
 
@@ -21,7 +21,7 @@ const usernameExistsRegex = /Username.*?exists/;
 const userExistsTest = errorMessage =>
   R.test(usernameExistsRegex, errorMessage);
 
-const BitbucketPermsToLagoonPerms = {
+const BitbucketPermsToLagoobernetesPerms = {
   REPO_READ: 'REPORTER',
   REPO_WRITE: 'DEVELOPER',
   REPO_ADMIN: 'MAINTAINER'
@@ -49,8 +49,8 @@ const addUser = async (email: string): Promise<boolean> => {
   // Keep track of users we know exist to avoid API calls
   let existingUsers = [];
 
-  // Get all bitbucket related lagoon projects
-  const groupQuery = await api.getProjectsByGroupName(LAGOON_SYNC_GROUP);
+  // Get all bitbucket related lagoobernetes projects
+  const groupQuery = await api.getProjectsByGroupName(LAGOOBERNETES_SYNC_GROUP);
   const projects = R.pathOr([], ['groupByName', 'projects'], groupQuery) as [
     object
   ];
@@ -59,7 +59,7 @@ const addUser = async (email: string): Promise<boolean> => {
 
   for (const project of projects) {
     const projectName = R.prop('name', project);
-    const lagoonProjectGroup = `project-${projectName}`;
+    const lagoobernetesProjectGroup = `project-${projectName}`;
     const repo = await bitbucketApi.searchReposByName(projectName);
     if (!repo) {
       logger.warn(`No bitbuket repo found for: ${projectName}`);
@@ -78,7 +78,7 @@ const addUser = async (email: string): Promise<boolean> => {
       continue;
     }
 
-    // Sync user/permissions from bitbucket to lagoon
+    // Sync user/permissions from bitbucket to lagoobernetes
     for (const userPermission of userPermissions) {
       const bbUser = userPermission.user as BitbucketUser;
       const bbPerm = userPermission.permission;
@@ -98,19 +98,19 @@ const addUser = async (email: string): Promise<boolean> => {
       try {
         await api.addUserToGroup(
           email,
-          lagoonProjectGroup,
-          BitbucketPermsToLagoonPerms[bbPerm]
+          lagoobernetesProjectGroup,
+          BitbucketPermsToLagoobernetesPerms[bbPerm]
         );
       } catch (err) {
         logger.error(
-          `Could not add user (${email}) to group (${lagoonProjectGroup}): ${err.message}`
+          `Could not add user (${email}) to group (${lagoobernetesProjectGroup}): ${err.message}`
         );
       }
     }
 
-    // Get current lagoon users
-    const currentMembersQuery = await api.getGroupMembersByGroupName(lagoonProjectGroup);
-    const lagoonUsers = R.pipe(
+    // Get current lagoobernetes users
+    const currentMembersQuery = await api.getGroupMembersByGroupName(lagoobernetesProjectGroup);
+    const lagoobernetesUsers = R.pipe(
       R.pathOr([], ['groupByName', 'members']),
       // @ts-ignore
       R.pluck('user'),
@@ -126,13 +126,13 @@ const addUser = async (email: string): Promise<boolean> => {
       R.pluck('emailAddress'),
     )(userPermissions) as [string];
 
-    // Remove users from lagoon project that are removed in bitbucket repo
-    const deleteUsers = R.difference(lagoonUsers, bitbucketUsers);
+    // Remove users from lagoobernetes project that are removed in bitbucket repo
+    const deleteUsers = R.difference(lagoobernetesUsers, bitbucketUsers);
     for (const user of deleteUsers) {
       try {
-        await api.removeUserFromGroup(user, lagoonProjectGroup);
+        await api.removeUserFromGroup(user, lagoobernetesProjectGroup);
       } catch (err) {
-        logger.error(`Could not remove user (${user}) from group (${lagoonProjectGroup}): ${err.message}`);
+        logger.error(`Could not remove user (${user}) from group (${lagoobernetesProjectGroup}): ${err.message}`);
       }
     }
   }

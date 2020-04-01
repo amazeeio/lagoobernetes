@@ -17,8 +17,8 @@ export default (App, initialAuth) => {
     async componentDidMount() {
       const keycloak = Keycloak({
         url: publicRuntimeConfig.KEYCLOAK_API,
-        realm: 'lagoon',
-        clientId: 'lagoon-ui'
+        realm: 'lagoobernetes',
+        clientId: 'lagoobernetes-ui'
       });
 
       keycloak.onTokenExpired = async () => {

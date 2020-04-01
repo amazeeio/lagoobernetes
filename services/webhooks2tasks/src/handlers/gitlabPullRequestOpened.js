@@ -1,9 +1,9 @@
 // @flow
 
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { createDeployTask } = require('@lagoon/commons/src/tasks');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { createDeployTask } = require('@lagoobernetes/commons/src/tasks');
 
 import type { WebhookRequestData, removeData, ChannelWrapper, Project } from '../types';
 
@@ -35,7 +35,7 @@ async function gitlabPullRequestOpened(webhook: WebhookRequestData, project: Pro
 
     // Don't trigger deploy if the head and base repos are different
     if (!R.equals(headRepoId, baseRepoId)) {
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
         `*[${project.name}]* PR ${body.number} opened. No deploy task created, reason: Target/Source not same repo`
       )
       return;
@@ -59,7 +59,7 @@ async function gitlabPullRequestOpened(webhook: WebhookRequestData, project: Pro
 
     try {
       const taskResult = await createDeployTask(data);
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:opened:handled`, data,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:opened:handled`, data,
         `*[${project.name}]* PR <${body.object_attributes.url}|#${body.object_attributes.id} (${body.object_attributes.title})> opened in <${body.object_attributes.target.web_url}|${body.object_attributes.target.name}>`
       )
       return;
@@ -69,7 +69,7 @@ async function gitlabPullRequestOpened(webhook: WebhookRequestData, project: Pro
         case "NoActiveSystemsDefined":
         case "UnknownActiveSystem":
           // These are not real errors and also they will happen many times. We just log them locally but not throw an error
-          sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+          sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
             `*[${project.name}]* PR ${body.object_attributes.id} opened. No deploy task created, reason: ${error}`
           )
           return;

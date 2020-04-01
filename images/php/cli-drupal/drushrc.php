@@ -1,17 +1,17 @@
 <?php
 /**
  * @file
- * Lagoon global drushrc.php file
+ * Lagoobernetes global drushrc.php file
  *
- * This file tells drush about the lagoon environment
+ * This file tells drush about the lagoobernetes environment
  */
 
 ### Drush Root
 $options['root'] = '/app/' . getenv('WEBROOT');
 
 ### Base URL so Drush knows on which URL the site runs (needed for cron, etc.)
-if (getenv('LAGOON_ROUTE')) {
-  $options['uri'] = str_replace(['https://', 'http://'], ['', ''], getenv('LAGOON_ROUTE'));
+if (getenv('LAGOOBERNETES_ROUTE')) {
+  $options['uri'] = str_replace(['https://', 'http://'], ['', ''], getenv('LAGOOBERNETES_ROUTE'));
 }
 
 ### Because of high security at OpenShift we need to change the behavior of rsync:

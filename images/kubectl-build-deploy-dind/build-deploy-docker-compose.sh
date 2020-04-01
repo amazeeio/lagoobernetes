@@ -4,10 +4,10 @@ function outputToYaml() {
   set +x
   IFS=''
   while read data; do
-    echo "$data" >> /kubectl-build-deploy/lagoon/${YAML_CONFIG_FILE}.yml;
+    echo "$data" >> /kubectl-build-deploy/lagoobernetes/${YAML_CONFIG_FILE}.yml;
   done;
   # Inject YAML document separator
-  echo "---" >> /kubectl-build-deploy/lagoon/${YAML_CONFIG_FILE}.yml;
+  echo "---" >> /kubectl-build-deploy/lagoobernetes/${YAML_CONFIG_FILE}.yml;
   set -x
 }
 
@@ -37,16 +37,16 @@ function cronScheduleMoreOftenThan30Minutes() {
 ##############################################
 
 # Load path of docker-compose that should be used
-DOCKER_COMPOSE_YAML=($(cat .lagoon.yml | shyaml get-value docker-compose-yaml))
+DOCKER_COMPOSE_YAML=($(cat .lagoobernetes.yml | shyaml get-value docker-compose-yaml))
 
-DEPLOY_TYPE=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.deploy-type default)
+DEPLOY_TYPE=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.deploy-type default)
 
 # Load all Services that are defined
 COMPOSE_SERVICES=($(cat $DOCKER_COMPOSE_YAML | shyaml keys services))
 
 # Default shared mariadb service broker
-MARIADB_SHARED_DEFAULT_CLASS="lagoon-dbaas-mariadb-apb"
-MONGODB_SHARED_DEFAULT_CLASS="lagoon-maas-mongodb-apb"
+MARIADB_SHARED_DEFAULT_CLASS="lagoobernetes-dbaas-mariadb-apb"
+MONGODB_SHARED_DEFAULT_CLASS="lagoobernetes-maas-mongodb-apb"
 
 # Figure out which services should we handle
 SERVICE_TYPES=()
@@ -66,21 +66,21 @@ declare -A IMAGE_HASHES
 for COMPOSE_SERVICE in "${COMPOSE_SERVICES[@]}"
 do
   # The name of the service can be overridden, if not we use the actual servicename
-  SERVICE_NAME=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.name default)
+  SERVICE_NAME=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.name default)
   if [ "$SERVICE_NAME" == "default" ]; then
     SERVICE_NAME=$COMPOSE_SERVICE
   fi
 
   # Load the servicetype. If it's "none" we will not care about this service at all
-  SERVICE_TYPE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.type custom)
+  SERVICE_TYPE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.type custom)
 
-  # Allow the servicetype to be overriden by environment in .lagoon.yml
-  ENVIRONMENT_SERVICE_TYPE_OVERRIDE=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.types.$SERVICE_NAME false)
+  # Allow the servicetype to be overriden by environment in .lagoobernetes.yml
+  ENVIRONMENT_SERVICE_TYPE_OVERRIDE=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.types.$SERVICE_NAME false)
   if [ ! $ENVIRONMENT_SERVICE_TYPE_OVERRIDE == "false" ]; then
     SERVICE_TYPE=$ENVIRONMENT_SERVICE_TYPE_OVERRIDE
   fi
 
-  # "mariadb" is a meta service, which allows lagoon to decide itself which of the services to use:
+  # "mariadb" is a meta service, which allows lagoobernetes to decide itself which of the services to use:
   # - mariadb-single (a single mariadb pod)
   # - mariadb-dbaas (use the dbaas shared operator)
   if [ "$SERVICE_TYPE" == "mariadb" ]; then
@@ -98,17 +98,17 @@ do
 
   fi
 
-  # Previous versions of Lagoon supported "mariadb-shared", this has been superseeded by "mariadb-dbaas"
+  # Previous versions of Lagoobernetes supported "mariadb-shared", this has been superseeded by "mariadb-dbaas"
   if [[ "$SERVICE_TYPE" == "mariadb-shared" ]]; then
     SERVICE_TYPE="mariadb-dbaas"
   fi
 
   if [[ "$SERVICE_TYPE" == "mariadb-dbaas" ]]; then
     # Default plan is the enviroment type
-    DBAAS_ENVIRONMENT=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.mariadb-dbaas\\.environment "${ENVIRONMENT_TYPE}")
+    DBAAS_ENVIRONMENT=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.mariadb-dbaas\\.environment "${ENVIRONMENT_TYPE}")
 
-    # Allow the dbaas shared servicebroker plan to be overriden by environment in .lagoon.yml
-    ENVIRONMENT_DBAAS_ENVIRONMENT_OVERRIDE=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.overrides.$SERVICE_NAME.mariadb-dbaas\\.environment false)
+    # Allow the dbaas shared servicebroker plan to be overriden by environment in .lagoobernetes.yml
+    ENVIRONMENT_DBAAS_ENVIRONMENT_OVERRIDE=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.overrides.$SERVICE_NAME.mariadb-dbaas\\.environment false)
     if [ ! $DBAAS_ENVIRONMENT_OVERRIDE == "false" ]; then
       DBAAS_ENVIRONMENT=$ENVIRONMENT_DBAAS_ENVIRONMENT_OVERRIDE
     fi
@@ -117,8 +117,8 @@ do
   fi
 
   if [ "$SERVICE_TYPE" == "mongodb-shared" ]; then
-    MONGODB_SHARED_CLASS=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.mongo-shared\\.class "${MONGODB_SHARED_DEFAULT_CLASS}")
-    MONGODB_SHARED_PLAN=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.mongo-shared\\.plan "${ENVIRONMENT_TYPE}")
+    MONGODB_SHARED_CLASS=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.mongo-shared\\.class "${MONGODB_SHARED_DEFAULT_CLASS}")
+    MONGODB_SHARED_PLAN=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.mongo-shared\\.plan "${ENVIRONMENT_TYPE}")
 
     # Check if the defined service broker plan  exists
     if svcat --scope cluster get plan --class "${MONGODB_SHARED_CLASS}" "${MONGODB_SHARED_PLAN}" > /dev/null; then
@@ -134,8 +134,8 @@ do
   fi
 
   # For DeploymentConfigs with multiple Services inside (like nginx-php), we allow to define the service type of within the
-  # deploymentconfig via lagoon.deployment.servicetype. If this is not set we use the Compose Service Name
-  DEPLOYMENT_SERVICETYPE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.deployment\\.servicetype default)
+  # deploymentconfig via lagoobernetes.deployment.servicetype. If this is not set we use the Compose Service Name
+  DEPLOYMENT_SERVICETYPE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.deployment\\.servicetype default)
   if [ "$DEPLOYMENT_SERVICETYPE" == "default" ]; then
     DEPLOYMENT_SERVICETYPE=$COMPOSE_SERVICE
   fi
@@ -177,37 +177,37 @@ if [[ ( "$BUILD_TYPE" == "pullrequest"  ||  "$BUILD_TYPE" == "branch" ) && ! $TH
 
   BUILD_ARGS=()
 
-  # Add environment variables from lagoon API as build args
-  if [ ! -z "$LAGOON_PROJECT_VARIABLES" ]; then
-    BUILD_ARGS+=($(echo $LAGOON_PROJECT_VARIABLES | jq -r '.[] | select(.scope == "build" or .scope == "global") | "--build-arg \(.name)=\(.value)"'))
+  # Add environment variables from lagoobernetes API as build args
+  if [ ! -z "$LAGOOBERNETES_PROJECT_VARIABLES" ]; then
+    BUILD_ARGS+=($(echo $LAGOOBERNETES_PROJECT_VARIABLES | jq -r '.[] | select(.scope == "build" or .scope == "global") | "--build-arg \(.name)=\(.value)"'))
   fi
-  if [ ! -z "$LAGOON_ENVIRONMENT_VARIABLES" ]; then
-    BUILD_ARGS+=($(echo $LAGOON_ENVIRONMENT_VARIABLES | jq -r '.[] | select(.scope == "build" or .scope == "global") | "--build-arg \(.name)=\(.value)"'))
+  if [ ! -z "$LAGOOBERNETES_ENVIRONMENT_VARIABLES" ]; then
+    BUILD_ARGS+=($(echo $LAGOOBERNETES_ENVIRONMENT_VARIABLES | jq -r '.[] | select(.scope == "build" or .scope == "global") | "--build-arg \(.name)=\(.value)"'))
   fi
 
   BUILD_ARGS+=(--build-arg IMAGE_REPO="${CI_OVERRIDE_IMAGE_REPO}")
-  BUILD_ARGS+=(--build-arg LAGOON_PROJECT="${PROJECT}")
-  BUILD_ARGS+=(--build-arg LAGOON_ENVIRONMENT="${ENVIRONMENT}")
-  BUILD_ARGS+=(--build-arg LAGOON_BUILD_TYPE="${BUILD_TYPE}")
-  BUILD_ARGS+=(--build-arg LAGOON_GIT_SOURCE_REPOSITORY="${SOURCE_REPOSITORY}")
+  BUILD_ARGS+=(--build-arg LAGOOBERNETES_PROJECT="${PROJECT}")
+  BUILD_ARGS+=(--build-arg LAGOOBERNETES_ENVIRONMENT="${ENVIRONMENT}")
+  BUILD_ARGS+=(--build-arg LAGOOBERNETES_BUILD_TYPE="${BUILD_TYPE}")
+  BUILD_ARGS+=(--build-arg LAGOOBERNETES_GIT_SOURCE_REPOSITORY="${SOURCE_REPOSITORY}")
 
   set +x
-  BUILD_ARGS+=(--build-arg LAGOON_SSH_PRIVATE_KEY="${SSH_PRIVATE_KEY}")
+  BUILD_ARGS+=(--build-arg LAGOOBERNETES_SSH_PRIVATE_KEY="${SSH_PRIVATE_KEY}")
   set -x
 
   if [ "$BUILD_TYPE" == "branch" ]; then
-    BUILD_ARGS+=(--build-arg LAGOON_GIT_SHA="${LAGOON_GIT_SHA}")
-    BUILD_ARGS+=(--build-arg LAGOON_GIT_BRANCH="${BRANCH}")
+    BUILD_ARGS+=(--build-arg LAGOOBERNETES_GIT_SHA="${LAGOOBERNETES_GIT_SHA}")
+    BUILD_ARGS+=(--build-arg LAGOOBERNETES_GIT_BRANCH="${BRANCH}")
   fi
 
 
   if [ "$BUILD_TYPE" == "pullrequest" ]; then
-    BUILD_ARGS+=(--build-arg LAGOON_PR_HEAD_BRANCH="${PR_HEAD_BRANCH}")
-    BUILD_ARGS+=(--build-arg LAGOON_PR_HEAD_SHA="${PR_HEAD_SHA}")
-    BUILD_ARGS+=(--build-arg LAGOON_PR_BASE_BRANCH="${PR_BASE_BRANCH}")
-    BUILD_ARGS+=(--build-arg LAGOON_PR_BASE_SHA="${PR_BASE_SHA}")
-    BUILD_ARGS+=(--build-arg LAGOON_PR_TITLE="${PR_TITLE}")
-    BUILD_ARGS+=(--build-arg LAGOON_PR_NUMBER="${PR_NUMBER}")
+    BUILD_ARGS+=(--build-arg LAGOOBERNETES_PR_HEAD_BRANCH="${PR_HEAD_BRANCH}")
+    BUILD_ARGS+=(--build-arg LAGOOBERNETES_PR_HEAD_SHA="${PR_HEAD_SHA}")
+    BUILD_ARGS+=(--build-arg LAGOOBERNETES_PR_BASE_BRANCH="${PR_BASE_BRANCH}")
+    BUILD_ARGS+=(--build-arg LAGOOBERNETES_PR_BASE_SHA="${PR_BASE_SHA}")
+    BUILD_ARGS+=(--build-arg LAGOOBERNETES_PR_TITLE="${PR_TITLE}")
+    BUILD_ARGS+=(--build-arg LAGOOBERNETES_PR_NUMBER="${PR_NUMBER}")
   fi
 
   for IMAGE_NAME in "${IMAGES[@]}"
@@ -223,7 +223,7 @@ if [[ ( "$BUILD_TYPE" == "pullrequest"  ||  "$BUILD_TYPE" == "branch" ) && ! $TH
       fi
 
       # allow to overwrite image that we pull
-      OVERRIDE_IMAGE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$IMAGE_NAME.labels.lagoon\\.image false)
+      OVERRIDE_IMAGE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$IMAGE_NAME.labels.lagoobernetes\\.image false)
       if [ ! $OVERRIDE_IMAGE == "false" ]; then
         # expand environment variables from ${OVERRIDE_IMAGE}
         PULL_IMAGE=$(echo "${OVERRIDE_IMAGE}" | envsubst)
@@ -261,10 +261,10 @@ if [[ ( "$BUILD_TYPE" == "pullrequest"  ||  "$BUILD_TYPE" == "branch" ) && ! $TH
 fi
 
 # if $DEPLOY_TYPE is tug we just push the images to the defined docker registry and create a clone
-# of ourselves and push it into `lagoon-tug` image which is then executed in the destination openshift
+# of ourselves and push it into `lagoobernetes-tug` image which is then executed in the destination openshift
 # If though this is the actual tug deployment in the destination openshift, we don't run this
 if [[ $DEPLOY_TYPE == "tug" && ! $THIS_IS_TUG == "true" ]]; then
-echo "TODO: lagoon-tug is not implemented yet in kubernetes"
+echo "TODO: lagoobernetes-tug is not implemented yet in kubernetes"
 exit 1
   . /kubectl-build-deploy/tug/tug-build-push.sh
 
@@ -273,21 +273,21 @@ exit 1
 fi
 
 ##############################################
-### RUN PRE-ROLLOUT tasks defined in .lagoon.yml
+### RUN PRE-ROLLOUT tasks defined in .lagoobernetes.yml
 ##############################################
 
 
 COUNTER=0
-while [ -n "$(cat .lagoon.yml | shyaml keys tasks.pre-rollout.$COUNTER 2> /dev/null)" ]
+while [ -n "$(cat .lagoobernetes.yml | shyaml keys tasks.pre-rollout.$COUNTER 2> /dev/null)" ]
 do
-  TASK_TYPE=$(cat .lagoon.yml | shyaml keys tasks.pre-rollout.$COUNTER)
+  TASK_TYPE=$(cat .lagoobernetes.yml | shyaml keys tasks.pre-rollout.$COUNTER)
   echo $TASK_TYPE
   case "$TASK_TYPE" in
     run)
-        COMMAND=$(cat .lagoon.yml | shyaml get-value tasks.pre-rollout.$COUNTER.$TASK_TYPE.command)
-        SERVICE_NAME=$(cat .lagoon.yml | shyaml get-value tasks.pre-rollout.$COUNTER.$TASK_TYPE.service)
-        CONTAINER=$(cat .lagoon.yml | shyaml get-value tasks.pre-rollout.$COUNTER.$TASK_TYPE.container false)
-        SHELL=$(cat .lagoon.yml | shyaml get-value tasks.pre-rollout.$COUNTER.$TASK_TYPE.shell sh)
+        COMMAND=$(cat .lagoobernetes.yml | shyaml get-value tasks.pre-rollout.$COUNTER.$TASK_TYPE.command)
+        SERVICE_NAME=$(cat .lagoobernetes.yml | shyaml get-value tasks.pre-rollout.$COUNTER.$TASK_TYPE.service)
+        CONTAINER=$(cat .lagoobernetes.yml | shyaml get-value tasks.pre-rollout.$COUNTER.$TASK_TYPE.container false)
+        SHELL=$(cat .lagoobernetes.yml | shyaml get-value tasks.pre-rollout.$COUNTER.$TASK_TYPE.shell sh)
         . /kubectl-build-deploy/scripts/exec-pre-tasks-run.sh
         ;;
     *)
@@ -308,16 +308,16 @@ done
 YAML_CONFIG_FILE="services-routes"
 
 # BC for routes.insecure, which is now called routes.autogenerate.insecure
-BC_ROUTES_AUTOGENERATE_INSECURE=$(cat .lagoon.yml | shyaml get-value routes.insecure false)
+BC_ROUTES_AUTOGENERATE_INSECURE=$(cat .lagoobernetes.yml | shyaml get-value routes.insecure false)
 if [ ! $BC_ROUTES_AUTOGENERATE_INSECURE == "false" ]; then
-  echo "=== routes.insecure is now defined in routes.autogenerate.insecure, pleae update your .lagoon.yml file"
+  echo "=== routes.insecure is now defined in routes.autogenerate.insecure, pleae update your .lagoobernetes.yml file"
   ROUTES_AUTOGENERATE_INSECURE=$BC_ROUTES_AUTOGENERATE_INSECURE
 else
   # By default we allow insecure traffic on autogenerate routes
-  ROUTES_AUTOGENERATE_INSECURE=$(cat .lagoon.yml | shyaml get-value routes.autogenerate.insecure Allow)
+  ROUTES_AUTOGENERATE_INSECURE=$(cat .lagoobernetes.yml | shyaml get-value routes.autogenerate.insecure Allow)
 fi
 
-ROUTES_AUTOGENERATE_ENABLED=$(cat .lagoon.yml | shyaml get-value routes.autogenerate.enabled true)
+ROUTES_AUTOGENERATE_ENABLED=$(cat .lagoobernetes.yml | shyaml get-value routes.autogenerate.enabled true)
 
 touch /kubectl-build-deploy/values.yaml
 
@@ -325,13 +325,13 @@ yq write -i /kubectl-build-deploy/values.yaml 'project' $PROJECT
 yq write -i /kubectl-build-deploy/values.yaml 'environment' $ENVIRONMENT
 yq write -i /kubectl-build-deploy/values.yaml 'environmentType' $ENVIRONMENT_TYPE
 yq write -i /kubectl-build-deploy/values.yaml 'namespace' $NAMESPACE
-yq write -i /kubectl-build-deploy/values.yaml 'gitSha' $LAGOON_GIT_SHA
+yq write -i /kubectl-build-deploy/values.yaml 'gitSha' $LAGOOBERNETES_GIT_SHA
 yq write -i /kubectl-build-deploy/values.yaml 'buildType' $BUILD_TYPE
 yq write -i /kubectl-build-deploy/values.yaml 'routesAutogenerateInsecure' $ROUTES_AUTOGENERATE_INSECURE
 yq write -i /kubectl-build-deploy/values.yaml 'routesAutogenerateEnabled' $ROUTES_AUTOGENERATE_ENABLED
 yq write -i /kubectl-build-deploy/values.yaml 'routesAutogenerateSuffix' $ROUTER_URL
 yq write -i /kubectl-build-deploy/values.yaml 'kubernetes' $KUBERNETES
-yq write -i /kubectl-build-deploy/values.yaml 'lagoonVersion' $LAGOON_VERSION
+yq write -i /kubectl-build-deploy/values.yaml 'lagoobernetesVersion' $LAGOOBERNETES_VERSION
 
 
 echo -e "\
@@ -346,25 +346,25 @@ do
 done
 
 echo -e "\
-LAGOON_PROJECT=${PROJECT}\n\
-LAGOON_ENVIRONMENT=${ENVIRONMENT}\n\
-LAGOON_ENVIRONMENT_TYPE=${ENVIRONMENT_TYPE}\n\
-LAGOON_GIT_SHA=${LAGOON_GIT_SHA}\n\
-LAGOON_KUBERNETES=${KUBERNETES}\n\
+LAGOOBERNETES_PROJECT=${PROJECT}\n\
+LAGOOBERNETES_ENVIRONMENT=${ENVIRONMENT}\n\
+LAGOOBERNETES_ENVIRONMENT_TYPE=${ENVIRONMENT_TYPE}\n\
+LAGOOBERNETES_GIT_SHA=${LAGOOBERNETES_GIT_SHA}\n\
+LAGOOBERNETES_KUBERNETES=${KUBERNETES}\n\
 " >> /kubectl-build-deploy/values.env
 
-# DEPRECATED: will be removed with Lagoon 3.0.0
-# LAGOON_GIT_SAFE_BRANCH is pointing to the enviornment name, therefore also is filled if this environment
+# DEPRECATED: will be removed with Lagoobernetes 3.0.0
+# LAGOOBERNETES_GIT_SAFE_BRANCH is pointing to the enviornment name, therefore also is filled if this environment
 # is created by a PR or Promote workflow. This technically wrong, therefore will be removed
 echo -e "\
-LAGOON_GIT_SAFE_BRANCH=${ENVIRONMENT}\n\
+LAGOOBERNETES_GIT_SAFE_BRANCH=${ENVIRONMENT}\n\
 " >> /kubectl-build-deploy/values.env
 
 if [ "$BUILD_TYPE" == "branch" ]; then
   yq write -i /kubectl-build-deploy/values.yaml 'branch' $BRANCH
 
   echo -e "\
-LAGOON_GIT_BRANCH=${BRANCH}\n\
+LAGOOBERNETES_GIT_BRANCH=${BRANCH}\n\
 " >> /kubectl-build-deploy/values.env
 fi
 
@@ -375,10 +375,10 @@ if [ "$BUILD_TYPE" == "pullrequest" ]; then
   yq write -i /kubectl-build-deploy/values.yaml 'prNumber' "$PR_NUMBER"
 
   echo -e "\
-LAGOON_PR_HEAD_BRANCH=${PR_HEAD_BRANCH}\n\
-LAGOON_PR_BASE_BRANCH=${PR_BASE_BRANCH}\n\
-LAGOON_PR_TITLE=${PR_TITLE}\n\
-LAGOON_PR_NUMBER=${PR_NUMBER}\n\
+LAGOOBERNETES_PR_HEAD_BRANCH=${PR_HEAD_BRANCH}\n\
+LAGOOBERNETES_PR_BASE_BRANCH=${PR_BASE_BRANCH}\n\
+LAGOOBERNETES_PR_TITLE=${PR_TITLE}\n\
+LAGOOBERNETES_PR_NUMBER=${PR_NUMBER}\n\
 " >> /kubectl-build-deploy/values.env
 fi
 
@@ -392,7 +392,7 @@ do
   SERVICE_NAME=${SERVICE_TYPES_ENTRY_SPLIT[0]}
   SERVICE_TYPE=${SERVICE_TYPES_ENTRY_SPLIT[1]}
 
-  SERVICE_TYPE_OVERRIDE=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.types.$SERVICE_NAME false)
+  SERVICE_TYPE_OVERRIDE=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.types.$SERVICE_NAME false)
   if [ ! $SERVICE_TYPE_OVERRIDE == "false" ]; then
     SERVICE_TYPE=$SERVICE_TYPE_OVERRIDE
   fi
@@ -429,28 +429,28 @@ done
 TEMPLATE_PARAMETERS=()
 
 ##############################################
-### CUSTOM ROUTES FROM .lagoon.yml
+### CUSTOM ROUTES FROM .lagoobernetes.yml
 ##############################################
 
 # Two while loops as we have multiple services that want routes and each service has multiple routes
 ROUTES_SERVICE_COUNTER=0
-if [ -n "$(cat .lagoon.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER 2> /dev/null)" ]; then
-  while [ -n "$(cat .lagoon.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER 2> /dev/null)" ]; do
-    ROUTES_SERVICE=$(cat .lagoon.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER)
+if [ -n "$(cat .lagoobernetes.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER 2> /dev/null)" ]; then
+  while [ -n "$(cat .lagoobernetes.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER 2> /dev/null)" ]; do
+    ROUTES_SERVICE=$(cat .lagoobernetes.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER)
 
     ROUTE_DOMAIN_COUNTER=0
-    while [ -n "$(cat .lagoon.yml | shyaml get-value ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER 2> /dev/null)" ]; do
+    while [ -n "$(cat .lagoobernetes.yml | shyaml get-value ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER 2> /dev/null)" ]; do
       # Routes can either be a key (when the have additional settings) or just a value
-      if cat .lagoon.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER &> /dev/null; then
-        ROUTE_DOMAIN=$(cat .lagoon.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER)
+      if cat .lagoobernetes.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER &> /dev/null; then
+        ROUTE_DOMAIN=$(cat .lagoobernetes.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER)
         # Route Domains include dots, which need to be esacped via `\.` in order to use them within shyaml
-        ROUTE_DOMAIN_ESCAPED=$(cat .lagoon.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER | sed 's/\./\\./g')
-        ROUTE_TLS_ACME=$(cat .lagoon.yml | shyaml get-value ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.tls-acme true)
-        ROUTE_INSECURE=$(cat .lagoon.yml | shyaml get-value ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.insecure Redirect)
-        ROUTE_HSTS=$(cat .lagoon.yml | shyaml get-value ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.hsts null)
+        ROUTE_DOMAIN_ESCAPED=$(cat .lagoobernetes.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER | sed 's/\./\\./g')
+        ROUTE_TLS_ACME=$(cat .lagoobernetes.yml | shyaml get-value ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.tls-acme true)
+        ROUTE_INSECURE=$(cat .lagoobernetes.yml | shyaml get-value ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.insecure Redirect)
+        ROUTE_HSTS=$(cat .lagoobernetes.yml | shyaml get-value ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.hsts null)
       else
         # Only a value given, assuming some defaults
-        ROUTE_DOMAIN=$(cat .lagoon.yml | shyaml get-value ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER)
+        ROUTE_DOMAIN=$(cat .lagoobernetes.yml | shyaml get-value ${PROJECT}.environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER)
         ROUTE_TLS_ACME=true
         ROUTE_INSECURE=Redirect
         ROUTE_HSTS=null
@@ -478,22 +478,22 @@ if [ -n "$(cat .lagoon.yml | shyaml keys ${PROJECT}.environments.${BRANCH//./\\.
     let ROUTES_SERVICE_COUNTER=ROUTES_SERVICE_COUNTER+1
   done
 else
-  while [ -n "$(cat .lagoon.yml | shyaml keys environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER 2> /dev/null)" ]; do
-    ROUTES_SERVICE=$(cat .lagoon.yml | shyaml keys environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER)
+  while [ -n "$(cat .lagoobernetes.yml | shyaml keys environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER 2> /dev/null)" ]; do
+    ROUTES_SERVICE=$(cat .lagoobernetes.yml | shyaml keys environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER)
 
     ROUTE_DOMAIN_COUNTER=0
-    while [ -n "$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER 2> /dev/null)" ]; do
+    while [ -n "$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER 2> /dev/null)" ]; do
       # Routes can either be a key (when the have additional settings) or just a value
-      if cat .lagoon.yml | shyaml keys environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER &> /dev/null; then
-        ROUTE_DOMAIN=$(cat .lagoon.yml | shyaml keys environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER)
+      if cat .lagoobernetes.yml | shyaml keys environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER &> /dev/null; then
+        ROUTE_DOMAIN=$(cat .lagoobernetes.yml | shyaml keys environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER)
         # Route Domains include dots, which need to be esacped via `\.` in order to use them within shyaml
-        ROUTE_DOMAIN_ESCAPED=$(cat .lagoon.yml | shyaml keys environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER | sed 's/\./\\./g')
-        ROUTE_TLS_ACME=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.tls-acme true)
-        ROUTE_INSECURE=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.insecure Redirect)
-        ROUTE_HSTS=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.hsts null)
+        ROUTE_DOMAIN_ESCAPED=$(cat .lagoobernetes.yml | shyaml keys environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER | sed 's/\./\\./g')
+        ROUTE_TLS_ACME=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.tls-acme true)
+        ROUTE_INSECURE=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.insecure Redirect)
+        ROUTE_HSTS=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER.$ROUTE_DOMAIN_ESCAPED.hsts null)
       else
         # Only a value given, assuming some defaults
-        ROUTE_DOMAIN=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER)
+        ROUTE_DOMAIN=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.routes.$ROUTES_SERVICE_COUNTER.$ROUTES_SERVICE.$ROUTE_DOMAIN_COUNTER)
         ROUTE_TLS_ACME=true
         ROUTE_INSECURE=Redirect
         ROUTE_HSTS=null
@@ -547,25 +547,25 @@ if kubectl --insecure-skip-tls-verify -n ${NAMESPACE} get schedules.backup.appui
   TEMPLATE_PARAMETERS+=(-p PRUNE_SCHEDULE="${PRUNE_SCHEDULE}")
 
   OPENSHIFT_TEMPLATE="/kubectl-build-deploy/openshift-templates/backup-schedule.yml"
-  helm template k8up-lagoon-backup-schedule /kubectl-build-deploy/helmcharts/k8up-schedule \
+  helm template k8up-lagoobernetes-backup-schedule /kubectl-build-deploy/helmcharts/k8up-schedule \
     -f /kubectl-build-deploy/values.yaml \
     --set backup.schedule="${BACKUP_SCHEDULE}" \
     --set check.schedule="${CHECK_SCHEDULE}" \
     --set prune.schedule="${PRUNE_SCHEDULE}" | outputToYaml
 fi
 
-cat /kubectl-build-deploy/lagoon/${YAML_CONFIG_FILE}.yml
+cat /kubectl-build-deploy/lagoobernetes/${YAML_CONFIG_FILE}.yml
 
-if [ -f /kubectl-build-deploy/lagoon/${YAML_CONFIG_FILE}.yml ]; then
-  kubectl apply --insecure-skip-tls-verify -n ${NAMESPACE} -f /kubectl-build-deploy/lagoon/${YAML_CONFIG_FILE}.yml
+if [ -f /kubectl-build-deploy/lagoobernetes/${YAML_CONFIG_FILE}.yml ]; then
+  kubectl apply --insecure-skip-tls-verify -n ${NAMESPACE} -f /kubectl-build-deploy/lagoobernetes/${YAML_CONFIG_FILE}.yml
 fi
 
 ##############################################
-### CUSTOM MONITORING_URLS FROM .lagoon.yml
+### CUSTOM MONITORING_URLS FROM .lagoobernetes.yml
 ##############################################
 URL_COUNTER=0
-while [ -n "$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.monitoring_urls.$URL_COUNTER 2> /dev/null)" ]; do
-  MONITORING_URL="$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.monitoring_urls.$URL_COUNTER)"
+while [ -n "$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.monitoring_urls.$URL_COUNTER 2> /dev/null)" ]; do
+  MONITORING_URL="$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.monitoring_urls.$URL_COUNTER)"
   if [[ $URL_COUNTER > 0 ]]; then
     MONITORING_URLS="${MONITORING_URLS}, ${MONITORING_URL}"
   else
@@ -595,7 +595,7 @@ fi
 ROUTES=$(kubectl -n ${NAMESPACE} get ingress --sort-by='{.metadata.name}' -l "acme.openshift.io/exposer!=true" -o=go-template --template='{{range $indexItems, $ingress := .items}}{{if $indexItems}},{{end}}{{$tls := .spec.tls}}{{range $indexRule, $rule := .spec.rules}}{{if $indexRule}},{{end}}{{if $tls}}https://{{else}}http://{{end}}{{.host}}{{end}}{{end}}')
 
 # Get list of autogenerated routes
-AUTOGENERATED_ROUTES=$(kubectl -n ${NAMESPACE} get ingress --sort-by='{.metadata.name}' -l "lagoon/autogenerated=true" -o=go-template --template='{{range $indexItems, $ingress := .items}}{{if $indexItems}},{{end}}{{$tls := .spec.tls}}{{range $indexRule, $rule := .spec.rules}}{{if $indexRule}},{{end}}{{if $tls}}https://{{else}}http://{{end}}{{.host}}{{end}}{{end}}')
+AUTOGENERATED_ROUTES=$(kubectl -n ${NAMESPACE} get ingress --sort-by='{.metadata.name}' -l "lagoobernetes/autogenerated=true" -o=go-template --template='{{range $indexItems, $ingress := .items}}{{if $indexItems}},{{end}}{{$tls := .spec.tls}}{{range $indexRule, $rule := .spec.rules}}{{if $indexRule}},{{end}}{{if $tls}}https://{{else}}http://{{end}}{{.host}}{{end}}{{end}}')
 
 # If no MONITORING_URLS were specified, fall back to the ROUTE of the project
 if [ -z "$MONITORING_URLS"]; then
@@ -609,42 +609,42 @@ yq write -i /kubectl-build-deploy/values.yaml 'autogeneratedRoutes' "$AUTOGENERA
 yq write -i /kubectl-build-deploy/values.yaml 'monitoringUrls' "$MONITORING_URLS"
 
 echo -e "\
-LAGOON_ROUTE=${ROUTE}\n\
-LAGOON_ROUTES=${ROUTES}\n\
-LAGOON_AUTOGENERATED_ROUTES=${AUTOGENERATED_ROUTES}\n\
-LAGOON_MONITORING_URLS=${MONITORING_URLS}\n\
+LAGOOBERNETES_ROUTE=${ROUTE}\n\
+LAGOOBERNETES_ROUTES=${ROUTES}\n\
+LAGOOBERNETES_AUTOGENERATED_ROUTES=${AUTOGENERATED_ROUTES}\n\
+LAGOOBERNETES_MONITORING_URLS=${MONITORING_URLS}\n\
 " >> /kubectl-build-deploy/values.env
 
 # Generate a Config Map with project wide env variables
-kubectl -n ${NAMESPACE} create configmap lagoon-env -o yaml --dry-run --from-env-file=/kubectl-build-deploy/values.env | kubectl apply -n ${NAMESPACE} -f -
+kubectl -n ${NAMESPACE} create configmap lagoobernetes-env -o yaml --dry-run --from-env-file=/kubectl-build-deploy/values.env | kubectl apply -n ${NAMESPACE} -f -
 
-# Add environment variables from lagoon API
-if [ ! -z "$LAGOON_PROJECT_VARIABLES" ]; then
-  HAS_PROJECT_RUNTIME_VARS=$(echo $LAGOON_PROJECT_VARIABLES | jq -r 'map( select(.scope == "runtime" or .scope == "global") )')
+# Add environment variables from lagoobernetes API
+if [ ! -z "$LAGOOBERNETES_PROJECT_VARIABLES" ]; then
+  HAS_PROJECT_RUNTIME_VARS=$(echo $LAGOOBERNETES_PROJECT_VARIABLES | jq -r 'map( select(.scope == "runtime" or .scope == "global") )')
 
   if [ ! "$HAS_PROJECT_RUNTIME_VARS" = "[]" ]; then
     kubectl patch --insecure-skip-tls-verify \
       -n ${NAMESPACE} \
-      configmap lagoon-env \
-      -p "{\"data\":$(echo $LAGOON_PROJECT_VARIABLES | jq -r 'map( select(.scope == "runtime" or .scope == "global") ) | map( { (.name) : .value } ) | add | tostring')}"
+      configmap lagoobernetes-env \
+      -p "{\"data\":$(echo $LAGOOBERNETES_PROJECT_VARIABLES | jq -r 'map( select(.scope == "runtime" or .scope == "global") ) | map( { (.name) : .value } ) | add | tostring')}"
   fi
 fi
-if [ ! -z "$LAGOON_ENVIRONMENT_VARIABLES" ]; then
-  HAS_ENVIRONMENT_RUNTIME_VARS=$(echo $LAGOON_ENVIRONMENT_VARIABLES | jq -r 'map( select(.scope == "runtime" or .scope == "global") )')
+if [ ! -z "$LAGOOBERNETES_ENVIRONMENT_VARIABLES" ]; then
+  HAS_ENVIRONMENT_RUNTIME_VARS=$(echo $LAGOOBERNETES_ENVIRONMENT_VARIABLES | jq -r 'map( select(.scope == "runtime" or .scope == "global") )')
 
   if [ ! "$HAS_ENVIRONMENT_RUNTIME_VARS" = "[]" ]; then
     kubectl patch --insecure-skip-tls-verify \
       -n ${NAMESPACE} \
-      configmap lagoon-env \
-      -p "{\"data\":$(echo $LAGOON_ENVIRONMENT_VARIABLES | jq -r 'map( select(.scope == "runtime" or .scope == "global") ) | map( { (.name) : .value } ) | add | tostring')}"
+      configmap lagoobernetes-env \
+      -p "{\"data\":$(echo $LAGOOBERNETES_ENVIRONMENT_VARIABLES | jq -r 'map( select(.scope == "runtime" or .scope == "global") ) | map( { (.name) : .value } ) | add | tostring')}"
   fi
 fi
 
 if [ "$BUILD_TYPE" == "pullrequest" ]; then
   kubectl patch --insecure-skip-tls-verify \
     -n ${NAMESPACE} \
-    configmap lagoon-env \
-    -p "{\"data\":{\"LAGOON_PR_HEAD_BRANCH\":\"${PR_HEAD_BRANCH}\", \"LAGOON_PR_BASE_BRANCH\":\"${PR_BASE_BRANCH}\", \"LAGOON_PR_TITLE\":$(echo $PR_TITLE | jq -R)}}"
+    configmap lagoobernetes-env \
+    -p "{\"data\":{\"LAGOOBERNETES_PR_HEAD_BRANCH\":\"${PR_HEAD_BRANCH}\", \"LAGOOBERNETES_PR_BASE_BRANCH\":\"${PR_BASE_BRANCH}\", \"LAGOOBERNETES_PR_TITLE\":$(echo $PR_TITLE | jq -R)}}"
 fi
 
 # loop through created DBAAS
@@ -674,8 +674,8 @@ done
 ##############################################
 
 if [[ $THIS_IS_TUG == "true" ]]; then
-  # TODO: lagoon-tug is not implemented yet in kubernetes
-  echo "lagoon-tug is not implemented yet in kubernetes"
+  # TODO: lagoobernetes-tug is not implemented yet in kubernetes
+  echo "lagoobernetes-tug is not implemented yet in kubernetes"
   exit 1
   # Allow to disable registry auth
   if [ ! "${TUG_SKIP_REGISTRY_AUTH}" == "true" ]; then
@@ -711,14 +711,14 @@ elif [ "$BUILD_TYPE" == "pullrequest" ] || [ "$BUILD_TYPE" == "branch" ]; then
     # Before the push the temporary name is resolved to the future tag with the registry in the image name
     TEMPORARY_IMAGE_NAME="${IMAGES_BUILD[${IMAGE_NAME}]}"
 
-    # This will actually not push any images and instead just add them to the file /kubectl-build-deploy/lagoon/push
+    # This will actually not push any images and instead just add them to the file /kubectl-build-deploy/lagoobernetes/push
     . /kubectl-build-deploy/scripts/exec-push-parallel.sh
   done
 
   # If we have Images to Push to the OpenRegistry, let's do so
-  if [ -f /kubectl-build-deploy/lagoon/push ]; then
+  if [ -f /kubectl-build-deploy/lagoobernetes/push ]; then
     # TODO: check if we still need the paralelism
-    parallel --retries 1 < /kubectl-build-deploy/lagoon/push
+    parallel --retries 1 < /kubectl-build-deploy/lagoobernetes/push
   fi
 
   # load the image hashes for just pushed Images
@@ -757,21 +757,21 @@ do
   # Some Templates need additonal Parameters, like where persistent storage can be found.
   HELM_SET_VALUES=()
 
-  # PERSISTENT_STORAGE_CLASS=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.persistent\\.class false)
+  # PERSISTENT_STORAGE_CLASS=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.persistent\\.class false)
   # if [ ! $PERSISTENT_STORAGE_CLASS == "false" ]; then
   #     TEMPLATE_PARAMETERS+=(-p PERSISTENT_STORAGE_CLASS="${PERSISTENT_STORAGE_CLASS}")
   # fi
 
-  PERSISTENT_STORAGE_SIZE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.persistent\\.size false)
+  PERSISTENT_STORAGE_SIZE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.persistent\\.size false)
   if [ ! $PERSISTENT_STORAGE_SIZE == "false" ]; then
     HELM_SET_VALUES+=(--set "persistentStorage.size=${PERSISTENT_STORAGE_SIZE}")
   fi
 
-  PERSISTENT_STORAGE_PATH=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.persistent false)
+  PERSISTENT_STORAGE_PATH=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.persistent false)
   if [ ! $PERSISTENT_STORAGE_PATH == "false" ]; then
     HELM_SET_VALUES+=(--set "persistentStorage.path=${PERSISTENT_STORAGE_PATH}")
 
-    PERSISTENT_STORAGE_NAME=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.persistent\\.name false)
+    PERSISTENT_STORAGE_NAME=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.persistent\\.name false)
     if [ ! $PERSISTENT_STORAGE_NAME == "false" ]; then
       HELM_SET_VALUES+=(--set "persistentStorage.name=${PERSISTENT_STORAGE_NAME}")
     else
@@ -780,7 +780,7 @@ do
   fi
 
 # TODO: we don't need this anymore
-  # DEPLOYMENT_STRATEGY=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.deployment\\.strategy false)
+  # DEPLOYMENT_STRATEGY=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.deployment\\.strategy false)
   # if [ ! $DEPLOYMENT_STRATEGY == "false" ]; then
   #   TEMPLATE_PARAMETERS+=(-p DEPLOYMENT_STRATEGY="${DEPLOYMENT_STRATEGY}")
   # fi
@@ -789,21 +789,21 @@ do
 
   CRONJOB_COUNTER=0
   CRONJOBS_ARRAY_INSIDE_POD=()   #crons run inside an existing pod more frequently than every 15 minutes
-  while [ -n "$(cat .lagoon.yml | shyaml keys environments.${BRANCH//./\\.}.cronjobs.$CRONJOB_COUNTER 2> /dev/null)" ]
+  while [ -n "$(cat .lagoobernetes.yml | shyaml keys environments.${BRANCH//./\\.}.cronjobs.$CRONJOB_COUNTER 2> /dev/null)" ]
   do
 
-    CRONJOB_SERVICE=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.cronjobs.$CRONJOB_COUNTER.service)
+    CRONJOB_SERVICE=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.cronjobs.$CRONJOB_COUNTER.service)
 
     # Only implement the cronjob for the services we are currently handling
     if [ $CRONJOB_SERVICE == $SERVICE_NAME ]; then
 
-      CRONJOB_NAME=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.cronjobs.$CRONJOB_COUNTER.name | sed "s/[^[:alnum:]-]/-/g" | sed "s/^-//g")
+      CRONJOB_NAME=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.cronjobs.$CRONJOB_COUNTER.name | sed "s/[^[:alnum:]-]/-/g" | sed "s/^-//g")
 
-      CRONJOB_SCHEDULE_RAW=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.cronjobs.$CRONJOB_COUNTER.schedule)
+      CRONJOB_SCHEDULE_RAW=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.cronjobs.$CRONJOB_COUNTER.schedule)
 
       # Convert the Cronjob Schedule for additional features and better spread
       CRONJOB_SCHEDULE=$( /kubectl-build-deploy/scripts/convert-crontab.sh "${NAMESPACE}" "$CRONJOB_SCHEDULE_RAW")
-      CRONJOB_COMMAND=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.cronjobs.$CRONJOB_COUNTER.command)
+      CRONJOB_COMMAND=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.cronjobs.$CRONJOB_COUNTER.command)
 
       if cronScheduleMoreOftenThan30Minutes "$CRONJOB_SCHEDULE_RAW" ; then
         # If this cronjob is more often than 30 minutes, we run the cronjob inside the pod itself
@@ -816,7 +816,7 @@ do
         # kubectl stores this cronjob name lowercased
 
         # if [ ! -f $OPENSHIFT_TEMPLATE ]; then
-        #   echo "No cronjob support for service '${SERVICE_NAME}' with type '${SERVICE_TYPE}', please contact the Lagoon maintainers to implement cronjob support"; exit 1;
+        #   echo "No cronjob support for service '${SERVICE_NAME}' with type '${SERVICE_TYPE}', please contact the Lagoobernetes maintainers to implement cronjob support"; exit 1;
         # else
 
         yq write -i /kubectl-build-deploy/${SERVICE_NAME}-values.yaml "nativeCronjobs.${CRONJOB_NAME,,}.schedule" "$CRONJOB_SCHEDULE"
@@ -837,9 +837,9 @@ do
     yq write -i /kubectl-build-deploy/${SERVICE_NAME}-values.yaml 'inPodCronjobs' --tag '!!str' ''
   fi
 
-  #OVERRIDE_TEMPLATE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoon\\.template false)
-  #ENVIRONMENT_OVERRIDE_TEMPLATE=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.templates.$SERVICE_NAME false)
-  #if [[ "${OVERRIDE_TEMPLATE}" == "false" && "${ENVIRONMENT_OVERRIDE_TEMPLATE}" == "false" ]]; then # No custom template defined in docker-compose or .lagoon.yml,  using the given service ones
+  #OVERRIDE_TEMPLATE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.$COMPOSE_SERVICE.labels.lagoobernetes\\.template false)
+  #ENVIRONMENT_OVERRIDE_TEMPLATE=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.templates.$SERVICE_NAME false)
+  #if [[ "${OVERRIDE_TEMPLATE}" == "false" && "${ENVIRONMENT_OVERRIDE_TEMPLATE}" == "false" ]]; then # No custom template defined in docker-compose or .lagoobernetes.yml,  using the given service ones
     # Generate deployment if service type defines it
     . /kubectl-build-deploy/scripts/exec-kubectl-resources-with-images.sh
 
@@ -849,11 +849,11 @@ do
   #     OPENSHIFT_TEMPLATE=$OPENSHIFT_STATEFULSET_TEMPLATE
   #     . /kubectl-build-deploy/scripts/exec-kubernetes-resources-with-images.sh
   #   fi
-  # elif [[ "${ENVIRONMENT_OVERRIDE_TEMPLATE}" != "false" ]]; then # custom template defined for this service in .lagoon.yml, trying to use it
+  # elif [[ "${ENVIRONMENT_OVERRIDE_TEMPLATE}" != "false" ]]; then # custom template defined for this service in .lagoobernetes.yml, trying to use it
 
   #   OPENSHIFT_TEMPLATE=$ENVIRONMENT_OVERRIDE_TEMPLATE
   #   if [ ! -f $OPENSHIFT_TEMPLATE ]; then
-  #     echo "defined template $OPENSHIFT_TEMPLATE for service $SERVICE_TYPE in .lagoon.yml not found"; exit 1;
+  #     echo "defined template $OPENSHIFT_TEMPLATE for service $SERVICE_TYPE in .lagoobernetes.yml not found"; exit 1;
   #   else
   #     . /kubectl-build-deploy/scripts/exec-kubernetes-resources-with-images.sh
   #   fi
@@ -874,19 +874,19 @@ done
 ### APPLY RESOURCES
 ##############################################
 
-if [ -f /kubectl-build-deploy/lagoon/${YAML_CONFIG_FILE}.yml ]; then
+if [ -f /kubectl-build-deploy/lagoobernetes/${YAML_CONFIG_FILE}.yml ]; then
 
 
   if [ "$CI" == "true" ]; then
-    # During CI tests of Lagoon itself we only have a single compute node, so we change podAntiAffinity to podAffinity
-    sed -i s/podAntiAffinity/podAffinity/g /kubectl-build-deploy/lagoon/${YAML_CONFIG_FILE}.yml
-    # During CI tests of Lagoon itself we only have a single compute node, so we change ReadWriteMany to ReadWriteOnce
-    sed -i s/ReadWriteMany/ReadWriteOnce/g /kubectl-build-deploy/lagoon/${YAML_CONFIG_FILE}.yml
+    # During CI tests of Lagoobernetes itself we only have a single compute node, so we change podAntiAffinity to podAffinity
+    sed -i s/podAntiAffinity/podAffinity/g /kubectl-build-deploy/lagoobernetes/${YAML_CONFIG_FILE}.yml
+    # During CI tests of Lagoobernetes itself we only have a single compute node, so we change ReadWriteMany to ReadWriteOnce
+    sed -i s/ReadWriteMany/ReadWriteOnce/g /kubectl-build-deploy/lagoobernetes/${YAML_CONFIG_FILE}.yml
   fi
 
-  cat /kubectl-build-deploy/lagoon/${YAML_CONFIG_FILE}.yml
+  cat /kubectl-build-deploy/lagoobernetes/${YAML_CONFIG_FILE}.yml
 
-  kubectl apply --insecure-skip-tls-verify -n ${NAMESPACE} -f /kubectl-build-deploy/lagoon/${YAML_CONFIG_FILE}.yml
+  kubectl apply --insecure-skip-tls-verify -n ${NAMESPACE} -f /kubectl-build-deploy/lagoobernetes/${YAML_CONFIG_FILE}.yml
 fi
 
 ##############################################
@@ -901,10 +901,10 @@ do
   SERVICE_NAME=${SERVICE_TYPES_ENTRY_SPLIT[0]}
   SERVICE_TYPE=${SERVICE_TYPES_ENTRY_SPLIT[1]}
 
-  SERVICE_ROLLOUT_TYPE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.${SERVICE_NAME}.labels.lagoon\\.rollout deployment)
+  SERVICE_ROLLOUT_TYPE=$(cat $DOCKER_COMPOSE_YAML | shyaml get-value services.${SERVICE_NAME}.labels.lagoobernetes\\.rollout deployment)
 
-  # Allow the rollout type to be overriden by environment in .lagoon.yml
-  ENVIRONMENT_SERVICE_ROLLOUT_TYPE=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.rollouts.${SERVICE_NAME} false)
+  # Allow the rollout type to be overriden by environment in .lagoobernetes.yml
+  ENVIRONMENT_SERVICE_ROLLOUT_TYPE=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.rollouts.${SERVICE_NAME} false)
   if [ ! $ENVIRONMENT_SERVICE_ROLLOUT_TYPE == "false" ]; then
     SERVICE_ROLLOUT_TYPE=$ENVIRONMENT_SERVICE_ROLLOUT_TYPE
   fi
@@ -953,7 +953,7 @@ done
 
 
 ##############################################
-### CLEANUP NATIVE CRONJOBS which have been removed from .lagoon.yml or modified to run more frequently than every 15 minutes
+### CLEANUP NATIVE CRONJOBS which have been removed from .lagoobernetes.yml or modified to run more frequently than every 15 minutes
 ##############################################
 
 CURRENT_CRONJOBS=$(kubectl -n ${NAMESPACE} get cronjobs --no-headers | cut -d " " -f 1 | xargs)
@@ -974,20 +974,20 @@ do
 done
 
 ##############################################
-### RUN POST-ROLLOUT tasks defined in .lagoon.yml
+### RUN POST-ROLLOUT tasks defined in .lagoobernetes.yml
 ##############################################
 
 COUNTER=0
-while [ -n "$(cat .lagoon.yml | shyaml keys tasks.post-rollout.$COUNTER 2> /dev/null)" ]
+while [ -n "$(cat .lagoobernetes.yml | shyaml keys tasks.post-rollout.$COUNTER 2> /dev/null)" ]
 do
-  TASK_TYPE=$(cat .lagoon.yml | shyaml keys tasks.post-rollout.$COUNTER)
+  TASK_TYPE=$(cat .lagoobernetes.yml | shyaml keys tasks.post-rollout.$COUNTER)
   echo $TASK_TYPE
   case "$TASK_TYPE" in
     run)
-        COMMAND=$(cat .lagoon.yml | shyaml get-value tasks.post-rollout.$COUNTER.$TASK_TYPE.command)
-        SERVICE_NAME=$(cat .lagoon.yml | shyaml get-value tasks.post-rollout.$COUNTER.$TASK_TYPE.service)
-        CONTAINER=$(cat .lagoon.yml | shyaml get-value tasks.post-rollout.$COUNTER.$TASK_TYPE.container false)
-        SHELL=$(cat .lagoon.yml | shyaml get-value tasks.post-rollout.$COUNTER.$TASK_TYPE.shell sh)
+        COMMAND=$(cat .lagoobernetes.yml | shyaml get-value tasks.post-rollout.$COUNTER.$TASK_TYPE.command)
+        SERVICE_NAME=$(cat .lagoobernetes.yml | shyaml get-value tasks.post-rollout.$COUNTER.$TASK_TYPE.service)
+        CONTAINER=$(cat .lagoobernetes.yml | shyaml get-value tasks.post-rollout.$COUNTER.$TASK_TYPE.container false)
+        SHELL=$(cat .lagoobernetes.yml | shyaml get-value tasks.post-rollout.$COUNTER.$TASK_TYPE.shell sh)
         . /kubectl-build-deploy/scripts/exec-tasks-run.sh
         ;;
     *)

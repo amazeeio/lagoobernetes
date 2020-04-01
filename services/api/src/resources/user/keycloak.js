@@ -25,7 +25,7 @@ const KeycloakOperations = {
         username: R.prop('email', user),
         enabled: true,
         attributes: {
-          'lagoon-uid': [R.prop('id', user)],
+          'lagoobernetes-uid': [R.prop('id', user)],
         },
       });
 

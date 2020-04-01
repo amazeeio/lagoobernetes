@@ -1,5 +1,5 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/kibana:7.1
+FROM ${IMAGE_REPO:-lagoobernetes}/kibana:7.1
 
 ENV NODE_OPTIONS="--max-old-space-size=2048" \
     LOGSDB_KIBANASERVER_PASSWORD=kibanaserver \
@@ -40,10 +40,10 @@ opendistro_security.multitenancy.tenants.enable_private: false\n\
 opendistro_security.auth.type: "openid"\n\
 \n\
 # the IdP metadata endpoint\n\
-opendistro_security.openid.connect_url: "${KEYCLOAK_URL:-}/auth/realms/lagoon/.well-known/openid-configuration"\n\
+opendistro_security.openid.connect_url: "${KEYCLOAK_URL:-}/auth/realms/lagoobernetes/.well-known/openid-configuration"\n\
 \n\
 # the ID of the OpenID Connect client in your IdP\n\
-opendistro_security.openid.client_id: "lagoon-opendistro-security"\n\
+opendistro_security.openid.client_id: "lagoobernetes-opendistro-security"\n\
 \n\
 # the client secret of the OpenID Connect client\n\
 opendistro_security.openid.client_secret: "${OPENDISTRO_SECURITY_OPENID_CLIENT_SECRET}"\n\
@@ -60,9 +60,9 @@ opendistro_security.cookie.password: "${OPENDISTRO_SECURITY_COOKIE_PASSWORD:-aaa
 
 RUN bin/kibana-plugin install https://d3g5vo6xdbdb9a.cloudfront.net/downloads/kibana-plugins/opendistro-security/opendistro_security_kibana_plugin-1.1.0.0.zip
 
-COPY entrypoints/80-keycloak-url.bash /lagoon/entrypoints/
-COPY entrypoints/81-logs-db-ui-url.bash /lagoon/entrypoints/
-COPY entrypoints/90-keycloak-client-secret.bash /lagoon/entrypoints/
+COPY entrypoints/80-keycloak-url.bash /lagoobernetes/entrypoints/
+COPY entrypoints/81-logs-db-ui-url.bash /lagoobernetes/entrypoints/
+COPY entrypoints/90-keycloak-client-secret.bash /lagoobernetes/entrypoints/
 
 RUN fix-permissions config/kibana.yml
 

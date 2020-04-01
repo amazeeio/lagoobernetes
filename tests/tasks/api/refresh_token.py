@@ -26,6 +26,6 @@ else:
           'grant_type': 'refresh_token',
           'refresh_token': grant['refresh_token']}
 
-  r = requests.post(url = "http://keycloak:8080/auth/realms/lagoon/protocol/openid-connect/token", data = data)
+  r = requests.post(url = "http://keycloak:8080/auth/realms/lagoobernetes/protocol/openid-connect/token", data = data)
   print r.text
 

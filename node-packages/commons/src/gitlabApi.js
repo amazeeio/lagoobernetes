@@ -159,7 +159,7 @@ const getSshKey = async (keyId: number): Object =>
 
 const addDeployKeyToProject = async (projectId: Number, key: string): Object =>
   postRequest(`projects/${projectId}/deploy_keys`, {
-    title: 'Lagoon Project Key',
+    title: 'Lagoobernetes Project Key',
     key,
     can_push: false,
   });

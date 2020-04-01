@@ -29,7 +29,7 @@ Common labels
 helm.sh/chart: {{ include "custom-ingress.chart" . }}
 {{ include "custom-ingress.selectorLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{ include "custom-ingress.lagoonLabels" . }}
+{{ include "custom-ingress.lagoobernetesLabels" . }}
 
 {{- end -}}
 
@@ -42,28 +42,28 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{/*
-Lagoon Labels
+Lagoobernetes Labels
 */}}
-{{- define "custom-ingress.lagoonLabels" -}}
-lagoon/service: {{ .Release.Name }}
-lagoon/service-type: {{ .Chart.Name }}
-lagoon/project: {{ .Values.project }}
-lagoon/environment: {{ .Values.environment }}
-lagoon/environmentType: {{ .Values.environmentType }}
-lagoon/buildType: {{ .Values.buildType }}
+{{- define "custom-ingress.lagoobernetesLabels" -}}
+lagoobernetes/service: {{ .Release.Name }}
+lagoobernetes/service-type: {{ .Chart.Name }}
+lagoobernetes/project: {{ .Values.project }}
+lagoobernetes/environment: {{ .Values.environment }}
+lagoobernetes/environmentType: {{ .Values.environmentType }}
+lagoobernetes/buildType: {{ .Values.buildType }}
 {{- end -}}
 
 {{/*
 Annotations
 */}}
 {{- define "custom-ingress.annotations" -}}
-lagoon/version: {{ .Values.lagoonVersion | quote }}
+lagoobernetes/version: {{ .Values.lagoobernetesVersion | quote }}
 {{- if .Values.branch }}
-lagoon/branch: {{ .Values.branch | quote }}
+lagoobernetes/branch: {{ .Values.branch | quote }}
 {{- end }}
 {{- if .Values.prNumber }}
-lagoon/prNumber: {{ .Values.prNumber | quote }}
-lagoon/prHeadBranch: {{ .Values.prHeadBranch | quote }}
-lagoon/prBaseBranch: {{ .Values.prBaseBranch | quote }}
+lagoobernetes/prNumber: {{ .Values.prNumber | quote }}
+lagoobernetes/prHeadBranch: {{ .Values.prHeadBranch | quote }}
+lagoobernetes/prBaseBranch: {{ .Values.prBaseBranch | quote }}
 {{- end }}
 {{- end -}}

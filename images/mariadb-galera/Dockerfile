@@ -1,14 +1,14 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM alpine:3.7
 
 MAINTAINER amazee.io
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copying commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /sbin/tini /sbin/
 COPY --from=commons /home /home
@@ -22,9 +22,9 @@ ENV TMPDIR=/tmp TMP=/tmp HOME=/home ENV=/home/.bashrc BASH_ENV=/home/.bashrc
 
 ENV BACKUPS_DIR="/var/lib/mysql/backup"
 
-ENV MARIADB_DATABASE=lagoon \
-    MARIADB_USER=lagoon \
-    MARIADB_PASSWORD=lagoon \
+ENV MARIADB_DATABASE=lagoobernetes \
+    MARIADB_USER=lagoobernetes \
+    MARIADB_PASSWORD=lagoobernetes \
     MARIADB_ROOT_PASSWORD=Lag00n
 
 # fix some environmental items
@@ -95,11 +95,11 @@ RUN apk add --no-cache --virtual .common-run-deps \
     rm -rf /tmp/* && \
     rm -rf /var/cache/apk/*
 
-COPY entrypoints/ /lagoon/entrypoints/
+COPY entrypoints/ /lagoobernetes/entrypoints/
 COPY maxscale.sql /docker-entrypoint-initdb.d/maxscale.sql
 COPY maxscale.cnf /etc/maxscale.cnf
 COPY maxscale-start.sh /usr/local/bin/maxscale-start
-COPY mysql-backup.sh /lagoon/
+COPY mysql-backup.sh /lagoobernetes/
 COPY my.cnf /etc/mysql/my.cnf
 
 RUN for i in /var/run/mysqld /var/lib/mysql /etc/mysql/conf.d /docker-entrypoint-initdb.d/ "${BACKUPS_DIR}"; \
@@ -132,5 +132,5 @@ WORKDIR /var/lib/mysql
 VOLUME /var/lib/mysql
 EXPOSE 3306
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.bash"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.bash"]
 CMD ["mysqld"]

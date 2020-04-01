@@ -2,9 +2,9 @@
 
 const R = require('ramda');
 const sshpk = require('sshpk');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { getProject, addDeployKeyToProject } = require('@lagoon/commons/src/gitlabApi');
-const { addProject, addGroupToProject, sanitizeGroupName } = require('@lagoon/commons/src/api');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { getProject, addDeployKeyToProject } = require('@lagoobernetes/commons/src/gitlabApi');
+const { addProject, addGroupToProject, sanitizeGroupName } = require('@lagoobernetes/commons/src/api');
 
 import type { WebhookRequestData } from '../types';
 
@@ -27,7 +27,7 @@ async function gitlabProjectCreate(webhook: WebhookRequestData) {
     };
 
     if (namespace.kind != 'group') {
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         '',
         uuid,
@@ -39,18 +39,18 @@ async function gitlabProjectCreate(webhook: WebhookRequestData) {
       return;
     }
 
-    const lagoonProject = await addProject(projectName, gitUrl, openshift, productionenvironment);
+    const lagoobernetesProject = await addProject(projectName, gitUrl, openshift, productionenvironment);
 
     try {
       const privateKey = R.pipe(
         R.path(['addProject', 'privateKey']),
         sshpk.parsePrivateKey,
-      )(lagoonProject);
+      )(lagoobernetesProject);
       const publicKey = privateKey.toPublic();
 
       await addDeployKeyToProject(id, publicKey.toString());
     } catch (err) {
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'error',
         '',
         uuid,
@@ -64,7 +64,7 @@ async function gitlabProjectCreate(webhook: WebhookRequestData) {
     // We add this owner Group to the Project.
     await addGroupToProject(projectName, sanitizeGroupName(namespace.full_path));
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -75,7 +75,7 @@ async function gitlabProjectCreate(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

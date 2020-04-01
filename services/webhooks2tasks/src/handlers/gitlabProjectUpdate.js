@@ -1,8 +1,8 @@
 // @flow
 
 const R = require('ramda');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { getProject } = require('@lagoon/commons/src/gitlabApi');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { getProject } = require('@lagoobernetes/commons/src/gitlabApi');
 const {
   addProject,
   updateProject,
@@ -10,7 +10,7 @@ const {
   addGroupToProject,
   removeGroupFromProject,
   sanitizeGroupName,
-} = require('@lagoon/commons/src/api');
+} = require('@lagoobernetes/commons/src/api');
 
 import type { WebhookRequestData } from '../types';
 
@@ -21,7 +21,7 @@ async function gitlabProjectUpdate(webhook: WebhookRequestData) {
     var project = await getProject(body.project_id);
     var { id, path: projectName, ssh_url_to_repo: gitUrl, namespace } = project;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,
@@ -43,7 +43,7 @@ async function gitlabProjectUpdate(webhook: WebhookRequestData) {
     try {
       await deleteProject(projectName);
 
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         '',
         uuid,
@@ -54,7 +54,7 @@ async function gitlabProjectUpdate(webhook: WebhookRequestData) {
 
       return;
     } catch (error) {
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'error',
         '',
         uuid,
@@ -84,7 +84,7 @@ async function gitlabProjectUpdate(webhook: WebhookRequestData) {
       try {
         await removeGroupFromProject(projectName, oldGroupName);
       } catch (err) {
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'error',
           '',
           uuid,
@@ -97,7 +97,7 @@ async function gitlabProjectUpdate(webhook: WebhookRequestData) {
       try {
         await addGroupToProject(projectName, sanitizeGroupName(project.namespace.full_path));
       } catch (err) {
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'error',
           '',
           uuid,
@@ -108,7 +108,7 @@ async function gitlabProjectUpdate(webhook: WebhookRequestData) {
       }
     }
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -133,7 +133,7 @@ async function gitlabProjectUpdate(webhook: WebhookRequestData) {
       // We add this owner Group to the Project.
       await addGroupToProject(projectName, sanitizeGroupName(namespace.full_path));
 
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         '',
         uuid,
@@ -144,7 +144,7 @@ async function gitlabProjectUpdate(webhook: WebhookRequestData) {
 
       return;
     } catch (error) {
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'error',
         '',
         uuid,

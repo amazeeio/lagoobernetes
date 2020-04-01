@@ -2,39 +2,39 @@ import * as R from 'ramda';
 import Api, { ClientConfiguration } from 'kubernetes-client';
 const Client = Api.Client1_13;
 
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 const {
   getOpenShiftInfoForProject,
   updateTask
-} = require('@lagoon/commons/src/api');
+} = require('@lagoobernetes/commons/src/api');
 const {
-  sendToLagoonLogs,
-  initSendToLagoonLogs
-} = require('@lagoon/commons/src/logs');
+  sendToLagoobernetesLogs,
+  initSendToLagoobernetesLogs
+} = require('@lagoobernetes/commons/src/logs');
 const {
   consumeTasks,
-  initSendToLagoonTasks,
+  initSendToLagoobernetesTasks,
   createTaskMonitor
-} = require('@lagoon/commons/src/tasks');
+} = require('@lagoobernetes/commons/src/tasks');
 
-const lagoonApiRoute = R.compose(
+const lagoobernetesApiRoute = R.compose(
   // Default to the gateway IP in virtualbox, so pods running in minishift can
   // connect to docker-for-mac containers.
   R.defaultTo('http://10.0.2.2:3000'),
   R.find(R.test(/api-/)),
   R.split(','),
-  R.propOr('', 'LAGOON_ROUTES')
+  R.propOr('', 'LAGOOBERNETES_ROUTES')
 )(process.env);
 
-const lagoonSshHost = R.propOr(
-  'ssh.lagoon.svc',
-  'LAGOON_SSH_HOST',
+const lagoobernetesSshHost = R.propOr(
+  'ssh.lagoobernetes.svc',
+  'LAGOOBERNETES_SSH_HOST',
   process.env
 );
-const lagoonSshPort = R.propOr('2020', 'LAGOON_SSH_PORT', process.env);
+const lagoobernetesSshPort = R.propOr('2020', 'LAGOOBERNETES_SSH_PORT', process.env);
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const failTask = async taskId => {
   try {
@@ -161,15 +161,15 @@ const getPodSpec = async (client, namespace, task, taskId) => {
       R.concat([
         {
           name: 'TASK_API_HOST',
-          value: lagoonApiRoute
+          value: lagoobernetesApiRoute
         },
         {
           name: 'TASK_SSH_HOST',
-          value: lagoonSshHost
+          value: lagoobernetesSshHost
         },
         {
           name: 'TASK_SSH_PORT',
-          value: lagoonSshPort
+          value: lagoobernetesSshPort
         },
         {
           name: 'TASK_DATA_ID',
@@ -182,7 +182,7 @@ const getPodSpec = async (client, namespace, task, taskId) => {
     const setContainerCommand = R.set(containerCommandLens, [
       '/sbin/tini',
       '--',
-      '/lagoon/entrypoints.sh',
+      '/lagoobernetes/entrypoints.sh',
       '/bin/sh',
       '-c',
       task.command
@@ -238,7 +238,7 @@ const deathHandler = async (msg, lastError) => {
   const taskId = typeof task.id === 'string' ? parseInt(task.id, 10) : task.id;
   failTask(taskId);
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'error',
     project.name,
     '',
@@ -254,7 +254,7 @@ ${lastError}
 const retryHandler = async (msg, error, retryCount, retryExpirationSecs) => {
   const { project, task } = JSON.parse(msg.content.toString());
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'warn',
     project.name,
     '',
@@ -297,11 +297,11 @@ const messageConsumer = async msg => {
 
   // Get pod spec for desired service
   const taskPodSpec = await getPodSpec(client, namespace, task, taskId);
-  // Create a new kubernetes job to run the lagoon task
+  // Create a new kubernetes job to run the lagoobernetes task
   const jobName = `${namespace}-${task.id}`;
   const job = await createJob(client, namespace, jobName, taskPodSpec);
 
-  // Update lagoon task
+  // Update lagoobernetes task
   const { updateTask } = await performUpdateTask(taskId, job, task, project);
 
   logger.verbose(`${namespace}: Running job: ${task.name}`);
@@ -309,7 +309,7 @@ const messageConsumer = async msg => {
   const monitorPayload = { task: updateTask, project, environment };
 
   await createTaskMonitor('job-kubernetes', monitorPayload);
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'start',
     project.name,
     '',

@@ -145,27 +145,27 @@ mocks.Openshift = () => ({
 
 mocks.NotificationMicrosoftTeams = () => ({
   id: faker.random.number(),
-  name: 'amazeeio--lagoon-local-ci',
+  name: 'amazeeio--lagoobernetes-local-ci',
   webhook: 'https://amazeeio.teams.microsoft.com/hooks/ikF5XMohDZK7KpsZf/c9BFBt2ch8oMMuycoERJQMSLTPo8nmZhg2Hf2ny68ZpuD4Kn',
 });
 
 mocks.NotificationRocketChat = () => ({
   id: faker.random.number(),
-  name: 'amazeeio--lagoon-local-ci',
+  name: 'amazeeio--lagoobernetes-local-ci',
   webhook: 'https://amazeeio.rocket.chat/hooks/ikF5XMohDZK7KpsZf/c9BFBt2ch8oMMuycoERJQMSLTPo8nmZhg2Hf2ny68ZpuD4Kn',
-  channel: 'lagoon-local-ci'
+  channel: 'lagoobernetes-local-ci'
 });
 
 mocks.NotificationSlack = () => ({
   id: faker.random.number(),
-  name: 'amazeeio--lagoon-local-ci',
+  name: 'amazeeio--lagoobernetes-local-ci',
   webhook: 'https://amazeeio.slack.com/hooks/ikF5XMohDZK7KpsZf/c9BFBt2ch8oMMuycoERJQMSLTPo8nmZhg2Hf2ny68ZpuD4Kn',
-  channel: 'lagoon-local-ci'
+  channel: 'lagoobernetes-local-ci'
 });
 
 mocks.NotificationEmail = () => ({
   id: faker.random.number(),
-  name: 'amazeeio--lagoon-local-ci',
+  name: 'amazeeio--lagoobernetes-local-ci',
   emailAddress: faker.internet.email(),
 });
 
@@ -200,10 +200,10 @@ MIIJKQIBAAKCAgEA+o[...]P0yoL8BoQQG2jCvYfWh6vyglQdrDYx/o6/8ecTwXokKKh6fg1q
 -----END RSA PRIVATE KEY-----`,
     subfolder: '',
     notifications: [mocks.Notification()],
-    activeSystemsDeploy: 'lagoon_openshiftBuildDeploy',
-    activeSystemsPromote: 'lagoon_openshiftBuildDeploy',
-    activeSystemsRemove: 'lagoon_openshiftRemove',
-    activeSystemsTask: 'lagoon_openshiftJob',
+    activeSystemsDeploy: 'lagoobernetes_openshiftBuildDeploy',
+    activeSystemsPromote: 'lagoobernetes_openshiftBuildDeploy',
+    activeSystemsRemove: 'lagoobernetes_openshiftRemove',
+    activeSystemsTask: 'lagoobernetes_openshiftJob',
     branches: faker.random.arrayElement(['true', 'false', '^(master|staging)$']),
     pullrequests: faker.random.arrayElement(['true', 'false', '[BUILD]']),
     productionEnvironment: 'master',
@@ -360,7 +360,7 @@ mocks.Deployment = (parent, args = {}, context, info) => {
 mocks.EnvKeyValue = () => ({
   id: faker.random.number(),
   scope: mocks.EnvVariableScope(),
-  name: 'LAGOON_API_VARIABLE_PROJECT',
+  name: 'LAGOOBERNETES_API_VARIABLE_PROJECT',
   value: '4A65DC68F2',
 });
 

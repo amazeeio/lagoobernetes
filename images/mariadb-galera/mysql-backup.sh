@@ -24,8 +24,8 @@ set -eu -o pipefail
 BACKUP_DIR=/var/lib/mysql/backup
 
 # MYSQL Parameters
-MARIADB_USER=${MARIADB_USER:-lagoon}
-MARIADB_PASSWORD=${MARIADB_PASSWORD:-lagoon}
+MARIADB_USER=${MARIADB_USER:-lagoobernetes}
+MARIADB_PASSWORD=${MARIADB_PASSWORD:-lagoobernetes}
 
 MARIADB_HOST=$1
 

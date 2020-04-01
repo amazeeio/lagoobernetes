@@ -23,13 +23,13 @@ OPENSHIFT_PROJECT=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 REGISTRY_REPOSITORY=$OPENSHIFT_PROJECT
 
 if [ "$CI" == "true" ]; then
-  CI_OVERRIDE_IMAGE_REPO=${OPENSHIFT_REGISTRY}/lagoon
+  CI_OVERRIDE_IMAGE_REPO=${OPENSHIFT_REGISTRY}/lagoobernetes
 else
   CI_OVERRIDE_IMAGE_REPO=""
 fi
 
-if [ ! -f .lagoon.yml ]; then
-  echo "no .lagoon.yml file found"; exit 1;
+if [ ! -f .lagoobernetes.yml ]; then
+  echo "no .lagoobernetes.yml file found"; exit 1;
 fi
 
 # Possibility to switch to legacy OC version via Environment variable OC_VERSION_OVERRIDE
@@ -47,7 +47,7 @@ if [[ $OC_VERSION_OVERRIDE == "true" ]]; then
       && install /tmp/openshift-origin-client-tools/oc /usr/bin/oc && rm -rf /tmp/openshift-origin-client-tools  && rm -rf /tmp/openshift-origin-client-tools.tar
 fi
 
-DEPLOYER_TOKEN=$(cat /var/run/secrets/lagoon/deployer/token)
+DEPLOYER_TOKEN=$(cat /var/run/secrets/lagoobernetes/deployer/token)
 
 oc login --insecure-skip-tls-verify --token="${DEPLOYER_TOKEN}" https://kubernetes.default.svc
 

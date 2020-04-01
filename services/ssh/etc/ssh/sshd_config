@@ -13,7 +13,7 @@ PermitRootLogin no
 AuthorizedKeysFile /dev/null
 
 AuthorizedKeysCommand /authorize.sh %u %f
-AuthorizedKeysCommandUser lagoon
+AuthorizedKeysCommandUser lagoobernetes
 
 HostbasedAuthentication no
 

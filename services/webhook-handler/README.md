@@ -1,6 +1,6 @@
-# lagoon-webhook-handler
+# lagoobernetes-webhook-handler
 
-This webhook handler is part of the amazee.io lagoon deployment system and is responsible for receiving webhooks from github, bitbucket, gitlab or any other system, parse them and add them in a unified format (as each of the different git hosters have different webhook formats) to a rabbitmq queue. For each webhook the following information are extracted:
+This webhook handler is part of the amazee.io lagoobernetes deployment system and is responsible for receiving webhooks from github, bitbucket, gitlab or any other system, parse them and add them in a unified format (as each of the different git hosters have different webhook formats) to a rabbitmq queue. For each webhook the following information are extracted:
 
 - `webhooktype` (`github`, `gitlab`, etc.)
 - `event` (event type, like `push` `pull_request`, specific for each webhook type)
@@ -9,13 +9,13 @@ This webhook handler is part of the amazee.io lagoon deployment system and is re
 
 It uses https://github.com/benbria/node-amqp-connection-manager for connecting to rabbitmq, so it can handle situations were rabbitmq is not reachable and still receive webhooks, process them and keep them in memory. As soon as rabbitmq is reachable again, it will send the messages there.
 
-Logs each received webhook to the lagoon-logs queue.
+Logs each received webhook to the lagoobernetes-logs queue.
 
 ## Hosting
 
 Fully developed in Docker and hosted on amazee.io Openshift, see the `.openshift` folder. Deployed via Jenkinsfile.
 
-Uses `lagoon/node:10` as base image.
+Uses `lagoobernetes/node:10` as base image.
 
 ## Development
 
@@ -30,7 +30,7 @@ Or via the existing docker-compose.yml
 
 ## Testdata
 
-There is testdata available from Postman. In order to use it, download [Postman](https://www.getpostman.com/) and import the `lagoon-webhook-handler.postman_collection.json` as collection, plus the `localhost.postman_environment.json` as environment.
+There is testdata available from Postman. In order to use it, download [Postman](https://www.getpostman.com/) and import the `lagoobernetes-webhook-handler.postman_collection.json` as collection, plus the `localhost.postman_environment.json` as environment.
 Now you can send single requests to the webhook handler.
 
 You can also run all tests from the CLI via newman

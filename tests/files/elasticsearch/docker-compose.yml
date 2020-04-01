@@ -8,7 +8,7 @@ services:
       context: .
       dockerfile: elasticsearch.dockerfile
     labels:
-      lagoon.type: elasticsearch
+      lagoobernetes.type: elasticsearch
     expose:
       - 9200
       - 9300
@@ -20,4 +20,4 @@ services:
       context: .
       dockerfile: nginx.dockerfile
     labels:
-      lagoon.type: nginx
+      lagoobernetes.type: nginx

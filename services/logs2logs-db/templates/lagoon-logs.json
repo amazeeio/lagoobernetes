@@ -1,5 +1,5 @@
 {
-    "template" : "lagoon-logs-*",
+    "template" : "lagoobernetes-logs-*",
     "version" : 70002,
     "settings" : {
       "index.refresh_interval" : "5s",

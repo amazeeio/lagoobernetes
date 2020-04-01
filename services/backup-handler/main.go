@@ -1,7 +1,7 @@
 package main
 
 /*
-	this is a simple wrestic snapshot webhook handler for lagoon
+	this is a simple wrestic snapshot webhook handler for lagoobernetes
 
 	https://nesv.github.io/golang/2014/02/25/worker-queues-in-go.html
 	workerqueues maybe in the event rabbit goes away
@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/amazeeio/lagoon/services/backup-handler/internal/handler"
+	"github.com/amazeeio/lagoobernetes/services/backup-handler/internal/handler"
 )
 
 var (
@@ -52,8 +52,8 @@ func main() {
 		Username:     os.Getenv("RABBITMQ_USERNAME"),
 		Password:     os.Getenv("RABBITMQ_PASSWORD"),
 		Port:         os.Getenv("RABBITMQ_PORT"),
-		QueueName:    "lagoon-webhooks:queue",
-		ExchangeName: "lagoon-webhooks",
+		QueueName:    "lagoobernetes-webhooks:queue",
+		ExchangeName: "lagoobernetes-webhooks",
 	}
 	graphQL := handler.GraphQLEndpoint{
 		Endpoint:        os.Getenv("GRAPHQL_ENDPOINT"),

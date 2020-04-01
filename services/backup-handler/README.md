@@ -15,5 +15,5 @@ GRAPHQL_ENDPOINT="http://api:3000/graphql"
 ## Build
 
 ```
-./build-push ${TAG:-latest} ${REPO:-amazeeiolagoon}
+./build-push ${TAG:-latest} ${REPO:-amazeeiolagoobernetes}
 ```

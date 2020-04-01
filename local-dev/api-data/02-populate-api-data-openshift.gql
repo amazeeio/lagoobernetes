@@ -124,7 +124,7 @@ mutation PopulateApi {
     input: {
       project: "ci-github-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -182,7 +182,7 @@ mutation PopulateApi {
     input: {
       project: "ci-gitlab-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -227,7 +227,7 @@ mutation PopulateApi {
     input: {
       project: "ci-bitbucket-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -273,7 +273,7 @@ mutation PopulateApi {
     input: {
       project: "ci-rest-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -318,7 +318,7 @@ mutation PopulateApi {
     input: {
       project: "ci-node-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -363,7 +363,7 @@ mutation PopulateApi {
     input: {
       project: "ci-multiproject1-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -408,7 +408,7 @@ mutation PopulateApi {
     input: {
       project: "ci-multiproject2-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -454,7 +454,7 @@ mutation PopulateApi {
     input: {
       project: "ci-drupal-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -500,7 +500,7 @@ mutation PopulateApi {
     input: {
       project: "ci-nginx-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -544,12 +544,12 @@ mutation PopulateApi {
   CIFeaturesEnv1: addOrUpdateEnvironment(
     input: {
       id: 2
-      name: "lagoon-api-variables"
+      name: "lagoobernetes-api-variables"
       project: 12
       deployType: BRANCH
-      deployBaseRef: "lagoon-api-variables"
+      deployBaseRef: "lagoobernetes-api-variables"
       environmentType: PRODUCTION
-      openshiftProjectName: "ci-features-openshift-lagoon-api-variables"
+      openshiftProjectName: "ci-features-openshift-lagoobernetes-api-variables"
     }
   ) {
     id
@@ -559,7 +559,7 @@ mutation PopulateApi {
     input: {
       type: PROJECT
       typeId: 12
-      name: "LAGOON_API_VARIABLE_PROJECT"
+      name: "LAGOOBERNETES_API_VARIABLE_PROJECT"
       value: "4A65DC68F2"
     }
   ) {
@@ -570,7 +570,7 @@ mutation PopulateApi {
     input: {
       type: PROJECT
       typeId: 12
-      name: "LAGOON_API_VARIABLE_OVERRIDE"
+      name: "LAGOOBERNETES_API_VARIABLE_OVERRIDE"
       value: "74B3E42B54"
     }
   ) {
@@ -581,7 +581,7 @@ mutation PopulateApi {
     input: {
       type: ENVIRONMENT
       typeId: 2
-      name:"LAGOON_API_VARIABLE_ENVIRONMENT"
+      name:"LAGOOBERNETES_API_VARIABLE_ENVIRONMENT"
       value: "EA2AFAE09B"
     }
   ) {
@@ -593,7 +593,7 @@ mutation PopulateApi {
     input: {
       type: ENVIRONMENT
       typeId: 2
-      name: "LAGOON_API_VARIABLE_OVERRIDE"
+      name: "LAGOOBERNETES_API_VARIABLE_OVERRIDE"
       value: "D0CE76D4C9"
     }
   ) {
@@ -604,7 +604,7 @@ mutation PopulateApi {
     input: {
       type: PROJECT
       typeId: 12
-      name: "LAGOON_API_VARIABLE_BUILD"
+      name: "LAGOOBERNETES_API_VARIABLE_BUILD"
       value: "AEF177FCF4"
       scope: BUILD
     }
@@ -616,7 +616,7 @@ mutation PopulateApi {
     input: {
       type: PROJECT
       typeId: 12
-      name: "LAGOON_API_VARIABLE_RUNTIME"
+      name: "LAGOOBERNETES_API_VARIABLE_RUNTIME"
       value: "90AEC657F8"
       scope: RUNTIME
     }
@@ -628,7 +628,7 @@ mutation PopulateApi {
     input: {
       project: "ci-features-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -676,7 +676,7 @@ mutation PopulateApi {
     input: {
       project: "ci-features-subfolder-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -721,7 +721,7 @@ mutation PopulateApi {
     input: {
       project: "ci-elasticsearch-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -766,7 +766,7 @@ mutation PopulateApi {
     input: {
       project: "ci-drupal-galera-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -811,7 +811,7 @@ mutation PopulateApi {
     input: {
       project: "ci-drupal-postgres-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -856,7 +856,7 @@ mutation PopulateApi {
     input: {
       project: "ci-solr-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id
@@ -901,7 +901,7 @@ mutation PopulateApi {
     input: {
       project: "ci-api-openshift"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-local-ci"
+      notificationName: "amazeeio--lagoobernetes-local-ci"
     }
   ) {
     id

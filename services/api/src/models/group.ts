@@ -1,5 +1,5 @@
 import * as R from 'ramda';
-import { asyncPipe } from '@lagoon/commons/src/util';
+import { asyncPipe } from '@lagoobernetes/commons/src/util';
 import pickNonNil from '../util/pickNonNil';
 import * as logger from '../logger';
 import GroupRepresentation from 'keycloak-admin/lib/defs/groupRepresentation';
@@ -16,7 +16,7 @@ import BillingModel from './billing'
 import EnvironmentModel from './environment';
 
 interface IGroupAttributes {
-  'lagoon-projects'?: [string];
+  'lagoobernetes-projects'?: [string];
   comment?: [string];
   [propName: string]: any;
 }
@@ -77,12 +77,12 @@ export class GroupNotFoundError extends Error {
 }
 
 const attrLens = R.lensPath(['attributes']);
-const lagoonProjectsLens = R.lensPath(['lagoon-projects']);
+const lagoobernetesProjectsLens = R.lensPath(['lagoobernetes-projects']);
 
-const attrLagoonProjectsLens = R.compose(
+const attrLagoobernetesProjectsLens = R.compose(
   // @ts-ignore
   attrLens,
-  lagoonProjectsLens,
+  lagoobernetesProjectsLens,
   R.lensPath([0]),
 );
 
@@ -243,7 +243,7 @@ export const Group = (clients) => {
     projectId: number,
   ): Promise<Group[] | BillingGroup[]> => {
     const filterFn = attribute => {
-      if (attribute.name === 'lagoon-projects') {
+      if (attribute.name === 'lagoobernetes-projects') {
         const value = R.is(Array, attribute.value)
           ? R.path(['value', 0], attribute)
           : attribute.value;
@@ -261,7 +261,7 @@ export const Group = (clients) => {
     group: Group,
   ): Promise<number[]> => {
     const projectIds = R.pipe(
-      R.view(attrLagoonProjectsLens),
+      R.view(attrLagoobernetesProjectsLens),
       R.defaultTo(''),
       R.split(','),
       R.reject(R.isEmpty),
@@ -285,7 +285,7 @@ export const Group = (clients) => {
     group: Group,
   ): Promise<number[]> => {
     const groupProjectIds = R.pipe(
-      R.view(attrLagoonProjectsLens),
+      R.view(attrLagoobernetesProjectsLens),
       R.defaultTo(''),
       R.split(','),
       R.reject(R.isEmpty),
@@ -530,7 +530,7 @@ export const Group = (clients) => {
   ): Promise<void> => {
     const group = await loadGroupById(groupInput.id);
     const newGroupProjects = R.pipe(
-      R.view(attrLagoonProjectsLens),
+      R.view(attrLagoobernetesProjectsLens),
       R.defaultTo(`${projectId}`),
       R.split(','),
       R.append(`${projectId}`),
@@ -546,7 +546,7 @@ export const Group = (clients) => {
         {
           attributes: {
             ...group.attributes,
-            'lagoon-projects': [newGroupProjects],
+            'lagoobernetes-projects': [newGroupProjects],
           },
         },
       );
@@ -562,7 +562,7 @@ export const Group = (clients) => {
     group: Group,
   ): Promise<void> => {
     const newGroupProjects = R.pipe(
-      R.view(attrLagoonProjectsLens),
+      R.view(attrLagoobernetesProjectsLens),
       R.defaultTo(''),
       R.split(','),
       R.without([`${projectId}`]),
@@ -578,7 +578,7 @@ export const Group = (clients) => {
         {
           attributes: {
             ...group.attributes,
-            'lagoon-projects': [newGroupProjects],
+            'lagoobernetes-projects': [newGroupProjects],
           },
         },
       );
@@ -609,7 +609,7 @@ export const Group = (clients) => {
     const groupProjects = await ProjectModel(clients).projectsByGroup(group);
 
     // Map a subset of project fields to the initial projects array
-    const initialProjects: [{id: string, name: string, availability: string, month: string, year:string}] = 
+    const initialProjects: [{id: string, name: string, availability: string, month: string, year:string}] =
     groupProjects.map(({ id, name, availability }) => ({
       id, name, availability, month, year
     }));
@@ -621,7 +621,7 @@ export const Group = (clients) => {
     }
 
     const environment = EnvironmentModel(clients);
-    
+
     // Get the hit, storage, environment data for each project and month
     const projects = await getProjectsData(initialProjects, yearMonth, environment);
 

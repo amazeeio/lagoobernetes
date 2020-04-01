@@ -17,7 +17,7 @@ describe('writeConfigFile', () => {
   });
 
   it('should write default config to given path', async () => {
-    writeConfigFile('lagoon.yml', {
+    writeConfigFile('lagoobernetes.yml', {
       project: 'your_project',
       api: '',
       ssh: '',
@@ -25,7 +25,7 @@ describe('writeConfigFile', () => {
     });
     const [filename, data] = writeFileMock.mock.calls[0];
 
-    expect(filename).toBe('lagoon.yml');
+    expect(filename).toBe('lagoobernetes.yml');
     expect(data).toMatchSnapshot();
   });
 
@@ -34,7 +34,7 @@ describe('writeConfigFile', () => {
     configFileInputOptionsTypes.arbitraryConfigKey = String;
 
     // $FlowFixMe This test uses an invalid arbitrary key here on purpose
-    writeConfigFile('lagoon.yml', {
+    writeConfigFile('lagoobernetes.yml', {
       project: 'your_project',
       arbitraryConfigKey: 'asdf',
       api: '',
@@ -43,7 +43,7 @@ describe('writeConfigFile', () => {
     });
     const [filename, data] = writeFileMock.mock.calls[0];
 
-    expect(filename).toBe('lagoon.yml');
+    expect(filename).toBe('lagoobernetes.yml');
     expect(data).toMatchSnapshot();
   });
 });

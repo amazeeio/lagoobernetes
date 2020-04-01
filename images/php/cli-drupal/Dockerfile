@@ -1,10 +1,10 @@
 ARG PHP_VERSION
 ARG PHP_IMAGE_VERSION
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/php:${PHP_VERSION}-cli
+FROM ${IMAGE_REPO:-lagoobernetes}/php:${PHP_VERSION}-cli
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=cli-drupal
+ENV LAGOOBERNETES=cli-drupal
 
 # Defining Versions - https://github.com/hechoendrupal/drupal-console-launcher/releases
 ENV DRUPAL_CONSOLE_LAUNCHER_VERSION=1.9.4 \

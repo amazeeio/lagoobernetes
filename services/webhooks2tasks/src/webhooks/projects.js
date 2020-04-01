@@ -1,8 +1,8 @@
 // @flow
 
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { getProjectsByGitUrl } = require('@lagoon/commons/src/api');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { getProjectsByGitUrl } = require('@lagoobernetes/commons/src/api');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
 const githubPullRequestClosed = require('../handlers/githubPullRequestClosed');
 const githubPullRequestOpened = require('../handlers/githubPullRequestOpened');
 const githubPullRequestSynchronize = require('../handlers/githubPullRequestSynchronize');
@@ -42,7 +42,7 @@ async function processProjects(
       const meta = {
         event: `${webhooktype}:${event}`
       };
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'warn',
         'unresolved',
         uuid,
@@ -59,7 +59,7 @@ async function processProjects(
         : 1;
 
       if (retryCount > 3) {
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'error',
           '',
           uuid,
@@ -78,7 +78,7 @@ async function processProjects(
       const retryDelaySecs = Math.pow(10, retryCount);
       const retryDelayMilisecs = retryDelaySecs * 1000;
 
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'warn',
         '',
         uuid,
@@ -104,10 +104,10 @@ async function processProjects(
         },
         persistent: true
       };
-      // publishing a new message with the same content as the original message but into the `lagoon-tasks-delay` exchange,
-      // which will send the message into the original exchange `lagoon-tasks` after x-delay time.
+      // publishing a new message with the same content as the original message but into the `lagoobernetes-tasks-delay` exchange,
+      // which will send the message into the original exchange `lagoobernetes-tasks` after x-delay time.
       channelWrapperWebhooks.publish(
-        `lagoon-webhooks-delay`,
+        `lagoobernetes-webhooks-delay`,
         rabbitMsg.fields.routingKey,
         rabbitMsg.content,
         retryMsgOptions
@@ -329,7 +329,7 @@ async function unhandled(
   const meta = {
     fullEvent: fullEvent
   };
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'info',
     project.name,
     uuid,

@@ -20,7 +20,7 @@ parameters:
   - name: PROJECT
     description: Which project this belongs to, original value
     required: true
-  - name: LAGOON_GIT_SHA
+  - name: LAGOOBERNETES_GIT_SHA
     description: git hash sha of the current deployment
     required: true
   - name: SERVICE_ROUTER_URL
@@ -96,6 +96,6 @@ objects:
             periodSeconds: 10
           envFrom:
           - configMapRef:
-              name: "lagoon-env"
+              name: "lagoobernetes-env"
           ports:
           - containerPort: 8080

@@ -1,8 +1,8 @@
 // @flow
 
 const R = require('ramda');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { createMiscTask } = require('@lagoon/commons/src/tasks');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { createMiscTask } = require('@lagoobernetes/commons/src/tasks');
 const { query, isPatchEmpty } = require('../../util/db');
 const {
   pubSub,
@@ -192,7 +192,7 @@ const addRestore = async (
   try {
     await createMiscTask({ key: 'restic:backup:restore', data });
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       '',

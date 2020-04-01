@@ -17,21 +17,21 @@
   tasks:
   - include: ../../tasks/api/deploy-no-sha.yaml
 
-- name: "{{ testname }} - check if {{ project }} is deployed with searching for the environment variable LAGOON_ROUTE"
+- name: "{{ testname }} - check if {{ project }} is deployed with searching for the environment variable LAGOOBERNETES_ROUTE"
   hosts: localhost
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_ROUTE=https://customdomain-will-be-main-domain.com"
+    expected_content: "LAGOOBERNETES_ROUTE=https://customdomain-will-be-main-domain.com"
   tasks:
   - include: ../../checks/check-url-content.yaml
 
-- name: "{{ testname }} - check if {{ project }} is deployed with searching for the environment variable LAGOON_ROUTES"
+- name: "{{ testname }} - check if {{ project }} is deployed with searching for the environment variable LAGOOBERNETES_ROUTES"
   hosts: localhost
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_ROUTES=https://customdomain-will-be-main-domain.com,https://customdomain-will-be-not-be-main-domain.com,https://node.{{ project | regex_replace('_', '-') }}.{{ branch | regex_replace('/', '-') }}.{{ lookup('env','ROUTE_SUFFIX_HTTPS') }}"
+    expected_content: "LAGOOBERNETES_ROUTES=https://customdomain-will-be-main-domain.com,https://customdomain-will-be-not-be-main-domain.com,https://node.{{ project | regex_replace('_', '-') }}.{{ branch | regex_replace('/', '-') }}.{{ lookup('env','ROUTE_SUFFIX_HTTPS') }}"
   tasks:
   - include: ../../checks/check-url-content.yaml
 

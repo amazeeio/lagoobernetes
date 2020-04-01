@@ -13,7 +13,7 @@ source /authorize.env
 
 API_ADMIN_TOKEN=$(/create_60_sec_jwt.sh)
 
-# This token will be required for accessing the sshKeys in the lagoon api
+# This token will be required for accessing the sshKeys in the lagoobernetes api
 bearer="Authorization: bearer $API_ADMIN_TOKEN"
 
 api=$API_HOST
@@ -27,7 +27,7 @@ options="no-port-forwarding,no-X11-forwarding,no-agent-forwarding"
 
 if [ -n "$keys" ]; then
     while read -r key; do
-        if [ $ssh_username == "lagoon" ]; then
+        if [ $ssh_username == "lagoobernetes" ]; then
             printf '%s\n' "$options,command=\"/bin/bash /home/command.sh '$API_ADMIN_TOKEN' '$key'\" $key"
         else
             printf '%s\n' "$options,command=\"/bin/bash /home/command.sh '$API_ADMIN_TOKEN' '$key' rsh '$ssh_username' \" $key"

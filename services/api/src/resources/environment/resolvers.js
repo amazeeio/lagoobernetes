@@ -1,8 +1,8 @@
 // @flow
 
 const R = require('ramda');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { createRemoveTask } = require('@lagoon/commons/src/tasks');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { createRemoveTask } = require('@lagoobernetes/commons/src/tasks');
 const esClient = require('../../clients/esClient');
 const { isPatchEmpty, prepare, query, whereAnd } = require('../../util/db');
 const Helpers = require('./helpers');
@@ -464,7 +464,7 @@ const deleteEnvironment = async (
       break;
 
     default:
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'error',
         data.projectName,
         '',
@@ -476,7 +476,7 @@ const deleteEnvironment = async (
   }
 
   await createRemoveTask(data);
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'info',
     data.projectName,
     '',

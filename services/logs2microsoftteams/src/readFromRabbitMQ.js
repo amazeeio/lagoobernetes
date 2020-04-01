@@ -1,8 +1,8 @@
 // @flow
 
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 
-const { getMicrosoftTeamsInfoForProject } = require('@lagoon/commons/src/api');
+const { getMicrosoftTeamsInfoForProject } = require('@lagoobernetes/commons/src/api');
 
 const { URL } = require('url');
 const http = require('https');

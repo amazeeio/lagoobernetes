@@ -1,7 +1,7 @@
 // @flow
 
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { deleteProject } = require('@lagoon/commons/src/api');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { deleteProject } = require('@lagoobernetes/commons/src/api');
 
 import type { WebhookRequestData } from '../types';
 
@@ -21,7 +21,7 @@ async function gitlabProjectDelete(webhook: WebhookRequestData) {
 
     await deleteProject(name);
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -32,7 +32,7 @@ async function gitlabProjectDelete(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

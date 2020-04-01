@@ -1,8 +1,8 @@
 import * as R from 'ramda';
 import * as sshpk from 'sshpk';
-import * as gitlabApi from '@lagoon/commons/src/gitlabApi';
-import * as api from '@lagoon/commons/src/api';
-import { logger } from '@lagoon/commons/src/local-logging';
+import * as gitlabApi from '@lagoobernetes/commons/src/gitlabApi';
+import * as api from '@lagoobernetes/commons/src/api';
+import { logger } from '@lagoobernetes/commons/src/local-logging';
 
 interface GitlabProject {
   id: number,
@@ -36,13 +36,13 @@ const syncProject = async (project) => {
     return;
   }
 
-  let lagoonProject;
+  let lagoobernetesProject;
   try {
     const result = await api.addProject(projectName, gitUrl, openshift, productionenvironment);
-    lagoonProject = R.prop('addProject', result);
+    lagoobernetesProject = R.prop('addProject', result);
   } catch (err) {
     if (R.test(projectExistsRegex, err.message)) {
-      lagoonProject = await api.getProjectByName(projectName);
+      lagoobernetesProject = await api.getProjectByName(projectName);
     } else {
       throw new Error(`Could not sync (add) gitlab project ${projectName}: ${err.message}`);
     }
@@ -52,7 +52,7 @@ const syncProject = async (project) => {
     const privateKey = R.pipe(
       R.prop('privateKey'),
       sshpk.parsePrivateKey,
-    )(lagoonProject);
+    )(lagoobernetesProject);
     //@ts-ignore
     const publicKey = privateKey.toPublic();
 

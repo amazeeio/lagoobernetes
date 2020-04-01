@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "5264ff2e-ae89-4413-a398-c889e4c89806",
-		"name": "lagoon-webhook-handler",
+		"name": "lagoobernetes-webhook-handler",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [

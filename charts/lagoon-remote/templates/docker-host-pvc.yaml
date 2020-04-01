@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "lagoon-remote.dockerHost.fullname" . }}
+  name: {{ include "lagoobernetes-remote.dockerHost.fullname" . }}
   labels:
-    {{- include "lagoon-remote.dockerHost.labels" . | nindent 4 }}
+    {{- include "lagoobernetes-remote.dockerHost.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce

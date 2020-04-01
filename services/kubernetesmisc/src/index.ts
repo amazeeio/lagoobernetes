@@ -1,12 +1,12 @@
-import { logger } from '@lagoon/commons/src/local-logging';
-import { sendToLagoonLogs, initSendToLagoonLogs } from '@lagoon/commons/src/logs';
-import { consumeTasks, initSendToLagoonTasks } from '@lagoon/commons/src/tasks';
+import { logger } from '@lagoobernetes/commons/src/local-logging';
+import { sendToLagoobernetesLogs, initSendToLagoobernetesLogs } from '@lagoobernetes/commons/src/logs';
+import { consumeTasks, initSendToLagoobernetesTasks } from '@lagoobernetes/commons/src/tasks';
 
 import resticRestore from './handlers/resticRestore';
 import kubernetesBuildCancel from "./handlers/kubernetesBuildCancel";
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const messageConsumer = async msg => {
 
@@ -29,7 +29,7 @@ const messageConsumer = async msg => {
       const meta = {
         msg: JSON.parse(msg.content.toString()),
       };
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         project.name,
         '',
@@ -44,7 +44,7 @@ const messageConsumer = async msg => {
 const deathHandler = async (msg, lastError) => {
   const { key, data: { project } } = JSON.parse(msg.content.toString());
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'error',
     project.name,
     '',
@@ -60,7 +60,7 @@ ${lastError}
 const retryHandler = async (msg, error, retryCount, retryExpirationSecs) => {
   const { key, data: { project } } = JSON.parse(msg.content.toString());
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'warn',
     project,
     '',

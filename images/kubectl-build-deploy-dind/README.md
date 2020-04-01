@@ -1,4 +1,4 @@
-# Lagoon Build & Deploy
+# Lagoobernetes Build & Deploy
 
 This is the Image which contains the actual code that is responsible for building and deploying the Code from Git repositories.
 
@@ -6,14 +6,14 @@ This is the Image which contains the actual code that is responsible for buildin
 - This is the Image which contains the actual code that is responsible for building and deploying the Code from Git repositories.
 
 ## Upstream Image
-- Based on the Lagoon `oc` image, which has the OpenShift Client Tools installed that are used heavily in this image.
+- Based on the Lagoobernetes `oc` image, which has the OpenShift Client Tools installed that are used heavily in this image.
 
 ## How this works
 
 Everything in here is based on Bash scripts. Which in a nutshell do this:
 1. Check out a given Git Repository of a given Git Reference (Branch, Branch & SHA, Tag)
 2. Creates a new project in an OpenShift for the given project and branch
-3. Checks yaml files (either .lagoon.yml or docker-compose.yml) to learn:
+3. Checks yaml files (either .lagoobernetes.yml or docker-compose.yml) to learn:
    1. Which Docker Images with which context should be built
    2. Which Services and with that which OpenShift Resources should be created
 4. Builds Docker Images

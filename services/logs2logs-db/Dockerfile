@@ -1,5 +1,5 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/logstash:7
+FROM ${IMAGE_REPO:-lagoobernetes}/logstash:7
 
 RUN bin/logstash-plugin install logstash-input-lumberjack
 
@@ -28,4 +28,4 @@ ENV RABBITMQ_HOST="broker" \
 
 EXPOSE 8080 9600
 
-COPY entrypoints/90-logstash-enable-forward-external-logstash.sh /lagoon/entrypoints/
+COPY entrypoints/90-logstash-enable-forward-external-logstash.sh /lagoobernetes/entrypoints/

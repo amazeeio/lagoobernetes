@@ -22,7 +22,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      priorityClassName: {{ include "nginx-php.lagoonPriority" . }}
+      priorityClassName: {{ include "nginx-php.lagoobernetesPriority" . }}
       enableServiceLinks: false
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -48,9 +48,9 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 5
           env:
-            ## LAGOON_GIT_SHA is injected directly and not loaded via `lagoon-env` config
+            ## LAGOOBERNETES_GIT_SHA is injected directly and not loaded via `lagoobernetes-env` config
             ## This will cause the pod to redeploy on every deployment, even the files have not changed
-            - name: LAGOON_GIT_SHA
+            - name: LAGOOBERNETES_GIT_SHA
               value: {{ .Values.gitSha | quote }}
             - name: NGINX_FASTCGI_PASS
               value: '127.0.0.1'
@@ -58,7 +58,7 @@ spec:
               value: {{ .Values.inPodCronjobs | quote }}
           envFrom:
             - configMapRef:
-                name: lagoon-env
+                name: lagoobernetes-env
           resources:
             {{- toYaml .Values.resources.nginx | nindent 12 }}
 
@@ -80,11 +80,11 @@ spec:
             periodSeconds: 10
           envFrom:
             - configMapRef:
-                name: lagoon-env
+                name: lagoobernetes-env
           env:
-            # LAGOON_GIT_SHA is injected directly and not loaded via `lagoon-env` config
+            # LAGOOBERNETES_GIT_SHA is injected directly and not loaded via `lagoobernetes-env` config
             # This will cause the pod to redeploy on every deployment, even the files have not changed
-            - name: LAGOON_GIT_SHA
+            - name: LAGOOBERNETES_GIT_SHA
               value: {{ .Values.gitSha | quote }}
             - name: NGINX_FASTCGI_PASS
               value: '127.0.0.1'

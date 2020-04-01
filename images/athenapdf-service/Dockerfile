@@ -1,12 +1,12 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM arachnysdocker/athenapdf-service:2.13.0
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=athenapdf-service
+ENV LAGOOBERNETES=athenapdf-service
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /home /home
 
@@ -25,6 +25,6 @@ ENV TMPDIR=/tmp \
     BASH_ENV=/home/.bashrc
 
 ENV WEAVER_ATHENA_CMD="athenapdf --no-cache --ignore-certificate-errors -S"
-ENV WEAVER_AUTH_KEY=lagoon-athenapdf
+ENV WEAVER_AUTH_KEY=lagoobernetes-athenapdf
 
 COPY entrypoint.sh /athenapdf-service/conf/entrypoint.sh

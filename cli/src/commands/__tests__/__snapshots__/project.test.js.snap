@@ -3,7 +3,7 @@
 exports[`handler should display error, if GraphQL sends error messages 1`] = `
 Array [
   Array [
-    "[31mOops! The Lagoon API returned an error:[39m",
+    "[31mOops! The Lagoobernetes API returned an error:[39m",
   ],
   Array [
     "[31msomething something error[39m",
@@ -17,8 +17,8 @@ Array [
     "[38;2;132;132;132mName[39m                   credentialstest-project1
 [38;2;132;132;132mCustomer[39m               credentialtest-customer1
 [38;2;132;132;132mGit URL[39m                project1.git
-[38;2;132;132;132mActive Systems Deploy[39m  lagoon_openshiftBuildDeploy
-[38;2;132;132;132mActive Systems Remove[39m  lagoon_openshiftRemove
+[38;2;132;132;132mActive Systems Deploy[39m  lagoobernetes_openshiftBuildDeploy
+[38;2;132;132;132mActive Systems Remove[39m  lagoobernetes_openshiftRemove
 [38;2;132;132;132mBranches[39m               true
 [38;2;132;132;132mPull Requests[39m          null
 [38;2;132;132;132mOpenshift[39m              credentialtest-openshift

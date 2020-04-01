@@ -1,7 +1,7 @@
 import * as R from 'ramda';
-import { getOpenShiftInfoForProject, updateTask, updateDeployment } from '@lagoon/commons/src/api';
-import { logger } from "@lagoon/commons/src/local-logging";
-import { sendToLagoonLogs } from '@lagoon/commons/src/logs';
+import { getOpenShiftInfoForProject, updateTask, updateDeployment } from '@lagoobernetes/commons/src/api';
+import { logger } from "@lagoobernetes/commons/src/local-logging";
+import { sendToLagoobernetesLogs } from '@lagoobernetes/commons/src/logs';
 
 import Api, { ClientConfiguration } from 'kubernetes-client';
 const Client = Api.Client1_13;
@@ -92,14 +92,14 @@ const kubernetesBuildCancel = async (data: any) => {
   if (jobInfo) {
     logger.error(`Job ${buildName} does not exist, bailing`);
     await deleteJob(client, namespace, buildName);
-    // Update lagoon deployment to CANCELLED. 
+    // Update lagoobernetes deployment to CANCELLED.
     await updateDeployment(parseInt(id, 10), {status: 'CANCELLED'})
   }
-  
+
 
   logger.verbose(`${namespace}: Cancelling build: ${buildName}`);
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'info',
     project.name,
     '',

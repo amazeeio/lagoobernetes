@@ -1,10 +1,10 @@
 // @flow
 const retry = require('async-retry')
 
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { addUserToGroup, sanitizeGroupName } = require('@lagoon/commons/src/api');
-const { getGroup } = require('@lagoon/commons/src/gitlabApi');
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { addUserToGroup, sanitizeGroupName } = require('@lagoobernetes/commons/src/api');
+const { getGroup } = require('@lagoobernetes/commons/src/gitlabApi');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 
 import type { WebhookRequestData } from '../types';
 
@@ -25,13 +25,13 @@ async function gitlabUserGroupAdd(webhook: WebhookRequestData) {
 
     // Retry adding the User to the Customer 5 times as during the creation of a new Group the customer is immediatelly added and the webhook sent at the same time
     await retry(async () => {
-      // Gitlab Group Access matches the Lagoon Roles, just need them Uppercase
+      // Gitlab Group Access matches the Lagoobernetes Roles, just need them Uppercase
       await addUserToGroup(userEmail, sanitizeGroupName(group.full_path), role.toUpperCase());
     }, {
       retries: 5,
     })
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -42,7 +42,7 @@ async function gitlabUserGroupAdd(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

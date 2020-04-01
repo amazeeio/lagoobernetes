@@ -1,10 +1,10 @@
-ARG LAGOON_GIT_BRANCH
+ARG LAGOOBERNETES_GIT_BRANCH
 ARG IMAGE_REPO
-# STAGE 1: Loading Image lagoon-node-packages-builder which contains node packages shared by all Node Services
-FROM ${IMAGE_REPO:-amazeeiolagoon}/yarn-workspace-builder:${LAGOON_GIT_BRANCH:-latest} as yarn-workspace-builder
+# STAGE 1: Loading Image lagoobernetes-node-packages-builder which contains node packages shared by all Node Services
+FROM ${IMAGE_REPO:-amazeeiolagoobernetes}/yarn-workspace-builder:${LAGOOBERNETES_GIT_BRANCH:-latest} as yarn-workspace-builder
 
 # STAGE 2: specific service Image
-FROM ${IMAGE_REPO:-amazeeiolagoon}/node:10
+FROM ${IMAGE_REPO:-amazeeiolagoobernetes}/node:10
 
 # Copying generated node_modules from the first stage
 COPY --from=yarn-workspace-builder /app /app
@@ -31,7 +31,7 @@ ENV NODE_ENV=production \
 
 # The API is not very resilient to sudden mariadb restarts which can happen when the api and mariadb are starting
 # at the same time. So we have a small entrypoint which waits for mariadb to be fully ready.
-COPY wait-for-mariadb.sh /lagoon/entrypoints/99-wait-for-mariadb.sh
+COPY wait-for-mariadb.sh /lagoobernetes/entrypoints/99-wait-for-mariadb.sh
 
 RUN yarn build
 

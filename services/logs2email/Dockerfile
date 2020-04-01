@@ -1,12 +1,12 @@
-ARG LAGOON_GIT_BRANCH
+ARG LAGOOBERNETES_GIT_BRANCH
 ARG IMAGE_REPO
-# STAGE 1: Loading Image lagoon-node-packages-builder which contains node packages shared by all Node Services
-FROM ${IMAGE_REPO:-amazeeiolagoon}/yarn-workspace-builder:${LAGOON_GIT_BRANCH:-latest} as yarn-workspace-builder
+# STAGE 1: Loading Image lagoobernetes-node-packages-builder which contains node packages shared by all Node Services
+FROM ${IMAGE_REPO:-amazeeiolagoobernetes}/yarn-workspace-builder:${LAGOOBERNETES_GIT_BRANCH:-latest} as yarn-workspace-builder
 
 # STAGE 2: specific service Image
-FROM ${IMAGE_REPO:-amazeeiolagoon}/node:10
+FROM ${IMAGE_REPO:-amazeeiolagoobernetes}/node:10
 
-COPY entrypoints/50-ssmtp.sh /lagoon/entrypoints/
+COPY entrypoints/50-ssmtp.sh /lagoobernetes/entrypoints/
 COPY ssmtp.conf /etc/ssmtp/ssmtp.conf
 
 RUN apk add --no-cache ssmtp

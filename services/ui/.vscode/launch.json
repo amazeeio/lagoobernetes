@@ -4,7 +4,7 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Lagoon UI Next: Chrome",
+      "name": "Lagoobernetes UI Next: Chrome",
       "url": "http://localhost:3003",
       "webRoot": "${workspaceFolder}/src",
       "sourceMapPathOverrides": {
@@ -14,7 +14,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Lagoon UI Next: Node",
+      "name": "Lagoobernetes UI Next: Node",
       "program": "${workspaceFolder}/server.js",
       "runtimeArgs": [
           "--inspect"
@@ -26,8 +26,8 @@
   ],
   "compounds": [
     {
-      "name": "Lagoon UI Next: Full",
-      "configurations": ["Lagoon UI Next: Node", "Lagoon UI Next: Chrome"]
+      "name": "Lagoobernetes UI Next: Full",
+      "configurations": ["Lagoobernetes UI Next: Node", "Lagoobernetes UI Next: Chrome"]
     }
   ]
 }

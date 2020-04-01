@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/amazeeio/lagoon-cli/pkg/api"
+	"github.com/amazeeio/lagoobernetes-cli/pkg/api"
 	"github.com/google/uuid"
 	"github.com/isayme/go-amqp-reconnect/rabbitmq"
 	"github.com/streadway/amqp"
@@ -126,7 +126,7 @@ func (b *BackupHandler) WebhookHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("unable to decode json data from webhook, error is %s:", err.Error())
 	} else {
 		// get backups from the API
-		lagoonAPI, err := api.New(b.Endpoint.TokenSigningKey, b.Endpoint.JWTAudience, b.Endpoint.Endpoint)
+		lagoobernetesAPI, err := api.New(b.Endpoint.TokenSigningKey, b.Endpoint.JWTAudience, b.Endpoint.Endpoint)
 		if err != nil {
 			log.Printf("unable to connect api, error is %s:", err.Error())
 			return
@@ -147,7 +147,7 @@ func (b *BackupHandler) WebhookHandler(w http.ResponseWriter, r *http.Request) {
 			environment := api.EnvironmentBackups{
 				OpenshiftProjectName: backupData.Name,
 			}
-			envBackups, err := lagoonAPI.GetEnvironmentBackups(environment)
+			envBackups, err := lagoobernetesAPI.GetEnvironmentBackups(environment)
 			if err != nil {
 				log.Printf("unable to get backups from api, error is %s:", err.Error())
 				return
@@ -166,7 +166,7 @@ func (b *BackupHandler) WebhookHandler(w http.ResponseWriter, r *http.Request) {
 						BackupID: backup.BackupID,
 					}
 					// now delete it from the api as it no longer exists
-					_, err := lagoonAPI.DeleteBackup(delBackup) // result is always success, or will error
+					_, err := lagoobernetesAPI.DeleteBackup(delBackup) // result is always success, or will error
 					if err != nil {
 						log.Printf("unable to delete backup from api, error is %s:", err.Error())
 						return

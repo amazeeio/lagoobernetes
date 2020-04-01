@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: lagoon-openshift-template-cli
+  name: lagoobernetes-openshift-template-cli
 parameters:
   - name: SERVICE_NAME
     description: Name of this service
@@ -19,7 +19,7 @@ parameters:
   - name: PROJECT
     description: Which project this belongs to, original value
     required: true
-  - name: LAGOON_GIT_SHA
+  - name: LAGOOBERNETES_GIT_SHA
     description: git hash sha of the current deployment
     required: true
   - name: SERVICE_ROUTER_URL
@@ -94,22 +94,22 @@ objects:
             - name: ${PERSISTENT_STORAGE_NAME}
               persistentVolumeClaim:
                 claimName: ${PERSISTENT_STORAGE_NAME}
-            - name: lagoon-sshkey
+            - name: lagoobernetes-sshkey
               secret:
                 defaultMode: 420
-                secretName: lagoon-sshkey
-          priorityClassName: lagoon-priority-${ENVIRONMENT_TYPE}
+                secretName: lagoobernetes-sshkey
+          priorityClassName: lagoobernetes-priority-${ENVIRONMENT_TYPE}
           containers:
             - image: ${SERVICE_IMAGE}
               name: ${SERVICE_NAME}
               envFrom:
                 - configMapRef:
-                    name: lagoon-env
+                    name: lagoobernetes-env
               env:
-                ## LAGOON_GIT_SHA is injected directly and not loaded via `lagoon-env` config
+                ## LAGOOBERNETES_GIT_SHA is injected directly and not loaded via `lagoobernetes-env` config
                 ## This will cause the cli to redeploy on every deployment, even the files have not changed
-                - name: LAGOON_GIT_SHA
-                  value: ${LAGOON_GIT_SHA}
+                - name: LAGOOBERNETES_GIT_SHA
+                  value: ${LAGOOBERNETES_GIT_SHA}
                 - name: SERVICE_NAME
                   value: ${SERVICE_NAME}
                 - name: CRONJOBS
@@ -117,8 +117,8 @@ objects:
               volumeMounts:
                 - name: ${PERSISTENT_STORAGE_NAME}
                   mountPath: ${PERSISTENT_STORAGE_PATH}
-                - mountPath: /var/run/secrets/lagoon/sshkey/
-                  name: lagoon-sshkey
+                - mountPath: /var/run/secrets/lagoobernetes/sshkey/
+                  name: lagoobernetes-sshkey
                   readOnly: true
               resources:
                 requests:

@@ -46,7 +46,7 @@ const withOptions = withProps(({ pageEnvironment }) => {
   // Remove tasks that are blacklisted.
   options = R.reject(
     option =>
-      R.contains(option.value, publicRuntimeConfig.LAGOON_UI_TASK_BLACKLIST),
+      R.contains(option.value, publicRuntimeConfig.LAGOOBERNETES_UI_TASK_BLACKLIST),
     options
   );
 

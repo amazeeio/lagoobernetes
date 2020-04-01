@@ -3,19 +3,19 @@
 const promisify = require('util').promisify;
 const OpenShiftClient = require('openshift-client');
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 const {
   getOpenShiftInfoForProject,
   updateTask
-} = require('@lagoon/commons/src/api');
+} = require('@lagoobernetes/commons/src/api');
 const {
-  sendToLagoonLogs,
-  initSendToLagoonLogs
-} = require('@lagoon/commons/src/logs');
+  sendToLagoobernetesLogs,
+  initSendToLagoobernetesLogs
+} = require('@lagoobernetes/commons/src/logs');
 const {
   consumeTaskMonitor,
-  initSendToLagoonTasks
-} = require('@lagoon/commons/src/tasks');
+  initSendToLagoobernetesTasks
+} = require('@lagoobernetes/commons/src/tasks');
 
 class JobNotCompletedYet extends Error {
   constructor(message: string) {
@@ -24,8 +24,8 @@ class JobNotCompletedYet extends Error {
   }
 }
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const getJobStatus = jobInfo => {
   if (R.isEmpty(jobInfo.status)) {
@@ -203,7 +203,7 @@ ${podLog}`;
 
   const jobStatus = getJobStatus(jobInfo);
 
-  // Update lagoon task
+  // Update lagoobernetes task
   try {
     const convertDateFormat = R.init;
     const dateOrNull = R.unless(R.isNil, convertDateFormat);
@@ -228,7 +228,7 @@ ${podLog}`;
   const meta = JSON.parse(msg.content.toString());
   switch (jobStatus) {
     case 'active':
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         project.name,
         '',
@@ -243,7 +243,7 @@ ${podLog}`;
     case 'failed':
       await saveTaskLog(jobName, project.name, jobInfo, await jobsLogGet());
       await deleteJob();
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'error',
         project.name,
         '',
@@ -256,7 +256,7 @@ ${podLog}`;
     case 'succeeded':
       await saveTaskLog(jobName, project.name, jobInfo, await jobsLogGet());
       await deleteJob();
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         project.name,
         '',
@@ -267,7 +267,7 @@ ${podLog}`;
       break;
 
     default:
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         project.name,
         '',
@@ -292,7 +292,7 @@ const saveTaskLog = async (jobName, projectName, jobInfo, log) => {
     remoteId: jobInfo.metadata.uid
   };
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'info',
     projectName,
     '',
@@ -307,7 +307,7 @@ const deathHandler = async (msg, lastError) => {
 
   failTask(taskId);
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'error',
     project.name,
     '',

@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-# amazee.io lagoon Makefile The main purpose of this Makefile is to provide easier handling of
+# amazee.io lagoobernetes Makefile The main purpose of this Makefile is to provide easier handling of
 # building images and running tests It understands the relation of the different images (like
 # nginx-drupal is based on nginx) and builds them in the correct order Also it knows which
 # services in docker-compose.yml are depending on which base images or maybe even other service
@@ -20,7 +20,7 @@ SHELL := /bin/bash
 # make tests/<testname>
 # Runs individual tests. In a nutshell it does:
 # 1. Builds all needed images for the test
-# 2. Starts needed Lagoon services for the test via docker-compose up
+# 2. Starts needed Lagoobernetes services for the test via docker-compose up
 # 3. Executes the test
 #
 # Run `make tests-list` to see a list of all tests.
@@ -29,10 +29,10 @@ SHELL := /bin/bash
 # Runs all tests together. Can be executed with `-j2` for two parallel running tests
 
 # make up
-# Starts all Lagoon Services at once, usefull for local development or just to start all of them.
+# Starts all Lagoobernetes Services at once, usefull for local development or just to start all of them.
 
 # make logs
-# Shows logs of Lagoon Services (aka docker-compose logs -f)
+# Shows logs of Lagoobernetes Services (aka docker-compose logs -f)
 
 # make minishift
 # Some tests need a full openshift running in order to test deployments and such. This can be
@@ -56,8 +56,8 @@ DOCKER_BUILD_PARAMS := --quiet
 
 # On CI systems like jenkins we need a way to run multiple testings at the same time. We expect the
 # CI systems to define an Environment variable CI_BUILD_TAG which uniquely identifies each build.
-# If it's not set we assume that we are running local and just call it lagoon.
-CI_BUILD_TAG ?= lagoon
+# If it's not set we assume that we are running local and just call it lagoobernetes.
+CI_BUILD_TAG ?= lagoobernetes
 
 # Version and Hash of the OpenShift cli that should be downloaded
 
@@ -81,7 +81,7 @@ K3D_VERSION := 1.4.0
 K3D_NAME := k3s-$(CI_BUILD_TAG)
 
 ARCH := $(shell uname | tr '[:upper:]' '[:lower:]')
-LAGOON_VERSION := $(shell git describe --tags --exact-match 2>/dev/null || echo development)
+LAGOOBERNETES_VERSION := $(shell git describe --tags --exact-match 2>/dev/null || echo development)
 # Name of the Branch we are currently in
 BRANCH_NAME :=
 DEFAULT_ALPINE_VERSION := 3.11
@@ -92,32 +92,32 @@ DEFAULT_ALPINE_VERSION := 3.11
 
 # Builds a docker image. Expects as arguments: name of the image, location of Dockerfile, path of
 # Docker Build Context
-docker_build = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOON_VERSION=$(LAGOON_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) --build-arg ALPINE_VERSION=$(DEFAULT_ALPINE_VERSION) -t $(CI_BUILD_TAG)/$(1) -f $(2) $(3)
+docker_build = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOOBERNETES_VERSION=$(LAGOOBERNETES_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) --build-arg ALPINE_VERSION=$(DEFAULT_ALPINE_VERSION) -t $(CI_BUILD_TAG)/$(1) -f $(2) $(3)
 
 # Build a Python docker image. Expects as arguments:
 # 1. Python version
 # 2. Location of Dockerfile
 # 3. Path of Docker Build context
-docker_build_python = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOON_VERSION=$(LAGOON_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) --build-arg PYTHON_VERSION=$(1) --build-arg ALPINE_VERSION=$(2) -t $(CI_BUILD_TAG)/python:$(3) -f $(4) $(5)
+docker_build_python = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOOBERNETES_VERSION=$(LAGOOBERNETES_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) --build-arg PYTHON_VERSION=$(1) --build-arg ALPINE_VERSION=$(2) -t $(CI_BUILD_TAG)/python:$(3) -f $(4) $(5)
 
-docker_build_elastic = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOON_VERSION=$(LAGOON_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) -t $(CI_BUILD_TAG)/$(2):$(1) -f $(3) $(4)
+docker_build_elastic = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOOBERNETES_VERSION=$(LAGOOBERNETES_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) -t $(CI_BUILD_TAG)/$(2):$(1) -f $(3) $(4)
 
 # Build a PHP docker image. Expects as arguments:
 # 1. PHP version
 # 2. PHP version and type of image (ie 7.3-fpm, 7.3-cli etc)
 # 3. Location of Dockerfile
 # 4. Path of Docker Build Context
-docker_build_php = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOON_VERSION=$(LAGOON_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) --build-arg PHP_VERSION=$(1)  --build-arg PHP_IMAGE_VERSION=$(1) --build-arg ALPINE_VERSION=$(2) -t $(CI_BUILD_TAG)/php:$(3) -f $(4) $(5)
+docker_build_php = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOOBERNETES_VERSION=$(LAGOOBERNETES_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) --build-arg PHP_VERSION=$(1)  --build-arg PHP_IMAGE_VERSION=$(1) --build-arg ALPINE_VERSION=$(2) -t $(CI_BUILD_TAG)/php:$(3) -f $(4) $(5)
 
-docker_build_node = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOON_VERSION=$(LAGOON_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) --build-arg NODE_VERSION=$(1) --build-arg ALPINE_VERSION=$(2) -t $(CI_BUILD_TAG)/node:$(3) -f $(4) $(5)
+docker_build_node = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOOBERNETES_VERSION=$(LAGOOBERNETES_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) --build-arg NODE_VERSION=$(1) --build-arg ALPINE_VERSION=$(2) -t $(CI_BUILD_TAG)/node:$(3) -f $(4) $(5)
 
-docker_build_solr = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOON_VERSION=$(LAGOON_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) --build-arg SOLR_MAJ_MIN_VERSION=$(1) -t $(CI_BUILD_TAG)/solr:$(2) -f $(3) $(4)
+docker_build_solr = docker build $(DOCKER_BUILD_PARAMS) --build-arg LAGOOBERNETES_VERSION=$(LAGOOBERNETES_VERSION) --build-arg IMAGE_REPO=$(CI_BUILD_TAG) --build-arg SOLR_MAJ_MIN_VERSION=$(1) -t $(CI_BUILD_TAG)/solr:$(2) -f $(3) $(4)
 
 # Tags an image with the `amazeeio` repository and pushes it
 docker_publish_amazeeio = docker tag $(CI_BUILD_TAG)/$(1) amazeeio/$(2) && docker push amazeeio/$(2) | cat
 
-# Tags an image with the `amazeeiolagoon` repository and pushes it
-docker_publish_amazeeiolagoon = docker tag $(CI_BUILD_TAG)/$(1) amazeeiolagoon/$(2) && docker push amazeeiolagoon/$(2) | cat
+# Tags an image with the `amazeeiolagoobernetes` repository and pushes it
+docker_publish_amazeeiolagoobernetes = docker tag $(CI_BUILD_TAG)/$(1) amazeeiolagoobernetes/$(2) && docker push amazeeiolagoobernetes/$(2) | cat
 
 
 #######
@@ -390,7 +390,7 @@ build/node__10-builder: build/node__10 images/node/builder/Dockerfile
 #######
 ####### Service Images
 #######
-####### Services Images are the Docker Images used to run the Lagoon Microservices, these images
+####### Services Images are the Docker Images used to run the Lagoobernetes Microservices, these images
 ####### will be expected by docker-compose to exist.
 
 # Yarn Workspace Image which builds the Yarn Workspace within a single image. This image will be
@@ -577,8 +577,8 @@ $(push-local-registry-images):
 	$(eval image = $(subst __,:,$(image)))
 	$(info pushing $(image) to local local-registry)
 	if docker inspect $(CI_BUILD_TAG)/$(image) > /dev/null 2>&1; then \
-		docker tag $(CI_BUILD_TAG)/$(image) localhost:5000/lagoon/$(image) && \
-		docker push localhost:5000/lagoon/$(image) | cat; \
+		docker tag $(CI_BUILD_TAG)/$(image) localhost:5000/lagoobernetes/$(image) && \
+		docker push localhost:5000/lagoobernetes/$(image) | cat; \
 	fi
 
 # Define list of all tests
@@ -607,19 +607,19 @@ wait-for-keycloak:
 	$(info Waiting for Keycloak to be ready....)
 	grep -m 1 "Config of Keycloak done." <(docker-compose -p $(CI_BUILD_TAG) logs -f keycloak 2>&1)
 
-# Define a list of which Lagoon Services are needed for running any deployment testing
+# Define a list of which Lagoobernetes Services are needed for running any deployment testing
 main-test-services = broker logs2email logs2slack logs2rocketchat logs2microsoftteams api api-db keycloak keycloak-db ssh auth-server local-git local-api-data-watcher-pusher harbor-core harbor-database harbor-jobservice harbor-portal harbor-nginx harbor-redis harborregistry harborregistryctl harborclair harborclairadapter local-minio
 
-# Define a list of which Lagoon Services are needed for openshift testing
+# Define a list of which Lagoobernetes Services are needed for openshift testing
 openshift-test-services = openshiftremove openshiftbuilddeploy openshiftbuilddeploymonitor tests-openshift
 
-# Define a list of which Lagoon Services are needed for kubernetes testing
+# Define a list of which Lagoobernetes Services are needed for kubernetes testing
 kubernetes-test-services = kubernetesbuilddeploy kubernetesdeployqueue kubernetesbuilddeploymonitor kubernetesjobs kubernetesjobsmonitor kubernetesremove kubernetesmisc tests-kubernetes local-registry local-dbaas-provider drush-alias
 
-# List of Lagoon Services needed for webhook endpoint testing
+# List of Lagoobernetes Services needed for webhook endpoint testing
 webhooks-test-services = webhook-handler webhooks2tasks backup-handler
 
-# List of Lagoon Services needed for drupal testing
+# List of Lagoobernetes Services needed for drupal testing
 drupal-test-services = drush-alias
 
 # All tests that use Webhook endpoints
@@ -705,18 +705,18 @@ $(push-minishift-images):
 	$(eval image = $(subst __,:,$(image)))
 	$(info pushing $(image) to minishift registry)
 	if docker inspect $(CI_BUILD_TAG)/$(image) > /dev/null 2>&1; then \
-		docker tag $(CI_BUILD_TAG)/$(image) $$(cat minishift):30000/lagoon/$(image) && \
-		docker push $$(cat minishift):30000/lagoon/$(image) | cat; \
+		docker tag $(CI_BUILD_TAG)/$(image) $$(cat minishift):30000/lagoobernetes/$(image) && \
+		docker push $$(cat minishift):30000/lagoobernetes/$(image) | cat; \
 	fi
 
 push-docker-host-image: build/docker-host minishift/login-docker-registry
-	docker tag $(CI_BUILD_TAG)/docker-host $$(cat minishift):30000/lagoon/docker-host
-	docker push $$(cat minishift):30000/lagoon/docker-host | cat
+	docker tag $(CI_BUILD_TAG)/docker-host $$(cat minishift):30000/lagoobernetes/docker-host
+	docker push $$(cat minishift):30000/lagoobernetes/docker-host | cat
 
-lagoon-kickstart: $(foreach image,$(deployment-test-services-rest),build/$(image))
+lagoobernetes-kickstart: $(foreach image,$(deployment-test-services-rest),build/$(image))
 	IMAGE_REPO=$(CI_BUILD_TAG) CI=false docker-compose -p $(CI_BUILD_TAG) up -d $(deployment-test-services-rest)
 	sleep 30
-	curl -X POST http://localhost:5555/deploy -H 'content-type: application/json' -d '{ "projectName": "lagoon", "branchName": "master" }'
+	curl -X POST http://localhost:5555/deploy -H 'content-type: application/json' -d '{ "projectName": "lagoobernetes", "branchName": "master" }'
 	make logs
 
 # Publish command to amazeeio docker hub, this should probably only be done during a master deployments
@@ -735,7 +735,7 @@ $(publish-amazeeio-baseimages):
 # 	Publish images as :latest
 		$(call docker_publish_amazeeio,$(image),$(image):latest)
 # 	Publish images with version tag
-		$(call docker_publish_amazeeio,$(image),$(image):$(LAGOON_VERSION))
+		$(call docker_publish_amazeeio,$(image),$(image):$(LAGOOBERNETES_VERSION))
 
 
 # tag and push of base image with version
@@ -750,53 +750,53 @@ $(publish-amazeeio-baseimages-with-versions):
 		$(call docker_publish_amazeeio,$(image),$(image))
 #		Plus a version with the `-latest` suffix, this makes it easier for people with automated testing
 		$(call docker_publish_amazeeio,$(image),$(image)-latest)
-#		We add the Lagoon Version just as a dash
-		$(call docker_publish_amazeeio,$(image),$(image)-$(LAGOON_VERSION))
+#		We add the Lagoobernetes Version just as a dash
+		$(call docker_publish_amazeeio,$(image),$(image)-$(LAGOOBERNETES_VERSION))
 
 
 
 # Publish command to amazeeio docker hub, this should probably only be done during a master deployments
-publish-amazeeiolagoon-baseimages = $(foreach image,$(base-images),[publish-amazeeiolagoon-baseimages]-$(image))
-publish-amazeeiolagoon-baseimages-with-versions = $(foreach image,$(base-images-with-versions),[publish-amazeeiolagoon-baseimages-with-versions]-$(image))
+publish-amazeeiolagoobernetes-baseimages = $(foreach image,$(base-images),[publish-amazeeiolagoobernetes-baseimages]-$(image))
+publish-amazeeiolagoobernetes-baseimages-with-versions = $(foreach image,$(base-images-with-versions),[publish-amazeeiolagoobernetes-baseimages-with-versions]-$(image))
 # tag and push all images
-.PHONY: publish-amazeeiolagoon-baseimages
-publish-amazeeiolagoon-baseimages: $(publish-amazeeiolagoon-baseimages) $(publish-amazeeiolagoon-baseimages-with-versions)
+.PHONY: publish-amazeeiolagoobernetes-baseimages
+publish-amazeeiolagoobernetes-baseimages: $(publish-amazeeiolagoobernetes-baseimages) $(publish-amazeeiolagoobernetes-baseimages-with-versions)
 
 
 # tag and push of each image
-.PHONY: $(publish-amazeeiolagoon-baseimages)
-$(publish-amazeeiolagoon-baseimages):
-#   Calling docker_publish for image, but remove the prefix '[publish-amazeeiolagoon-baseimages]-' first
-		$(eval image = $(subst [publish-amazeeiolagoon-baseimages]-,,$@))
+.PHONY: $(publish-amazeeiolagoobernetes-baseimages)
+$(publish-amazeeiolagoobernetes-baseimages):
+#   Calling docker_publish for image, but remove the prefix '[publish-amazeeiolagoobernetes-baseimages]-' first
+		$(eval image = $(subst [publish-amazeeiolagoobernetes-baseimages]-,,$@))
 # 	Publish images with version tag
-		$(call docker_publish_amazeeiolagoon,$(image),$(image):$(BRANCH_NAME))
+		$(call docker_publish_amazeeiolagoobernetes,$(image),$(image):$(BRANCH_NAME))
 
 
 # tag and push of base image with version
-.PHONY: $(publish-amazeeiolagoon-baseimages-with-versions)
-$(publish-amazeeiolagoon-baseimages-with-versions):
-#   Calling docker_publish for image, but remove the prefix '[publish-amazeeiolagoon-baseimages-with-versions]-' first
-		$(eval image = $(subst [publish-amazeeiolagoon-baseimages-with-versions]-,,$@))
+.PHONY: $(publish-amazeeiolagoobernetes-baseimages-with-versions)
+$(publish-amazeeiolagoobernetes-baseimages-with-versions):
+#   Calling docker_publish for image, but remove the prefix '[publish-amazeeiolagoobernetes-baseimages-with-versions]-' first
+		$(eval image = $(subst [publish-amazeeiolagoobernetes-baseimages-with-versions]-,,$@))
 #   The underline is a placeholder for a colon, replace that
 		$(eval image = $(subst __,:,$(image)))
-#		We add the Lagoon Version just as a dash
-		$(call docker_publish_amazeeiolagoon,$(image),$(image)-$(BRANCH_NAME))
+#		We add the Lagoobernetes Version just as a dash
+		$(call docker_publish_amazeeiolagoobernetes,$(image),$(image)-$(BRANCH_NAME))
 
 
 # Publish command to amazeeio docker hub, this should probably only be done during a master deployments
-publish-amazeeiolagoon-serviceimages = $(foreach image,$(service-images),[publish-amazeeiolagoon-serviceimages]-$(image))
+publish-amazeeiolagoobernetes-serviceimages = $(foreach image,$(service-images),[publish-amazeeiolagoobernetes-serviceimages]-$(image))
 # tag and push all images
-.PHONY: publish-amazeeiolagoon-serviceimages
-publish-amazeeiolagoon-serviceimages: $(publish-amazeeiolagoon-serviceimages)
+.PHONY: publish-amazeeiolagoobernetes-serviceimages
+publish-amazeeiolagoobernetes-serviceimages: $(publish-amazeeiolagoobernetes-serviceimages)
 
 
 # tag and push of each image
-.PHONY: $(publish-amazeeiolagoon-serviceimages)
-$(publish-amazeeiolagoon-serviceimages):
-#   Calling docker_publish for image, but remove the prefix '[publish-amazeeiolagoon-serviceimages]-' first
-		$(eval image = $(subst [publish-amazeeiolagoon-serviceimages]-,,$@))
+.PHONY: $(publish-amazeeiolagoobernetes-serviceimages)
+$(publish-amazeeiolagoobernetes-serviceimages):
+#   Calling docker_publish for image, but remove the prefix '[publish-amazeeiolagoobernetes-serviceimages]-' first
+		$(eval image = $(subst [publish-amazeeiolagoobernetes-serviceimages]-,,$@))
 # 	Publish images with version tag
-		$(call docker_publish_amazeeiolagoon,$(image),$(image):$(BRANCH_NAME))
+		$(call docker_publish_amazeeiolagoobernetes,$(image),$(image):$(BRANCH_NAME))
 
 
 s3-save = $(foreach image,$(s3-images),[s3-save]-$(image))
@@ -809,7 +809,7 @@ $(s3-save):
 #   remove the prefix '[s3-save]-' first
 		$(eval image = $(subst [s3-save]-,,$@))
 		$(eval image = $(subst __,:,$(image)))
-		docker save $(CI_BUILD_TAG)/$(image) $$(docker history -q $(CI_BUILD_TAG)/$(image) | grep -v missing) | gzip -9 | aws s3 cp - s3://lagoon-images/$(image).tar.gz
+		docker save $(CI_BUILD_TAG)/$(image) $$(docker history -q $(CI_BUILD_TAG)/$(image) | grep -v missing) | gzip -9 | aws s3 cp - s3://lagoobernetes-images/$(image).tar.gz
 
 s3-load = $(foreach image,$(s3-images),[s3-load]-$(image))
 # save all images to s3
@@ -821,18 +821,18 @@ $(s3-load):
 #   remove the prefix '[s3-load]-' first
 		$(eval image = $(subst [s3-load]-,,$@))
 		$(eval image = $(subst __,:,$(image)))
-		curl -s https://s3.us-east-2.amazonaws.com/lagoon-images/$(image).tar.gz | gunzip -c | docker load
+		curl -s https://s3.us-east-2.amazonaws.com/lagoobernetes-images/$(image).tar.gz | gunzip -c | docker load
 
 # Clean all build touches, which will case make to rebuild the Docker Images (Layer caching is
 # still active, so this is a very safe command)
 clean:
 	rm -rf build/*
 
-# Show Lagoon Service Logs
+# Show Lagoobernetes Service Logs
 logs:
 	IMAGE_REPO=$(CI_BUILD_TAG) docker-compose -p $(CI_BUILD_TAG) logs --tail=10 -f $(service)
 
-# Start all Lagoon Services
+# Start all Lagoobernetes Services
 up:
 	IMAGE_REPO=$(CI_BUILD_TAG) docker-compose -p $(CI_BUILD_TAG) up -d
 	grep -m 1 ".opendistro_security index does not exist yet" <(docker-compose -p $(CI_BUILD_TAG) logs -f logs-db 2>&1)
@@ -842,9 +842,9 @@ up:
 down:
 	IMAGE_REPO=$(CI_BUILD_TAG) docker-compose -p $(CI_BUILD_TAG) down -v --remove-orphans
 
-# kill all containers containing the name "lagoon"
+# kill all containers containing the name "lagoobernetes"
 kill:
-	docker ps --format "{{.Names}}" | grep lagoon | xargs -t -r -n1 docker rm -f -v
+	docker ps --format "{{.Names}}" | grep lagoobernetes | xargs -t -r -n1 docker rm -f -v
 
 openshift:
 	$(info the openshift command has been renamed to minishift)
@@ -879,54 +879,54 @@ endif
 	sleep 60
 	eval $$(./local-dev/minishift/minishift --profile $(CI_BUILD_TAG) oc-env); \
 	for i in {10..30}; do oc --context="myproject/$$(./local-dev/minishift/minishift --profile $(CI_BUILD_TAG) ip | sed 's/\./-/g'):8443/system:admin" patch pv pv00$${i} -p '{"spec":{"storageClassName":"bulk"}}'; done;
-	$(MAKE) minishift/configure-lagoon-local push-docker-host-image
+	$(MAKE) minishift/configure-lagoobernetes-local push-docker-host-image
 
 minishift/login-docker-registry:
 	eval $$(./local-dev/minishift/minishift --profile $(CI_BUILD_TAG) oc-env); \
 	oc login --insecure-skip-tls-verify -u developer -p developer $$(cat minishift):8443; \
 	oc whoami -t | docker login --username developer --password-stdin $$(cat minishift):30000
 
-# Configures an openshift to use with Lagoon
-.PHONY: openshift-lagoon-setup
-openshift-lagoon-setup:
+# Configures an openshift to use with Lagoobernetes
+.PHONY: openshift-lagoobernetes-setup
+openshift-lagoobernetes-setup:
 # Only use the minishift provided oc if we don't have one yet (allows system engineers to use their own oc)
 	if ! which oc; then eval $$(./local-dev/minishift/minishift --profile $(CI_BUILD_TAG) oc-env); fi; \
-	oc -n default set env dc/router -e ROUTER_LOG_LEVEL=info -e ROUTER_SYSLOG_ADDRESS=router-logs.lagoon.svc:5140; \
-	oc new-project lagoon; \
-	oc adm pod-network make-projects-global lagoon; \
-	oc -n lagoon create serviceaccount openshiftbuilddeploy; \
-	oc -n lagoon policy add-role-to-user admin -z openshiftbuilddeploy; \
-	oc -n lagoon create -f openshift-setup/clusterrole-openshiftbuilddeploy.yaml; \
-	oc -n lagoon adm policy add-cluster-role-to-user openshiftbuilddeploy -z openshiftbuilddeploy; \
-	oc -n lagoon create -f openshift-setup/priorityclasses.yaml; \
-	oc -n lagoon create -f openshift-setup/shared-resource-viewer.yaml; \
-	oc -n lagoon create -f openshift-setup/policybinding.yaml | oc -n lagoon create -f openshift-setup/rolebinding.yaml; \
-	oc -n lagoon create serviceaccount docker-host; \
-	oc -n lagoon adm policy add-scc-to-user privileged -z docker-host; \
-	oc -n lagoon policy add-role-to-user edit -z docker-host; \
-	oc -n lagoon create serviceaccount logs-collector; \
-	oc -n lagoon adm policy add-cluster-role-to-user cluster-reader -z logs-collector; \
-	oc -n lagoon adm policy add-scc-to-user hostaccess -z logs-collector; \
-	oc -n lagoon adm policy add-scc-to-user privileged -z logs-collector; \
-	oc -n lagoon adm policy add-cluster-role-to-user daemonset-admin -z lagoon-deployer; \
-	oc -n lagoon create serviceaccount lagoon-deployer; \
-	oc -n lagoon policy add-role-to-user edit -z lagoon-deployer; \
-	oc -n lagoon create -f openshift-setup/clusterrole-daemonset-admin.yaml; \
-	oc -n lagoon adm policy add-cluster-role-to-user daemonset-admin -z lagoon-deployer; \
-	bash -c "oc process -n lagoon -f services/docker-host/docker-host.yaml | oc -n lagoon apply -f -"; \
-	oc -n lagoon create -f openshift-setup/dbaas-roles.yaml; \
+	oc -n default set env dc/router -e ROUTER_LOG_LEVEL=info -e ROUTER_SYSLOG_ADDRESS=router-logs.lagoobernetes.svc:5140; \
+	oc new-project lagoobernetes; \
+	oc adm pod-network make-projects-global lagoobernetes; \
+	oc -n lagoobernetes create serviceaccount openshiftbuilddeploy; \
+	oc -n lagoobernetes policy add-role-to-user admin -z openshiftbuilddeploy; \
+	oc -n lagoobernetes create -f openshift-setup/clusterrole-openshiftbuilddeploy.yaml; \
+	oc -n lagoobernetes adm policy add-cluster-role-to-user openshiftbuilddeploy -z openshiftbuilddeploy; \
+	oc -n lagoobernetes create -f openshift-setup/priorityclasses.yaml; \
+	oc -n lagoobernetes create -f openshift-setup/shared-resource-viewer.yaml; \
+	oc -n lagoobernetes create -f openshift-setup/policybinding.yaml | oc -n lagoobernetes create -f openshift-setup/rolebinding.yaml; \
+	oc -n lagoobernetes create serviceaccount docker-host; \
+	oc -n lagoobernetes adm policy add-scc-to-user privileged -z docker-host; \
+	oc -n lagoobernetes policy add-role-to-user edit -z docker-host; \
+	oc -n lagoobernetes create serviceaccount logs-collector; \
+	oc -n lagoobernetes adm policy add-cluster-role-to-user cluster-reader -z logs-collector; \
+	oc -n lagoobernetes adm policy add-scc-to-user hostaccess -z logs-collector; \
+	oc -n lagoobernetes adm policy add-scc-to-user privileged -z logs-collector; \
+	oc -n lagoobernetes adm policy add-cluster-role-to-user daemonset-admin -z lagoobernetes-deployer; \
+	oc -n lagoobernetes create serviceaccount lagoobernetes-deployer; \
+	oc -n lagoobernetes policy add-role-to-user edit -z lagoobernetes-deployer; \
+	oc -n lagoobernetes create -f openshift-setup/clusterrole-daemonset-admin.yaml; \
+	oc -n lagoobernetes adm policy add-cluster-role-to-user daemonset-admin -z lagoobernetes-deployer; \
+	bash -c "oc process -n lagoobernetes -f services/docker-host/docker-host.yaml | oc -n lagoobernetes apply -f -"; \
+	oc -n lagoobernetes create -f openshift-setup/dbaas-roles.yaml; \
 	oc -n dbaas-operator-system create -f openshift-setup/dbaas-operator.yaml; \
-	oc -n lagoon create -f openshift-setup/dbaas-providers.yaml; \
-	echo -e "\n\nAll Setup, use this token as described in the Lagoon Install Documentation:" \
-	oc -n lagoon serviceaccounts get-token openshiftbuilddeploy
+	oc -n lagoobernetes create -f openshift-setup/dbaas-providers.yaml; \
+	echo -e "\n\nAll Setup, use this token as described in the Lagoobernetes Install Documentation:" \
+	oc -n lagoobernetes serviceaccounts get-token openshiftbuilddeploy
 
 
-# This calls the regular openshift-lagoon-setup first, which configures our minishift like we configure a real openshift for lagoon.
+# This calls the regular openshift-lagoobernetes-setup first, which configures our minishift like we configure a real openshift for lagoobernetes.
 # It then overwrites the docker-host deploymentconfig and cronjobs to use our own just-built docker-host images.
-.PHONY: minishift/configure-lagoon-local
-minishift/configure-lagoon-local: openshift-lagoon-setup
+.PHONY: minishift/configure-lagoobernetes-local
+minishift/configure-lagoobernetes-local: openshift-lagoobernetes-setup
 	eval $$(./local-dev/minishift/minishift --profile $(CI_BUILD_TAG) oc-env); \
-	bash -c "oc process -n lagoon -p SERVICE_IMAGE=172.30.1.1:5000/lagoon/docker-host:latest -p REPOSITORY_TO_UPDATE=lagoon -f services/docker-host/docker-host.yaml | oc -n lagoon apply -f -"; \
+	bash -c "oc process -n lagoobernetes -p SERVICE_IMAGE=172.30.1.1:5000/lagoobernetes/docker-host:latest -p REPOSITORY_TO_UPDATE=lagoobernetes -f services/docker-host/docker-host.yaml | oc -n lagoobernetes apply -f -"; \
 	oc -n default set env dc/router -e ROUTER_LOG_LEVEL=info -e ROUTER_SYSLOG_ADDRESS=172.17.0.1:5140;
 
 # Stop MiniShift
@@ -1018,20 +1018,20 @@ endif
 	echo "$(K3D_NAME)" > $@
 	export KUBECONFIG="$$(./local-dev/k3d get-kubeconfig --name='$(K3D_NAME)')"; \
 	local-dev/kubectl apply -f $$PWD/local-dev/k3d-storageclass-bulk.yaml; \
-	docker tag $(CI_BUILD_TAG)/docker-host localhost:5000/lagoon/docker-host; \
-	docker push localhost:5000/lagoon/docker-host; \
-	local-dev/kubectl create namespace lagoon; \
-	local-dev/helm/helm upgrade --install -n lagoon lagoon-remote ./charts/lagoon-remote --set dockerHost.image.name=172.17.0.1:5000/lagoon/docker-host --set dockerHost.registry=172.17.0.1:5000; \
-	local-dev/kubectl -n lagoon rollout status deployment docker-host -w;
+	docker tag $(CI_BUILD_TAG)/docker-host localhost:5000/lagoobernetes/docker-host; \
+	docker push localhost:5000/lagoobernetes/docker-host; \
+	local-dev/kubectl create namespace lagoobernetes; \
+	local-dev/helm/helm upgrade --install -n lagoobernetes lagoobernetes-remote ./charts/lagoobernetes-remote --set dockerHost.image.name=172.17.0.1:5000/lagoobernetes/docker-host --set dockerHost.registry=172.17.0.1:5000; \
+	local-dev/kubectl -n lagoobernetes rollout status deployment docker-host -w;
 ifeq ($(ARCH), darwin)
 	export KUBECONFIG="$$(./local-dev/k3d get-kubeconfig --name='$(K3D_NAME)')"; \
-	KUBERNETESBUILDDEPLOY_TOKEN=$$(local-dev/kubectl -n lagoon describe secret $$(local-dev/kubectl -n lagoon get secret | grep kubernetesbuilddeploy | awk '{print $$1}') | grep token: | awk '{print $$2}'); \
+	KUBERNETESBUILDDEPLOY_TOKEN=$$(local-dev/kubectl -n lagoobernetes describe secret $$(local-dev/kubectl -n lagoobernetes get secret | grep kubernetesbuilddeploy | awk '{print $$1}') | grep token: | awk '{print $$2}'); \
 	sed -i '' -e "s/\".*\" # make-kubernetes-token/\"$${KUBERNETESBUILDDEPLOY_TOKEN}\" # make-kubernetes-token/g" local-dev/api-data/03-populate-api-data-kubernetes.gql; \
 	DOCKER_IP="$$(docker network inspect bridge --format='{{(index .IPAM.Config 0).Gateway}}')"; \
 	sed -i '' -e "s/172\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$${DOCKER_IP}/g" local-dev/api-data/03-populate-api-data-kubernetes.gql docker-compose.yaml;
 else
 	export KUBECONFIG="$$(./local-dev/k3d get-kubeconfig --name='$(K3D_NAME)')"; \
-	KUBERNETESBUILDDEPLOY_TOKEN=$$(local-dev/kubectl -n lagoon describe secret $$(local-dev/kubectl -n lagoon get secret | grep kubernetesbuilddeploy | awk '{print $$1}') | grep token: | awk '{print $$2}'); \
+	KUBERNETESBUILDDEPLOY_TOKEN=$$(local-dev/kubectl -n lagoobernetes describe secret $$(local-dev/kubectl -n lagoobernetes get secret | grep kubernetesbuilddeploy | awk '{print $$1}') | grep token: | awk '{print $$2}'); \
 	sed -i "s/\".*\" # make-kubernetes-token/\"$${KUBERNETESBUILDDEPLOY_TOKEN}\" # make-kubernetes-token/g" local-dev/api-data/03-populate-api-data-kubernetes.gql; \
 	DOCKER_IP="$$(docker network inspect bridge --format='{{(index .IPAM.Config 0).Gateway}}')"; \
 	sed -i "s/172\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/$${DOCKER_IP}/g" local-dev/api-data/03-populate-api-data-kubernetes.gql docker-compose.yaml;
@@ -1040,8 +1040,8 @@ endif
 
 .PHONY: push-kubectl-build-deploy-dind
 push-kubectl-build-deploy-dind: build/kubectl-build-deploy-dind
-	docker tag $(CI_BUILD_TAG)/kubectl-build-deploy-dind localhost:5000/lagoon/kubectl-build-deploy-dind
-	docker push localhost:5000/lagoon/kubectl-build-deploy-dind
+	docker tag $(CI_BUILD_TAG)/kubectl-build-deploy-dind localhost:5000/lagoobernetes/kubectl-build-deploy-dind
+	docker push localhost:5000/lagoobernetes/kubectl-build-deploy-dind
 
 .PHONY: rebuild-push-kubectl-build-deploy-dind
 rebuild-push-kubectl-build-deploy-dind:
@@ -1071,7 +1071,7 @@ k8s-dashboard:
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc2/aio/deploy/recommended.yaml; \
 	kubectl -n kubernetes-dashboard rollout status deployment kubernetes-dashboard -w; \
 	echo -e "\nUse this token:"; \
-	kubectl -n lagoon describe secret $$(local-dev/kubectl -n lagoon get secret | grep kubernetesbuilddeploy | awk '{print $$1}') | grep token: | awk '{print $$2}'; \
+	kubectl -n lagoobernetes describe secret $$(local-dev/kubectl -n lagoobernetes get secret | grep kubernetesbuilddeploy | awk '{print $$1}') | grep token: | awk '{print $$2}'; \
 	open http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/ ; \
 	kubectl proxy
 
@@ -1097,17 +1097,17 @@ k3d/clean: k3d/stop
 k3d/cleanall: k3d/stopall
 	rm -rf ./local-dev/k3d
 
-# Configures an openshift to use with Lagoon
-.PHONY: kubernetes-lagoon-setup
-kubernetes-lagoon-setup:
-	kubectl create namespace lagoon; \
-	local-dev/helm/helm upgrade --install -n lagoon lagoon-remote ./charts/lagoon-remote; \
-	echo -e "\n\nAll Setup, use this token as described in the Lagoon Install Documentation:";
+# Configures an openshift to use with Lagoobernetes
+.PHONY: kubernetes-lagoobernetes-setup
+kubernetes-lagoobernetes-setup:
+	kubectl create namespace lagoobernetes; \
+	local-dev/helm/helm upgrade --install -n lagoobernetes lagoobernetes-remote ./charts/lagoobernetes-remote; \
+	echo -e "\n\nAll Setup, use this token as described in the Lagoobernetes Install Documentation:";
 	$(MAKE) kubernetes-get-kubernetesbuilddeploy-token
 
 .PHONY: kubernetes-get-kubernetesbuilddeploy-token
 kubernetes-get-kubernetesbuilddeploy-token:
-	kubectl -n lagoon describe secret $$(kubectl -n lagoon get secret | grep kubernetesbuilddeploy | awk '{print $$1}') | grep token: | awk '{print $$2}'
+	kubectl -n lagoobernetes describe secret $$(kubectl -n lagoobernetes get secret | grep kubernetesbuilddeploy | awk '{print $$1}') | grep token: | awk '{print $$2}'
 
 .PHONY: push-oc-build-deploy-dind
 rebuild-push-oc-build-deploy-dind:

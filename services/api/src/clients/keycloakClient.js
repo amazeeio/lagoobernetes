@@ -7,7 +7,7 @@ const KeycloakGrantManager = require('../lib/keycloak-grant-manager');
 
 const ConnectionConfig = {
   baseUrl: 'http://keycloak:8080/auth',
-  realmName: 'lagoon',
+  realmName: 'lagoobernetes',
 };
 
 const Credentials = {
@@ -18,16 +18,16 @@ const Credentials = {
   clientId: 'admin-cli',
 };
 
-const lagoonKeycloakRoute = R.compose(
+const lagoobernetesKeycloakRoute = R.compose(
   R.defaultTo('http://keycloak:8080'),
   R.find(R.test(/keycloak-/)),
   R.split(','),
-  R.propOr('', 'LAGOON_ROUTES'),
+  R.propOr('', 'LAGOOBERNETES_ROUTES'),
 )(process.env);
 
 const config = new KeycloakConfig({
-  authServerUrl: `${lagoonKeycloakRoute}/auth`,
-  realm: 'lagoon',
+  authServerUrl: `${lagoobernetesKeycloakRoute}/auth`,
+  realm: 'lagoobernetes',
   clientId: 'api',
   bearerOnly: true,
   credentials: {
@@ -57,7 +57,7 @@ keycloakGrantManager.validateToken = function validateToken(token, expectedType)
       reject(new Error('invalid token (wrong type)'));
     } else if (token.content.iat < this.notBefore) {
       reject(new Error('invalid token (future dated)'));
-    } else if (!token.content.iss.includes('auth/realms/lagoon')) {
+    } else if (!token.content.iss.includes('auth/realms/lagoobernetes')) {
       reject(new Error('invalid token (wrong ISS)'));
     } else {
       const verify = crypto.createVerify('RSA-SHA256');

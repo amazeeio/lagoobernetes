@@ -22,7 +22,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_API_VARIABLE_PROJECT_BUILDTIME=4A65DC68F2"
+    expected_content: "LAGOOBERNETES_API_VARIABLE_PROJECT_BUILDTIME=4A65DC68F2"
   tasks:
   - include: ../../checks/check-url-content.yaml
 
@@ -31,7 +31,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_API_VARIABLE_ENVIRONMENT_BUILDTIME=EA2AFAE09B"
+    expected_content: "LAGOOBERNETES_API_VARIABLE_ENVIRONMENT_BUILDTIME=EA2AFAE09B"
   tasks:
   - include: ../../checks/check-url-content.yaml
 
@@ -40,7 +40,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_API_VARIABLE_OVERRIDE_BUILDTIME=D0CE76D4C9"
+    expected_content: "LAGOOBERNETES_API_VARIABLE_OVERRIDE_BUILDTIME=D0CE76D4C9"
   tasks:
   - include: ../../checks/check-url-content.yaml
 
@@ -49,7 +49,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_API_VARIABLE_PROJECT=4A65DC68F2"
+    expected_content: "LAGOOBERNETES_API_VARIABLE_PROJECT=4A65DC68F2"
   tasks:
   - include: ../../checks/check-url-content.yaml
 
@@ -58,7 +58,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_API_VARIABLE_ENVIRONMENT=EA2AFAE09B"
+    expected_content: "LAGOOBERNETES_API_VARIABLE_ENVIRONMENT=EA2AFAE09B"
   tasks:
   - include: ../../checks/check-url-content.yaml
 
@@ -67,7 +67,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_API_VARIABLE_OVERRIDE=D0CE76D4C9"
+    expected_content: "LAGOOBERNETES_API_VARIABLE_OVERRIDE=D0CE76D4C9"
   tasks:
   - include: ../../checks/check-url-content.yaml
 
@@ -76,7 +76,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_API_VARIABLE_BUILD_BUILDTIME=AEF177FCF4"
+    expected_content: "LAGOOBERNETES_API_VARIABLE_BUILD_BUILDTIME=AEF177FCF4"
   tasks:
   - include: ../../checks/check-url-content.yaml
 
@@ -85,7 +85,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_API_VARIABLE_RUNTIME=90AEC657F8"
+    expected_content: "LAGOOBERNETES_API_VARIABLE_RUNTIME=90AEC657F8"
   tasks:
   - include: ../../checks/check-url-content.yaml
 
@@ -94,7 +94,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_API_VARIABLE_RUNTIME_BUILDTIME=90AEC657F8"
+    expected_content: "LAGOOBERNETES_API_VARIABLE_RUNTIME_BUILDTIME=90AEC657F8"
   tasks:
   - include: ../../checks/check-url-content-absent.yaml
 
@@ -103,7 +103,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_API_VARIABLE_BUILD=AEF177FCF4"
+    expected_content: "LAGOOBERNETES_API_VARIABLE_BUILD=AEF177FCF4"
   tasks:
   - include: ../../checks/check-url-content-absent.yaml
 

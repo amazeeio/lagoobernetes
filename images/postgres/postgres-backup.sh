@@ -6,8 +6,8 @@ set -eu -o pipefail
 BACKUP_DIR=/var/lib/postgresql/data/backup
 
 # MYSQL Parameters
-PGUSER=${POSTGRES_USER:-lagoon}
-PGPASSWORD=${POSTGRES_PASSWORD:-lagoon}
+PGUSER=${POSTGRES_USER:-lagoobernetes}
+PGPASSWORD=${POSTGRES_PASSWORD:-lagoobernetes}
 
 PGHOST=$1
 

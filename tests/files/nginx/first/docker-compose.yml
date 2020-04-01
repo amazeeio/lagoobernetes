@@ -8,8 +8,8 @@ services:
       context: .
       dockerfile: Dockerfile
     labels:
-      lagoon.type: nginx
-      lagoon.deployment.strategy: Recreate
+      lagoobernetes.type: nginx
+      lagoobernetes.deployment.strategy: Recreate
     volumes:
       - ./app:/app:delegated
     ports:
@@ -24,7 +24,7 @@ services:
       context: .
       dockerfile: basic-auth.dockerfile
     labels:
-      lagoon.type: nginx
+      lagoobernetes.type: nginx
     volumes:
       - ./app:/app:delegated
     expose:
@@ -39,7 +39,7 @@ services:
       context: .
       dockerfile: basic-auth-disable.dockerfile
     labels:
-      lagoon.type: nginx
+      lagoobernetes.type: nginx
     volumes:
       - ./app:/app:delegated
     expose:

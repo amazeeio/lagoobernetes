@@ -1,13 +1,13 @@
 // @flow
 
-const { initSendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { initSendToLagoonTasks } = require('@lagoon/commons/src/tasks');
+const { initSendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { initSendToLagoobernetesTasks } = require('@lagoobernetes/commons/src/tasks');
 const waitForKeycloak = require('./util/waitForKeycloak');
 const logger = require('./logger');
 const createServer = require('./server');
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 (async () => {
   const { JWTSECRET, JWTAUDIENCE } = process.env;

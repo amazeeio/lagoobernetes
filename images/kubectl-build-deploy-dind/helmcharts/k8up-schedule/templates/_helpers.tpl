@@ -28,7 +28,7 @@ Common labels
 helm.sh/chart: {{ include "k8up-schedule.chart" . }}
 {{ include "k8up-schedule.selectorLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{ include "k8up-schedule.lagoonLabels" . }}
+{{ include "k8up-schedule.lagoobernetesLabels" . }}
 
 {{- end -}}
 
@@ -41,28 +41,28 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{/*
-Lagoon Labels
+Lagoobernetes Labels
 */}}
-{{- define "k8up-schedule.lagoonLabels" -}}
-lagoon/service: {{ .Release.Name }}
-lagoon/service-type: {{ .Chart.Name }}
-lagoon/project: {{ .Values.project }}
-lagoon/environment: {{ .Values.environment }}
-lagoon/environmentType: {{ .Values.environmentType }}
-lagoon/buildType: {{ .Values.buildType }}
+{{- define "k8up-schedule.lagoobernetesLabels" -}}
+lagoobernetes/service: {{ .Release.Name }}
+lagoobernetes/service-type: {{ .Chart.Name }}
+lagoobernetes/project: {{ .Values.project }}
+lagoobernetes/environment: {{ .Values.environment }}
+lagoobernetes/environmentType: {{ .Values.environmentType }}
+lagoobernetes/buildType: {{ .Values.buildType }}
 {{- end -}}
 
 {{/*
 Annotations
 */}}
 {{- define "k8up-schedule.annotations" -}}
-lagoon/version: {{ .Values.lagoonVersion | quote }}
+lagoobernetes/version: {{ .Values.lagoobernetesVersion | quote }}
 {{- if .Values.branch }}
-lagoon/branch: {{ .Values.branch | quote }}
+lagoobernetes/branch: {{ .Values.branch | quote }}
 {{- end }}
 {{- if .Values.prNumber }}
-lagoon/prNumber: {{ .Values.prNumber | quote }}
-lagoon/prHeadBranch: {{ .Values.prHeadBranch | quote }}
-lagoon/prBaseBranch: {{ .Values.prBaseBranch | quote }}
+lagoobernetes/prNumber: {{ .Values.prNumber | quote }}
+lagoobernetes/prHeadBranch: {{ .Values.prHeadBranch | quote }}
+lagoobernetes/prBaseBranch: {{ .Values.prBaseBranch | quote }}
 {{- end }}
 {{- end -}}

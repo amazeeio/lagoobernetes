@@ -1,7 +1,7 @@
 {
-  "name": "@lagoon/commons",
+  "name": "@lagoobernetes/commons",
   "version": "4.0.0",
-  "description": "lagoon node commons",
+  "description": "lagoobernetes node commons",
   "author": "amazee.io <hello@amazee.io> (http://www.amazee.io)",
   "license": "MIT",
   "engines": {
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "format": "prettier-eslint --write '**/*.js'",
-    "lint": "../eslint-config-lagoon-node/node_modules/.bin/eslint .",
+    "lint": "../eslint-config-lagoobernetes-node/node_modules/.bin/eslint .",
     "test": "jest"
   },
   "devDependencies": {
@@ -18,7 +18,7 @@
     "prettier-eslint-cli": "^4.7.1"
   },
   "dependencies": {
-    "@lagoon/lokka-transport-http": "^1.6.1",
+    "@lagoobernetes/lokka-transport-http": "^1.6.1",
     "amqp-connection-manager": "^1.3.5",
     "amqplib": "^0.5.1",
     "axios": "^0.18.1",

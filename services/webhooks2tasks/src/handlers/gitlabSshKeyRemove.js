@@ -1,8 +1,8 @@
 // @flow
 
 const R = require('ramda');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { getUserBySshKey, deleteSshKey } = require('@lagoon/commons/src/api');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { getUserBySshKey, deleteSshKey } = require('@lagoobernetes/commons/src/api');
 
 import type { WebhookRequestData } from '../types';
 
@@ -29,7 +29,7 @@ async function gitlabSshKeyRemove(webhook: WebhookRequestData) {
 
     await deleteSshKey(name);
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -40,7 +40,7 @@ async function gitlabSshKeyRemove(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

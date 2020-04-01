@@ -20,7 +20,7 @@ parameters:
   - name: PROJECT
     description: Which project this belongs to, original value
     required: true
-  - name: LAGOON_GIT_SHA
+  - name: LAGOOBERNETES_GIT_SHA
     description: git hash sha of the current deployment
     required: true
   - name: SERVICE_ROUTER_URL
@@ -59,8 +59,8 @@ objects:
   type: Opaque
   data:
     REGISTRY_REDIS_PASSWORD: ""
-    #REGISTRY_STORAGE_S3_ACCESSKEY: "" # Will be stored in the Lagoon API
-    #REGISTRY_STORAGE_S3_SECRETKEY: "" # Will be stored in the Lagoon API
+    #REGISTRY_STORAGE_S3_ACCESSKEY: "" # Will be stored in the Lagoobernetes API
+    #REGISTRY_STORAGE_S3_SECRETKEY: "" # Will be stored in the Lagoobernetes API
 - apiVersion: v1
   kind: ConfigMap
   metadata:
@@ -191,14 +191,14 @@ objects:
           - secretRef:
               name: ${SERVICE_NAME} # harborregistry
           - configMapRef:
-              name: "lagoon-env"
+              name: "lagoobernetes-env"
           ports:
           - containerPort: 5000
           - containerPort: 5001
           volumeMounts:
           - name: registry-data
             mountPath: /storage
-            subPath: 
+            subPath:
           - name: registry-root-certificate
             mountPath: /etc/registry/root.crt
             subPath: tls.crt
@@ -225,7 +225,7 @@ objects:
           - secretRef:
               name: ${SERVICE_NAME} # harborregistry
           - configMapRef:
-              name: "lagoon-env"
+              name: "lagoobernetes-env"
           env:
             - name: CORE_SECRET
               valueFrom:
@@ -247,7 +247,7 @@ objects:
           volumeMounts:
           - name: registry-data
             mountPath: /storage
-            subPath: 
+            subPath:
           - name: registry-config
             mountPath: /etc/registry/pre_config.yml
             subPath: config.yml

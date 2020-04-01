@@ -1,16 +1,16 @@
 #!/bin/bash
 set -e
 
-if docker -H docker-host.lagoon.svc info &> /dev/null; then
-    export DOCKER_HOST=docker-host.lagoon.svc
+if docker -H docker-host.lagoobernetes.svc info &> /dev/null; then
+    export DOCKER_HOST=docker-host.lagoobernetes.svc
 else
-    echo "could not connect to docker-host.lagoon.svc";
+    echo "could not connect to docker-host.lagoobernetes.svc";
     exit 1
 fi
 
 mkdir -p ~/.ssh
 
-cp /var/run/secrets/lagoon/ssh/ssh-privatekey ~/.ssh/key
+cp /var/run/secrets/lagoobernetes/ssh/ssh-privatekey ~/.ssh/key
 
 # Add a new line to the key, as some ssh key formats need a new line
 echo "" >> ~/.ssh/key

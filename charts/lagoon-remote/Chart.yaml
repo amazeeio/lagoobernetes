@@ -1,6 +1,6 @@
 apiVersion: v2
-name: lagoon-remote
-description: A Helm chart to run a lagoon-remote
+name: lagoobernetes-remote
+description: A Helm chart to run a lagoobernetes-remote
 
 # A chart can be either an 'application' or a 'library' chart.
 #

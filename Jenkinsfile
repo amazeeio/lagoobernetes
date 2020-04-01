@@ -12,7 +12,7 @@ node {
 
   withEnv(['AWS_BUCKET=jobs.amazeeio.services', 'AWS_DEFAULT_REGION=us-east-2']) {
     withCredentials([
-      usernamePassword(credentialsId: 'aws-s3-lagoon', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY'),
+      usernamePassword(credentialsId: 'aws-s3-lagoobernetes', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY'),
       string(credentialsId: 'SKIP_IMAGE_PUBLISH', variable: 'SKIP_IMAGE_PUBLISH')
     ]) {
       try {
@@ -89,13 +89,13 @@ node {
                 }
               }
             },
-            '3 push images to amazeeiolagoon': {
-              stage ('push images to amazeeiolagoon/*') {
+            '3 push images to amazeeiolagoobernetes': {
+              stage ('push images to amazeeiolagoobernetes/*') {
                 withCredentials([string(credentialsId: 'amazeeiojenkins-dockerhub-password', variable: 'PASSWORD')]) {
                   try {
                     if (env.SKIP_IMAGE_PUBLISH != 'true') {
                       sh 'docker login -u amazeeiojenkins -p $PASSWORD'
-                      sh "make -O${SYNC_MAKE_OUTPUT} -j4 publish-amazeeiolagoon-baseimages publish-amazeeiolagoon-serviceimages BRANCH_NAME=${SAFEBRANCH_NAME}"
+                      sh "make -O${SYNC_MAKE_OUTPUT} -j4 publish-amazeeiolagoobernetes-baseimages publish-amazeeiolagoobernetes-serviceimages BRANCH_NAME=${SAFEBRANCH_NAME}"
                     } else {
                       sh 'echo "skipped because of SKIP_IMAGE_PUBLISH env variable"'
                     }

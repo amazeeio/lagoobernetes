@@ -13,8 +13,8 @@ export function registerCommands() {
       // Use yargs.commandDir method to initialize a directory of commands
       // Ref: https://github.com/yargs/yargs/blob/e87f4873012e3541325e7ec6dafb11a93b5717e0/docs/advanced.md#commanddirdirectory-opts
       .commandDir('../commands', { visit: setConfigForHandlers })
-      // Require entry of at least one command after `lagoon`, such as `lagoon login`.
-      // `lagoon` by itself has no assigned function at the moment.
+      // Require entry of at least one command after `lagoobernetes`, such as `lagoobernetes login`.
+      // `lagoobernetes` by itself has no assigned function at the moment.
       .demandCommand()
       // .strict(): Error out on non-demanded or non-described command line argument
       // .argv: Get arguments as an object

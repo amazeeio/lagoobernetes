@@ -22,7 +22,7 @@ if (JWTAUDIENCE == null) {
 const apiAdminToken = createJWTWithoutUserId({
   payload: {
     role: 'admin',
-    iss: 'lagoon-commons',
+    iss: 'lagoobernetes-commons',
     aud: JWTAUDIENCE || 'api.amazee.io',
   },
   jwtSecret: JWTSECRET || '',

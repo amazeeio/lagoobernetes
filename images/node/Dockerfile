@@ -1,17 +1,17 @@
 ARG NODE_VERSION
 ARG ALPINE_VERSION
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION}
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=node
+ENV LAGOOBERNETES=node
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /sbin/tini /sbin/
 COPY --from=commons /home /home
@@ -43,7 +43,7 @@ WORKDIR /app
 EXPOSE 3000
 
 # tells the local development environment on which port we are running
-ENV LAGOON_LOCALDEV_HTTP_PORT=3000
+ENV LAGOOBERNETES_LOCALDEV_HTTP_PORT=3000
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]
 CMD ["yarn", "run", "start"]

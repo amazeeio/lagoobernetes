@@ -1,0 +1,95 @@
+version: '2.3'
+
+x-lagoobernetes-project:
+  &lagoobernetes-project lagoobernetes-remote
+
+services:
+  logs-forwarder-logstash:
+    build:
+      context: logs-forwarder-logstash
+      dockerfile: Dockerfile
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: logs-forwarder-logstash/.lagoobernetes.yml
+  logs-forwarder:
+    build:
+      context: logs-forwarder
+      dockerfile: Dockerfile
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: logs-forwarder.remote.yml # logs-forwarder in a remote openshift needs a special config
+  logs-collector:
+    image: openshift/origin-logging-fluentd:v3.6.1
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.rollout: daemonset
+      lagoobernetes.template: logs-collector/.lagoobernetes.yml
+  docker-host:
+    image: amazeeio/docker-host:latest
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: docker-host/docker-host.yaml
+  harborclair:
+    image: ${IMAGE_REPO:-lagoobernetes}/harborclair
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: harborclair/harborclair.yml
+      lagoobernetes.name: harborclair
+      lagoobernetes.image: amazeeiolagoobernetes/harborclair:v1-2-0
+  harborclairadapter:
+    image: ${IMAGE_REPO:-lagoobernetes}/harborclairadapter
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: harborclairadapter/harborclair.yml
+      lagoobernetes.name: harborclair
+      lagoobernetes.image: amazeeiolagoobernetes/harborclairadapter:v1-2-0
+  harbor-core:
+    image: ${IMAGE_REPO:-lagoobernetes}/harbor-core
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: harbor-core/harbor-core.yml
+      lagoobernetes.image: amazeeiolagoobernetes/harbor-core:v1-2-0
+  harbor-database:
+    image: ${IMAGE_REPO:-lagoobernetes}/harbor-database
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: harbor-database/harbor-database.yml
+      lagoobernetes.image: amazeeiolagoobernetes/harbor-database:v1-2-0
+  harbor-jobservice:
+    image: ${IMAGE_REPO:-lagoobernetes}/harbor-jobservice
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: harbor-jobservice/harbor-jobservice.yml
+      lagoobernetes.image: amazeeiolagoobernetes/harbor-jobservice:v1-2-0
+  harbor-nginx:
+    image: ${IMAGE_REPO:-lagoobernetes}/harbor-nginx
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: harbor-nginx/harbor-nginx.yml
+      lagoobernetes.image: amazeeiolagoobernetes/harbor-nginx:v1-2-0
+  harbor-portal:
+    image: ${IMAGE_REPO:-lagoobernetes}/harbor-portal
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: harbor-portal/harbor-portal.yml
+      lagoobernetes.image: amazeeiolagoobernetes/harbor-portal:v1-2-0
+  harbor-redis:
+    image: ${IMAGE_REPO:-lagoobernetes}/harbor-redis
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: harbor-redis/harbor-redis.yml
+      lagoobernetes.image: amazeeiolagoobernetes/harbor-redis:v1-2-0
+  harborregistry:
+    image: ${IMAGE_REPO:-lagoobernetes}/harborregistry
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: harborregistry/harborregistry.yml
+      lagoobernetes.name: harborregistry
+      lagoobernetes.image: amazeeiolagoobernetes/harborregistry:v1-2-0
+  harborregistryctl:
+    image: ${IMAGE_REPO:-lagoobernetes}/harborregistryctl
+    labels:
+      lagoobernetes.type: custom
+      lagoobernetes.template: harborregistryctl/harborregistry.yml
+      lagoobernetes.name: harborregistry
+      lagoobernetes.image: amazeeiolagoobernetes/harborregistryctl:v1-2-0

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import getConfig from 'next/config';
 import { AuthContext } from 'lib/Authenticator';
 import { color } from 'lib/variables';
-import lagoonLogo from '!svg-inline-loader?classPrefix!./lagoon.svg';
+import lagoobernetesLogo from '!svg-inline-loader?classPrefix!./lagoobernetes.svg';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -17,9 +17,9 @@ const Header = ({ logo }) => (
         <img
           alt="Home"
           src={logo ? logo : `data:image/svg+xml;utf8,${
-            publicRuntimeConfig.LAGOON_UI_ICON
-              ? publicRuntimeConfig.LAGOON_UI_ICON
-              : encodeURIComponent(lagoonLogo)
+            publicRuntimeConfig.LAGOOBERNETES_UI_ICON
+              ? publicRuntimeConfig.LAGOOBERNETES_UI_ICON
+              : encodeURIComponent(lagoobernetesLogo)
           }`}
         />
       </a>

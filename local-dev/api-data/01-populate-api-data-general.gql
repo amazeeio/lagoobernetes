@@ -199,16 +199,16 @@ mutation PopulateApi {
   # Real RocketChat Hook on the amazeeio RocketChat for testing
   CiRocketChat: addNotificationRocketChat(
     input: {
-      name: "amazeeio--lagoon-local-ci"
+      name: "amazeeio--lagoobernetes-local-ci"
       webhook: "https://amazeeio.rocket.chat/hooks/ikF5XMohDZK7KpsZf/c9BFBt2ch8oMMuycoERJQMSLTPo8nmZhg2Hf2ny68ZpuD4Kn"
-      channel: "lagoon-local-ci"
+      channel: "lagoobernetes-local-ci"
     }
   ) {
     id
   }
 
 
-  #### Lagoon Kickstart Objects
+  #### Lagoobernetes Kickstart Objects
   # Customer with a private key that has access to the local-git server.
   KickstartGroup: addGroup(
     input: {
@@ -219,9 +219,9 @@ mutation PopulateApi {
   }
   KickstartRocketChat: addNotificationRocketChat(
     input: {
-      name: "amazeeio--lagoon-kickstart"
+      name: "amazeeio--lagoobernetes-kickstart"
       webhook: "https://amazeeio.rocket.chat/hooks/ikF5XMohDZK7KpsZf/c9BFBt2ch8oMMuycoERJQMSLTPo8nmZhg2Hf2ny68ZpuD4Kn"
-      channel: "lagoon-kickstart"
+      channel: "lagoobernetes-kickstart"
     }
   ) {
     id
@@ -231,7 +231,7 @@ mutation PopulateApi {
       id: 3
       name: "kickstart-openshift"
       consoleUrl: "[REPLACE ME WITH OPENSHIFT URL]"
-      token: "[REPLACE ME WITH OPENSHIFT LAGOON SERVICEACCOUTN TOKEN]"
+      token: "[REPLACE ME WITH OPENSHIFT LAGOOBERNETES SERVICEACCOUTN TOKEN]"
     }
   ) {
     id
@@ -239,10 +239,10 @@ mutation PopulateApi {
   KickstartProject: addProject(
     input: {
       id: 13
-      name: "lagoon"
+      name: "lagoobernetes"
       openshift: 3
-      gitUrl: "git@github.com:amazeeio/lagoon.git"
-      openshiftProjectPattern: "lagoon"
+      gitUrl: "git@github.com:amazeeio/lagoobernetes.git"
+      openshiftProjectPattern: "lagoobernetes"
       productionEnvironment:"master"
     }
   ) {
@@ -251,7 +251,7 @@ mutation PopulateApi {
   KickstartProjectGroup4: addGroupsToProject(
     input: {
       project: {
-        name: "lagoon"
+        name: "lagoobernetes"
       }
       groups: [
         {
@@ -264,9 +264,9 @@ mutation PopulateApi {
   }
   KickstartRocketChatNotification: addNotificationToProject(
     input: {
-      project: "lagoon"
+      project: "lagoobernetes"
       notificationType: ROCKETCHAT
-      notificationName: "amazeeio--lagoon-kickstart"
+      notificationName: "amazeeio--lagoobernetes-kickstart"
     }
   ) {
     id

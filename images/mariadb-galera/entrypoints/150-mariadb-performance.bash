@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-if [ "$LAGOON_ENVIRONMENT_TYPE" == "production" ]; then
+if [ "$LAGOOBERNETES_ENVIRONMENT_TYPE" == "production" ]; then
   # only set if not already defined
   if [ -z ${MARIADB_INNODB_BUFFER_POOL_SIZE+x} ]; then
     export MARIADB_INNODB_BUFFER_POOL_SIZE=1024M

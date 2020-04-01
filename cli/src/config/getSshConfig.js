@@ -29,7 +29,7 @@ export const getSshConfig = (() => {
         // Host from config
         configSshHost ||
         // Default host
-        'ssh.lagoon.amazeeio.cloud';
+        'ssh.lagoobernetes.amazeeio.cloud';
 
       const port: number =
         // Port from environment variable (needs to be number for .connect())
@@ -40,7 +40,7 @@ export const getSshConfig = (() => {
         32222;
 
       allSshConfig = {
-        username: 'lagoon',
+        username: 'lagoobernetes',
         host,
         port,
       };

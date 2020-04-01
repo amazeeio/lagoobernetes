@@ -1,8 +1,8 @@
-TUG_REGISTRY=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.tug.registry false)
-TUG_REGISTRY_USERNAME=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.tug.username false)
-TUG_REGISTRY_PASSWORD=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.tug.password false)
-TUG_REGISTRY_REPOSITORY=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.tug.repository false)
-TUG_IMAGE_PREFIX=$(cat .lagoon.yml | shyaml get-value environments.${BRANCH//./\\.}.tug.image-prefix '')
+TUG_REGISTRY=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.tug.registry false)
+TUG_REGISTRY_USERNAME=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.tug.username false)
+TUG_REGISTRY_PASSWORD=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.tug.password false)
+TUG_REGISTRY_REPOSITORY=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.tug.repository false)
+TUG_IMAGE_PREFIX=$(cat .lagoobernetes.yml | shyaml get-value environments.${BRANCH//./\\.}.tug.image-prefix '')
 
 
 # Login into TUG registry
@@ -42,7 +42,7 @@ echo "PROJECT=\"${PROJECT}\"" >> /oc-build-deploy/tug/env
 echo "ROUTER_URL=\"${ROUTER_URL}\"" >> /oc-build-deploy/tug/env
 echo "ENVIRONMENT_TYPE=\"${ENVIRONMENT_TYPE}\"" >> /oc-build-deploy/tug/env
 echo "CI=\"${CI}\"" >> /oc-build-deploy/tug/env
-echo "LAGOON_GIT_SHA=\"${LAGOON_GIT_SHA}\"" >> /oc-build-deploy/tug/env
+echo "LAGOOBERNETES_GIT_SHA=\"${LAGOOBERNETES_GIT_SHA}\"" >> /oc-build-deploy/tug/env
 echo "TUG_REGISTRY=\"${TUG_REGISTRY}\"" >> /oc-build-deploy/tug/env
 echo "TUG_REGISTRY_USERNAME=\"${TUG_REGISTRY_USERNAME}\"" >> /oc-build-deploy/tug/env
 echo "TUG_REGISTRY_PASSWORD=\"${TUG_REGISTRY_PASSWORD}\"" >> /oc-build-deploy/tug/env
@@ -50,7 +50,7 @@ echo "TUG_REGISTRY_REPOSITORY=\"${TUG_REGISTRY_REPOSITORY}\"" >> /oc-build-deplo
 echo "TUG_IMAGE_PREFIX=\"${TUG_IMAGE_PREFIX}\"" >> /oc-build-deploy/tug/env
 
 # build the tug docker image
-IMAGE_NAME="${TUG_IMAGE_PREFIX}lagoon-tug"
+IMAGE_NAME="${TUG_IMAGE_PREFIX}lagoobernetes-tug"
 BUILD_CONTEXT="/oc-build-deploy/"
 DOCKERFILE="tug/Dockerfile"
 BUILD_ARGS=()
@@ -61,6 +61,6 @@ IMAGE_TAG="${SAFE_BRANCH}"
 .  /oc-build-deploy/scripts/exec-push-parallel-tug.sh
 
 # If we have Images to Push to the Registry, let's do so
-if [ -f /oc-build-deploy/lagoon/push ]; then
-  parallel --retries 4 < /oc-build-deploy/lagoon/push
+if [ -f /oc-build-deploy/lagoobernetes/push ]; then
+  parallel --retries 4 < /oc-build-deploy/lagoobernetes/push
 fi

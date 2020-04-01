@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # to create serviceaccounts:
-#    oc -n $namespace create serviceaccount lagoon-sync
-#    oc -n $namespace adm policy add-role-to-user edit -z lagoon-sync
-#    oc -n $namespace serviceaccounts get-token lagoon-sync
+#    oc -n $namespace create serviceaccount lagoobernetes-sync
+#    oc -n $namespace adm policy add-role-to-user edit -z lagoobernetes-sync
+#    oc -n $namespace serviceaccounts get-token lagoobernetes-sync
 
 set -eu -o pipefail
 
@@ -52,7 +52,7 @@ echo "DESTINATION_NAMESPACE: $DESTINATION_NAMESPACE"
 
 set -v
 
-mkdir -p /tmp/lagoon-sync/backup
+mkdir -p /tmp/lagoobernetes-sync/backup
 
 oc login $SOURCE_CONSOLE --token=$SOURCE_SERVICEACCOUNT_TOKEN
 source_context=$(oc config current-context)
@@ -61,25 +61,25 @@ oc login $DESTINATION_CONSOLE --token=$DESTINATION_SERVICEACCOUNT_TOKEN
 destination_context=$(oc config current-context)
 
 source_api_db_pod=$(oc --context=$source_context -n $SOURCE_NAMESPACE get pod -o custom-columns=NAME:.metadata.name --no-headers -l service=api-db)
-oc --context=$source_context -n $SOURCE_NAMESPACE exec $source_api_db_pod -- /lagoon/mysql-backup.sh 127.0.0.1 || true
+oc --context=$source_context -n $SOURCE_NAMESPACE exec $source_api_db_pod -- /lagoobernetes/mysql-backup.sh 127.0.0.1 || true
 source_api_db_backup=$(oc --context=$source_context -n $SOURCE_NAMESPACE exec $source_api_db_pod -- sh -c "find . -name \"*.sql.gz\" -print0 | xargs -r -0 ls -1 -t | head -1")
-oc --context=$source_context -n $SOURCE_NAMESPACE exec $source_api_db_pod -- cat $source_api_db_backup > /tmp/lagoon-sync/$source_api_db_backup
+oc --context=$source_context -n $SOURCE_NAMESPACE exec $source_api_db_pod -- cat $source_api_db_backup > /tmp/lagoobernetes-sync/$source_api_db_backup
 
 
 destination_api_db_pod=$(oc --context=$destination_context -n $DESTINATION_NAMESPACE get pod -o custom-columns=NAME:.metadata.name --no-headers -l service=api-db)
 oc --context=$destination_context -n $DESTINATION_NAMESPACE exec -i $destination_api_db_pod -- sh -c "mkdir -p backup"
-oc --context=$destination_context -n $DESTINATION_NAMESPACE exec -i $destination_api_db_pod -- sh -c "cat > $source_api_db_backup" < /tmp/lagoon-sync/$source_api_db_backup
+oc --context=$destination_context -n $DESTINATION_NAMESPACE exec -i $destination_api_db_pod -- sh -c "cat > $source_api_db_backup" < /tmp/lagoobernetes-sync/$source_api_db_backup
 oc --context=$destination_context -n $DESTINATION_NAMESPACE exec -i $destination_api_db_pod -- sh -c "zcat $source_api_db_backup | mysql infrastructure"
 
 
 source_keycloak_db_pod=$(oc --context=$source_context -n $SOURCE_NAMESPACE get pod -o custom-columns=NAME:.metadata.name --no-headers -l service=keycloak-db)
-oc --context=$source_context -n $SOURCE_NAMESPACE exec $source_keycloak_db_pod -- /lagoon/mysql-backup.sh 127.0.0.1
+oc --context=$source_context -n $SOURCE_NAMESPACE exec $source_keycloak_db_pod -- /lagoobernetes/mysql-backup.sh 127.0.0.1
 source_keycloak_db_backup=$(oc --context=$source_context -n $SOURCE_NAMESPACE exec $source_keycloak_db_pod -- sh -c "find . -name \"*.sql.gz\" -print0 | xargs -r -0 ls -1 -t | head -1")
-oc --context=$source_context -n $SOURCE_NAMESPACE exec $source_keycloak_db_pod -- cat $source_keycloak_db_backup > /tmp/lagoon-sync/$source_keycloak_db_backup
+oc --context=$source_context -n $SOURCE_NAMESPACE exec $source_keycloak_db_pod -- cat $source_keycloak_db_backup > /tmp/lagoobernetes-sync/$source_keycloak_db_backup
 
 destination_keycloak_db_pod=$(oc --context=$destination_context -n $DESTINATION_NAMESPACE get pod -o custom-columns=NAME:.metadata.name --no-headers -l service=keycloak-db)
 oc --context=$destination_context -n $DESTINATION_NAMESPACE exec -i $destination_keycloak_db_pod -- sh -c "mkdir -p backup"
-oc --context=$destination_context -n $DESTINATION_NAMESPACE exec -i $destination_keycloak_db_pod -- sh -c "cat > $source_keycloak_db_backup" < /tmp/lagoon-sync/$source_keycloak_db_backup
+oc --context=$destination_context -n $DESTINATION_NAMESPACE exec -i $destination_keycloak_db_pod -- sh -c "cat > $source_keycloak_db_backup" < /tmp/lagoobernetes-sync/$source_keycloak_db_backup
 oc --context=$destination_context -n $DESTINATION_NAMESPACE exec -i $destination_keycloak_db_pod -- sh -c "zcat $source_keycloak_db_backup | mysql keycloak"
 
 

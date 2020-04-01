@@ -31,13 +31,13 @@ spec:
           image: {{ .Values.image | quote }}
           imagePullPolicy: {{ .Values.imagePullPolicy | quote }}
           env:
-            - name: LAGOON_GIT_SHA
+            - name: LAGOOBERNETES_GIT_SHA
               value: {{ .Values.gitSha | quote }}
             - name: SERVICE_NAME
               value: {{ .Release.Name | quote }}
           envFrom:
             - configMapRef:
-                name: lagoon-env
+                name: lagoobernetes-env
           ports:
             - name: 9600-tcp
               containerPort: 9600

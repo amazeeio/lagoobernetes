@@ -33,11 +33,11 @@ spec:
           env:
             - name: CRONJOBS
               value: {{ .Values.cronjobs | quote }}
-            - name: LAGOON_GIT_SHA
+            - name: LAGOOBERNETES_GIT_SHA
               value: {{ .Values.gitSha | quote }}
           envFrom:
             - configMapRef:
-                name: lagoon-env
+                name: lagoobernetes-env
           ports:
             - name: 5601-tcp
               containerPort: 5601

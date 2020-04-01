@@ -24,7 +24,7 @@
 #
 # How to get your existing ASB root credentials
 # =============================================
-# oc -n openshift-ansible-service-broker get secret/lagoon-dbaas-db-credentials -o JSON | jq '.data'
+# oc -n openshift-ansible-service-broker get secret/lagoobernetes-dbaas-db-credentials -o JSON | jq '.data'
 #
 # How to create a `.my.cnf` file
 # ==============================
@@ -238,7 +238,7 @@ shw_info "> Testing the route https://${ROUTE}/?${TIMESTAMP}"
 shw_info "================================================"
 curl -skLIXGET "https://${ROUTE}/?${TIMESTAMP}" \
   -A "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36" \
-  --cookie "NO_CACHE=1" | grep -E "HTTP|Cache|Location|LAGOON" || TRUE
+  --cookie "NO_CACHE=1" | grep -E "HTTP|Cache|Location|LAGOOBERNETES" || TRUE
 
 shw_grey "================================================"
 shw_grey ""

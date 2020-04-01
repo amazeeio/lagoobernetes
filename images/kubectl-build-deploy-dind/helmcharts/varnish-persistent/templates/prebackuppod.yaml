@@ -34,7 +34,7 @@ spec:
             - '3600'
           envFrom:
             - configMapRef:
-                name: lagoon-env
+                name: lagoobernetes-env
           image: alpine
           imagePullPolicy: Always
           name: {{ include "varnish-persistent.fullname" . }}-prebackuppod

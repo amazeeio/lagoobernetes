@@ -18,7 +18,7 @@ echo "$ALL_ENVIRONMENTS" | jq -c '.data.environments[] | select((.environments|l
           OPENSHIFT_TOKEN=$(echo "$project" | jq -r '.openshift.token')
           echo "$PROJECT_NAME: Found "
 
-          # loop through each environment of the current lagoon project
+          # loop through each environment of the current lagoobernetes project
           echo "$project" | jq -c '.environments[]' | while read environment
           do
             ENVIRONMENT_OPENSHIFT_PROJECTNAME=$(echo "$environment" | jq -r '.openshiftProjectName')

@@ -18,7 +18,7 @@ import type { CommandHandlerArgsWithOptions } from '../types/Command';
 
 export const command = 'init';
 export const description =
-  'Create a .lagoon.yml config file in the current working directory';
+  'Create a .lagoobernetes.yml config file in the current working directory';
 
 export const OVERWRITE: 'overwrite' = 'overwrite';
 export const PROJECT: 'project' = 'project';
@@ -71,13 +71,13 @@ export function builder(yargs: Yargs) {
         type: 'string',
       },
       [TOKEN]: {
-        describe: 'Path to the Lagoon token file',
+        describe: 'Path to the Lagoobernetes token file',
         type: 'string',
       },
     })
     .example(
       `$0 ${command}`,
-      'Create a config file at ./.lagoon.yml. This will confirm with the user whether to overwrite the config if it already exists and also prompt for some parameters to add to the config.\n',
+      'Create a config file at ./.lagoobernetes.yml. This will confirm with the user whether to overwrite the config if it already exists and also prompt for some parameters to add to the config.\n',
     )
     .example(
       `$0 ${command} --${OVERWRITE}`,
@@ -100,8 +100,8 @@ export function builder(yargs: Yargs) {
       'Set SSH URL to "localhost:2020" (do not prompt the user).\n',
     )
     .example(
-      `$0 ${command} --${TOKEN} ~/tokens/.lagoon-token`,
-      'Set the token path to ~/tokens/.lagoon-token (do not prompt the user).\n',
+      `$0 ${command} --${TOKEN} ~/tokens/.lagoobernetes-token`,
+      'Set the token path to ~/tokens/.lagoobernetes-token (do not prompt the user).\n',
     )
     .example(
       `$0 ${command} --${API} --${SSH} --${TOKEN}`,
@@ -153,7 +153,7 @@ export async function handler({
   cerr,
 }:
 Args): Promise<number> {
-  const filepath = path.join(cwd, '.lagoon.yml');
+  const filepath = path.join(cwd, '.lagoobernetes.yml');
   const exists = await fileExists(filepath);
 
   const overwrite = !exists
@@ -175,7 +175,7 @@ Args): Promise<number> {
 
   const defaultToken = R.prop(TOKEN, globalOptionDefaults);
 
-  // $FlowFixMe inquirer$Answers is inexact, LagoonConfigInput is exact
+  // $FlowFixMe inquirer$Answers is inexact, LagoobernetesConfigInput is exact
   const configInput: ConfigFileInput = await inquirer.prompt([
     {
       type: 'input',

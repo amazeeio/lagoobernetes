@@ -8,8 +8,8 @@ services:
       context: subfolder3
       dockerfile: Dockerfile
     labels:
-      lagoon.type: node-persistent
-      lagoon.persistent: /files
+      lagoobernetes.type: node-persistent
+      lagoobernetes.persistent: /files
     volumes:
       - ./subfolder3/index.js:/app/index.js:delegated
     expose:

@@ -3,12 +3,12 @@
 const promisify = require('util').promisify;
 const OpenShiftClient = require('openshift-client');
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
 const {
   getOpenShiftInfoForProject,
-} = require('@lagoon/commons/src/api');
-const { BaaS } = require('@lagoon/commons/src/openshiftApi');
+} = require('@lagoobernetes/commons/src/api');
+const { BaaS } = require('@lagoobernetes/commons/src/openshiftApi');
 
 
 async function resticRestore (data: Object) {
@@ -91,7 +91,7 @@ async function resticRestore (data: Object) {
 
   logger.verbose(`${openshiftProject}: Creating restore: ${backup.backupId}`);
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'start',
     project.name,
     '',

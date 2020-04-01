@@ -1,6 +1,6 @@
 # Debugging
 
-**Generate an admin token for the api service and store it in your lagoon `.env` file:**
+**Generate an admin token for the api service and store it in your lagoobernetes `.env` file:**
 
 ```
 AUTH_SSH_ADMIN_TOKEN=<YOUR_TOKEN>

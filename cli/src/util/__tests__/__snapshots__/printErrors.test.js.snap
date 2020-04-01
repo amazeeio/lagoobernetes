@@ -11,7 +11,7 @@ Array [
 exports[`printGraphQLErrors should print multiple GraphQLErrors 1`] = `
 Array [
   Array [
-    "[31mOops! The Lagoon API returned errors:[39m",
+    "[31mOops! The Lagoobernetes API returned errors:[39m",
   ],
   Array [
     "[31mA GraphQLError message[39m",
@@ -25,7 +25,7 @@ Array [
 exports[`printGraphQLErrors should print singular GraphQLErrors 1`] = `
 Array [
   Array [
-    "[31mOops! The Lagoon API returned an error:[39m",
+    "[31mOops! The Lagoobernetes API returned an error:[39m",
   ],
   Array [
     "[31mA GraphQLError message[39m",
@@ -36,8 +36,8 @@ Array [
 exports[`printGraphQLErrors should tell the user to log in if there is a bearer token error 1`] = `
 Array [
   Array [
-    "[31mNo authentication token found. Please log in first with \\"lagoon login\\".[39m
-[31mOnline documentation: https://github.com/amazeeio/lagoon/blob/master/cli/README.md#lagoon-login[39m",
+    "[31mNo authentication token found. Please log in first with \\"lagoobernetes login\\".[39m
+[31mOnline documentation: https://github.com/amazeeio/lagoobernetes/blob/master/cli/README.md#lagoobernetes-login[39m",
   ],
 ]
 `;
@@ -45,8 +45,8 @@ Array [
 exports[`printNoConfigError should print an error about the configuration file not being found 1`] = `
 Array [
   Array [
-    "[31m.lagoon.yml config file not found. Please create one with \\"lagoon init\\".[39m
-[31mOnline documentation: https://github.com/amazeeio/lagoon/blob/master/cli/README.md#lagoon-init[39m",
+    "[31m.lagoobernetes.yml config file not found. Please create one with \\"lagoobernetes init\\".[39m
+[31mOnline documentation: https://github.com/amazeeio/lagoobernetes/blob/master/cli/README.md#lagoobernetes-init[39m",
   ],
 ]
 `;
@@ -54,8 +54,8 @@ Array [
 exports[`printProjectConfigurationError should print an error about missing project configuration 1`] = `
 Array [
   Array [
-    "[31mNo project configured. Please create a .lagoon.yml config file with \\"lagoon init\\" or pass a project to this command via the --project option.[39m
-[31mOnline documentation: https://github.com/amazeeio/lagoon/blob/master/cli/README.md#lagoon-init[39m",
+    "[31mNo project configured. Please create a .lagoobernetes.yml config file with \\"lagoobernetes init\\" or pass a project to this command via the --project option.[39m
+[31mOnline documentation: https://github.com/amazeeio/lagoobernetes/blob/master/cli/README.md#lagoobernetes-init[39m",
   ],
 ]
 `;

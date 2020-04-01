@@ -1,7 +1,7 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/oc
+FROM ${IMAGE_REPO:-lagoobernetes}/oc
 
-ENV LAGOON=auto-idler
+ENV LAGOOBERNETES=auto-idler
 
 RUN apk add --no-cache tini jq openssl bash curl nodejs nodejs-npm \
     && npm config set unsafe-perm true \
@@ -16,5 +16,5 @@ ENV JWTSECRET=super-secret-string \
     POD_RUN_INTERVAL=14400 \
     ELASTICSEARCH_URL="http://logs-db-service:9200"
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]
 CMD ["/bin/docker-sleep"]

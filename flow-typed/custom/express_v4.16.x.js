@@ -117,8 +117,8 @@ declare class express$Response extends http$ServerResponse mixins express$Reques
   req: express$Request;
 }
 
-// Lagoon addition: extend Error to have status property (for auth-server)
-declare interface express$LagoonErrorWithStatus extends Error {
+// Lagoobernetes addition: extend Error to have status property (for auth-server)
+declare interface express$LagoobernetesErrorWithStatus extends Error {
   status: number;
 }
 
@@ -130,9 +130,9 @@ declare type express$Middleware =
       next: express$NextFunction
     ) => mixed)
   | ((
-      // Lagoon change: extend Error to have status property (for auth-server). Original:
+      // Lagoobernetes change: extend Error to have status property (for auth-server). Original:
       // error: Error,
-      error: express$LagoonErrorWithStatus,
+      error: express$LagoobernetesErrorWithStatus,
       req: $Subtype<express$Request>,
       res: express$Response,
       next: express$NextFunction
@@ -147,7 +147,7 @@ declare interface express$RouteMethodType<T> {
 }
 declare class express$Route {
   all: express$RouteMethodType<this>;
-  // Lagoon change: Type relaxed to allow for modifying the context. (for api)
+  // Lagoobernetes change: Type relaxed to allow for modifying the context. (for api)
   // Original:
   // get: express$RouteMethodType<this>;
   get: Function;
@@ -303,7 +303,7 @@ declare module "express" {
   declare export type $Response = express$Response;
   declare export type $Request = express$Request;
   declare export type $Application = express$Application;
-  declare export type LagoonErrorWithStatus = express$LagoonErrorWithStatus;
+  declare export type LagoobernetesErrorWithStatus = express$LagoobernetesErrorWithStatus;
 
   declare module.exports: {
     (): express$Application, // If you try to call like a function, it will use this signature

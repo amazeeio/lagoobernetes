@@ -1,9 +1,9 @@
 // @flow
 
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { createDeployTask } = require('@lagoon/commons/src/tasks');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { createDeployTask } = require('@lagoobernetes/commons/src/tasks');
 
 import type { WebhookRequestData, removeData, ChannelWrapper, Project } from '../types';
 
@@ -35,7 +35,7 @@ async function gitlabPullRequestUpdated(webhook: WebhookRequestData, project: Pr
 
     // Don't trigger deploy if the head and base repos are different
     if (!R.equals(headRepoId, baseRepoId)) {
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
         `*[${project.name}]* PR ${body.number} updated. No deploy task created, reason: Target/Source not same repo`
       )
       return;
@@ -60,7 +60,7 @@ async function gitlabPullRequestUpdated(webhook: WebhookRequestData, project: Pr
     try {
       const taskResult = await createDeployTask(data);
       // gitlab does not identify well that this is an update to a merge request, so we manually set the event type here.
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:updated:handled`, data,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:updated:handled`, data,
         `*[${project.name}]* PR <${body.object_attributes.url}|#${body.object_attributes.id} (${body.object_attributes.title})> updated in <${body.object_attributes.target.web_url}|${body.object_attributes.target.name}>`
       )
       return;
@@ -70,7 +70,7 @@ async function gitlabPullRequestUpdated(webhook: WebhookRequestData, project: Pr
         case "NoActiveSystemsDefined":
         case "UnknownActiveSystem":
           // These are not real errors and also they will happen many times. We just log them locally but not throw an error
-          sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+          sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
             `*[${project.name}]* PR ${body.object_attributes.id} updated. No deploy task created, reason: ${error}`
           )
           return;

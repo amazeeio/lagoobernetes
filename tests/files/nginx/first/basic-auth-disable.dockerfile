@@ -7,4 +7,4 @@ ENV BASIC_AUTH_USERNAME=username \
 COPY app/ /app/
 
 # this should disable the basic auth again
-COPY .lagoon.env.nginx /app/
+COPY .lagoobernetes.env.nginx /app/

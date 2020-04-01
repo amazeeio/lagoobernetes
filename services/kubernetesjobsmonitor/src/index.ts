@@ -2,10 +2,10 @@ import * as R from 'ramda';
 import Api, { ClientConfiguration } from 'kubernetes-client';
 const Client = Api.Client1_13;
 
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { getOpenShiftInfoForProject, updateTask } = require('@lagoon/commons/src/api');
-const { sendToLagoonLogs, initSendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { consumeTaskMonitor, initSendToLagoonTasks } = require('@lagoon/commons/src/tasks');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { getOpenShiftInfoForProject, updateTask } = require('@lagoobernetes/commons/src/api');
+const { sendToLagoobernetesLogs, initSendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { consumeTaskMonitor, initSendToLagoobernetesTasks } = require('@lagoobernetes/commons/src/tasks');
 
 class JobNotCompletedYet extends Error {
   constructor(message: string) {
@@ -14,8 +14,8 @@ class JobNotCompletedYet extends Error {
   }
 }
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const ocsafety = string => string.toLocaleLowerCase().replace(/[^0-9a-z-]/g, '-');
 
@@ -105,8 +105,8 @@ const projectExists = async (client: Api.ApiRoot, namespace: string) => {
 
 const jobsLogGet = async (client: Api.ApiRoot, namespace: string, jobName: string) => {
   try {
-    const pods = await client.api.v1.namespaces(namespace).pods.get({ 
-      qs: { labelSelector: `job-name=${jobName}` } 
+    const pods = await client.api.v1.namespaces(namespace).pods.get({
+      qs: { labelSelector: `job-name=${jobName}` }
     });
     const podNames = pods.body.items.map(pod => pod.metadata.name);
 
@@ -158,8 +158,8 @@ const getJobInfo = async (client: Api.ApiRoot, namespace: string, jobName: strin
   }
 }
 
-const updateLagoonTask = async (jobInfo, jobStatus, taskId, project, jobName) => {
-  // Update lagoon task
+const updateLagoobernetesTask = async (jobInfo, jobStatus, taskId, project, jobName) => {
+  // Update lagoobernetes task
   try {
     const convertDateFormat = R.init;
     const dateOrNull = R.unless(R.isNil, convertDateFormat);
@@ -210,12 +210,12 @@ const messageConsumer = async msg => {
   }
   const jobStatus = getJobStatus(jobInfo);
 
-  await updateLagoonTask(jobInfo, jobStatus, taskId, project, jobName);
+  await updateLagoobernetesTask(jobInfo, jobStatus, taskId, project, jobName);
   const meta = JSON.parse(msg.content.toString());
 
   switch (jobStatus) {
     case 'active':
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         project.name,
         '',
@@ -223,7 +223,7 @@ const messageConsumer = async msg => {
         meta,
         `*[${project.name}]* Task \`${task.id}\` *${task.name}* active`
       );
-      
+
       throw new JobNotCompletedYet(
         `*[${project.name}]* Task \`${task.id}\` *${task.name}* phase ${jobStatus}`
         );
@@ -231,7 +231,7 @@ const messageConsumer = async msg => {
     case 'failed':
       await saveTaskLog(jobName, project.name, jobInfo, await jobsLogGet(client, namespace, jobName));
       await deleteJob(client, namespace, jobName);
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'error',
         project.name,
         '',
@@ -244,7 +244,7 @@ const messageConsumer = async msg => {
     case 'succeeded':
       await saveTaskLog(jobName, project.name, jobInfo, await jobsLogGet(client, namespace, jobName));
       await deleteJob(client, namespace, jobName);
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         project.name,
         '',
@@ -255,7 +255,7 @@ const messageConsumer = async msg => {
       break;
 
     default:
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         project.name,
         '',
@@ -278,7 +278,7 @@ const saveTaskLog = (jobName, projectName, jobInfo, log) => {
     remoteId: jobInfo.body.metadata.uid
   };
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'info',
     projectName,
     '',
@@ -294,7 +294,7 @@ const deathHandler = (msg, lastError) => {
   const taskId = typeof task.id === 'string' ? parseInt(task.id, 10) : task.id;
   failTask(taskId);
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'error',
     project.name,
     '',

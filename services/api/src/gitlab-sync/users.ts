@@ -1,7 +1,7 @@
 import * as R from 'ramda';
-import * as gitlabApi from '@lagoon/commons/src/gitlabApi';
-import * as api from '@lagoon/commons/src/api';
-import { logger } from '@lagoon/commons/src/local-logging';
+import * as gitlabApi from '@lagoobernetes/commons/src/gitlabApi';
+import * as api from '@lagoobernetes/commons/src/api';
+import { logger } from '@lagoobernetes/commons/src/local-logging';
 
 interface GitlabUser {
   name: string,

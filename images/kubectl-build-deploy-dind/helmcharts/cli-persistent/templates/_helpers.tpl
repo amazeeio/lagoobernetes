@@ -28,7 +28,7 @@ Common labels
 helm.sh/chart: {{ include "cli-persistent.chart" . }}
 {{ include "cli-persistent.selectorLabels" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{ include "cli-persistent.lagoonLabels" . }}
+{{ include "cli-persistent.lagoobernetesLabels" . }}
 
 {{- end -}}
 
@@ -42,35 +42,35 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 {{/*
 Create a PriorityClassName.
-(this is based on the Lagoon Environment Type)).
+(this is based on the Lagoobernetes Environment Type)).
 */}}
-{{- define "cli-persistent.lagoonPriority" -}}
-{{- printf "lagoon-priority-%s" .Values.environmentType }}
+{{- define "cli-persistent.lagoobernetesPriority" -}}
+{{- printf "lagoobernetes-priority-%s" .Values.environmentType }}
 {{- end -}}
 
 {{/*
-Lagoon Labels
+Lagoobernetes Labels
 */}}
-{{- define "cli-persistent.lagoonLabels" -}}
-lagoon/service: {{ .Release.Name }}
-lagoon/service-type: {{ .Chart.Name }}
-lagoon/project: {{ .Values.project }}
-lagoon/environment: {{ .Values.environment }}
-lagoon/environmentType: {{ .Values.environmentType }}
-lagoon/buildType: {{ .Values.buildType }}
+{{- define "cli-persistent.lagoobernetesLabels" -}}
+lagoobernetes/service: {{ .Release.Name }}
+lagoobernetes/service-type: {{ .Chart.Name }}
+lagoobernetes/project: {{ .Values.project }}
+lagoobernetes/environment: {{ .Values.environment }}
+lagoobernetes/environmentType: {{ .Values.environmentType }}
+lagoobernetes/buildType: {{ .Values.buildType }}
 {{- end -}}
 
 {{/*
 Annotations
 */}}
 {{- define "cli-persistent.annotations" -}}
-lagoon/version: {{ .Values.lagoonVersion | quote }}
+lagoobernetes/version: {{ .Values.lagoobernetesVersion | quote }}
 {{- if .Values.branch }}
-lagoon/branch: {{ .Values.branch | quote }}
+lagoobernetes/branch: {{ .Values.branch | quote }}
 {{- end }}
 {{- if .Values.prNumber }}
-lagoon/prNumber: {{ .Values.prNumber | quote }}
-lagoon/prHeadBranch: {{ .Values.prHeadBranch | quote }}
-lagoon/prBaseBranch: {{ .Values.prBaseBranch | quote }}
+lagoobernetes/prNumber: {{ .Values.prNumber | quote }}
+lagoobernetes/prHeadBranch: {{ .Values.prHeadBranch | quote }}
+lagoobernetes/prBaseBranch: {{ .Values.prBaseBranch | quote }}
 {{- end }}
 {{- end -}}

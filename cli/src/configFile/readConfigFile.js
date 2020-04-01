@@ -7,10 +7,10 @@ import { parseConfigFile } from './parseConfigFile';
 import type { ConfigFile } from '../types/ConfigFile';
 
 /**
- * Find and read the .lagoon.yml config file
+ * Find and read the .lagoobernetes.yml config file
  */
 export function readConfigFile(): ConfigFile | null {
-  const configPath = findup('.lagoon.yml');
+  const configPath = findup('.lagoobernetes.yml');
 
   if (configPath == null) {
     return null;

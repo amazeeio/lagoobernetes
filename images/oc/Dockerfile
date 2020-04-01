@@ -1,6 +1,6 @@
 ARG ALPINE_VERSION
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM golang:1.13-alpine${ALPINE_VERSION} as golang
 
 RUN apk add --no-cache git
@@ -9,15 +9,15 @@ RUN go get github.com/a8m/envsubst/cmd/envsubst
 FROM docker:stable
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=oc
+ENV LAGOOBERNETES=oc
 
 COPY --from=golang /go/bin/envsubst /bin/envsubst
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /sbin/tini /sbin/
 COPY --from=commons /home /home
@@ -50,7 +50,7 @@ RUN apk add -U --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing au
     echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf && \
     rm -rf glibc.apk glibc-bin.apk /var/cache/apk/*  && \
     apk add --no-cache bash git openssh py-pip && \
-    git config --global user.email "lagoon@lagoon.io" && git config --global user.name lagoon && \
+    git config --global user.email "lagoobernetes@lagoobernetes.io" && git config --global user.name lagoobernetes && \
     pip install shyaml && \
     mkdir -p /openshift-origin-client-tools && \
     curl -Lo /tmp/openshift-origin-client-tools.tar https://github.com/openshift/origin/releases/download/${OC_VERSION}/openshift-origin-client-tools-${OC_VERSION}-${OC_HASH}-linux-64bit.tar.gz && \
@@ -61,4 +61,4 @@ RUN apk add -U --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing au
     curl -Lo /usr/bin/svcat https://download.svcat.sh/cli/latest-v0.2/linux/amd64/svcat && \
     chmod +x /usr/bin/svcat
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]

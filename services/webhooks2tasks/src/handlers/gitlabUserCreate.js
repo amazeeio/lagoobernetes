@@ -1,8 +1,8 @@
 // @flow
 const R = require('ramda');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { getUser } = require('@lagoon/commons/src/gitlabApi');
-const { addUser } = require('@lagoon/commons/src/api');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { getUser } = require('@lagoobernetes/commons/src/gitlabApi');
+const { addUser } = require('@lagoobernetes/commons/src/api');
 
 import type { WebhookRequestData } from '../types';
 
@@ -28,7 +28,7 @@ async function gitlabUserCreate(webhook: WebhookRequestData) {
 
     await addUser(email, firstName, lastName, null, id);
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -39,7 +39,7 @@ async function gitlabUserCreate(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

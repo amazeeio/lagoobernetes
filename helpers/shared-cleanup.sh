@@ -5,7 +5,7 @@
 # on port 3306 with a .my.cnf that allows you to run
 # non-interactive mysql commands.
 
-# use oc -n openshift-ansible-service-broker get secret/lagoon-dbaas-db-credentials
+# use oc -n openshift-ansible-service-broker get secret/lagoobernetes-dbaas-db-credentials
 # if the database is not directly connectable, an ssh tunnel can be used:
 # ~/.my.cnf-mysql-development-cluster.cluster-xxx.rds.amazonaws.com
 # [client]
@@ -81,7 +81,7 @@ for PROJECT in $(awk '$3 ~ /^dedicated/ {next} {print $1}' /tmp/mariadb-services
 
   # In the case that there are multiple ASB configs for the 1 project, this will
   # return an array with each database in it.
-  DATABASES=($(oc -n "${PROJECT}" get configmap lagoon-env -o json | jq -r '.data | with_entries(select(.key|match("_DATABASE";"i")))[]' || :))
+  DATABASES=($(oc -n "${PROJECT}" get configmap lagoobernetes-env -o json | jq -r '.data | with_entries(select(.key|match("_DATABASE";"i")))[]' || :))
 
   if [ ${#DATABASES[@]} -eq 0 ]; then
     shw_err " > Some problem with ${PROJECT}"

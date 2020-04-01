@@ -25,8 +25,8 @@ describe('handler', () => {
           name: 'credentialtest-customer1',
         },
         gitUrl: 'project1.git',
-        activeSystemsDeploy: 'lagoon_openshiftBuildDeploy',
-        activeSystemsRemove: 'lagoon_openshiftRemove',
+        activeSystemsDeploy: 'lagoobernetes_openshiftBuildDeploy',
+        activeSystemsRemove: 'lagoobernetes_openshiftRemove',
         branches: 'true',
         pullrequests: 'null',
         openshift: {

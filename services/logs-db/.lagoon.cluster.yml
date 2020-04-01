@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: lagoon-openshift-template-elasticsearch-cluster
+  name: lagoobernetes-openshift-template-elasticsearch-cluster
 parameters:
   - name: SERVICE_NAME
     description: Name of this service
@@ -19,7 +19,7 @@ parameters:
   - name: PROJECT
     description: Which project this belongs to, original value
     required: true
-  - name: LAGOON_GIT_SHA
+  - name: LAGOOBERNETES_GIT_SHA
     description: git hash sha of the current deployment
     required: true
   - name: SERVICE_ROUTER_URL
@@ -60,7 +60,7 @@ objects:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
                 - matchExpressions:
-                    - key: lagoon-elasticsearch
+                    - key: lagoobernetes-elasticsearch
                       operator: NotIn
                       values:
                         - forbidden
@@ -92,7 +92,7 @@ objects:
             initialDelaySeconds: 360
           envFrom:
           - configMapRef:
-              name: lagoon-env
+              name: lagoobernetes-env
           resources:
             requests:
               cpu: 10m
@@ -133,7 +133,7 @@ objects:
           resources:
             requests:
               storage: 100G
-          storageClassName: lagoon-elasticsearch
+          storageClassName: lagoobernetes-elasticsearch
 - apiVersion: apps/v1beta1
   kind: StatefulSet
   metadata:
@@ -158,7 +158,7 @@ objects:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
                 - matchExpressions:
-                    - key: lagoon-logs-db-archive
+                    - key: lagoobernetes-logs-db-archive
                       operator: NotIn
                       values:
                         - forbidden
@@ -194,7 +194,7 @@ objects:
             initialDelaySeconds: 120
           envFrom:
           - configMapRef:
-              name: lagoon-env
+              name: lagoobernetes-env
           resources:
             requests:
               cpu: 10m
@@ -239,4 +239,4 @@ objects:
           resources:
             requests:
               storage: 1000Gi
-          storageClassName:  lagoon-logs-db-archive
+          storageClassName:  lagoobernetes-logs-db-archive

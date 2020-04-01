@@ -1,4 +1,4 @@
-# Default values for lagoon-remote.
+# Default values for lagoobernetes-remote.
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -6,14 +6,14 @@ fullnameOverride: ""
 
 dockerHost:
   image:
-    name: amazeeiolagoon/docker-host:kubernetes
+    name: amazeeiolagoobernetes/docker-host:kubernetes
     pullPolicy: Always
 
   name: docker-host
 
-  registry: registry.lagoon.svc:5000
+  registry: registry.lagoobernetes.svc:5000
 
-  repositoryToUpdate: lagoon
+  repositoryToUpdate: lagoobernetes
 
   replicaCount: 1
 
@@ -59,10 +59,10 @@ dockerHost:
   nodeSelector: {}
 
   tolerations:
-    - key: lagoon/build
+    - key: lagoobernetes/build
       effect: NoSchedule
       operator: Exists
-    - key: lagoon/build
+    - key: lagoobernetes/build
       effect: PreferNoSchedule
       operator: Exists
 

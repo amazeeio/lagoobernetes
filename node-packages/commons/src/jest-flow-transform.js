@@ -9,7 +9,7 @@
     "rootDir": "src",
     "testEnvironment": "node",
     "transform": {
-      "\\.js$": "../../../node-packages/lagoon-commons/src/jest-flow-transform"
+      "\\.js$": "../../../node-packages/lagoobernetes-commons/src/jest-flow-transform"
     }
   }
 

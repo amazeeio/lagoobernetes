@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "lagoon-remote.dockerHost.fullname" . }}
+  name: {{ include "lagoobernetes-remote.dockerHost.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    {{- include "lagoon-remote.dockerHost.labels" . | nindent 4 }}
+    {{- include "lagoobernetes-remote.dockerHost.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.dockerHost.replicaCount }}
   selector:
     matchLabels:
-      {{- include "lagoon-remote.dockerHost.selectorLabels" . | nindent 6 }}
+      {{- include "lagoobernetes-remote.dockerHost.selectorLabels" . | nindent 6 }}
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        {{- include "lagoon-remote.dockerHost.selectorLabels" . | nindent 8 }}
+        {{- include "lagoobernetes-remote.dockerHost.selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ include "lagoon-remote.dockerHost.serviceAccountName" . }}
+      serviceAccountName: {{ include "lagoobernetes-remote.dockerHost.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.dockerHost.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ include "lagoon-remote.dockerHost.fullname" . }}
+        - name: {{ include "lagoobernetes-remote.dockerHost.fullname" . }}
           securityContext:
             {{- toYaml .Values.dockerHost.securityContext | nindent 12 }}
           image: {{ .Values.dockerHost.image.name | quote }}
@@ -39,9 +39,9 @@ spec:
               value: {{ .Values.dockerHost.repositoryToUpdate | quote }}
             - name: CRONJOBS
               value: |
-                22 1 * * * /lagoon/cronjob.sh "/prune-images.sh"
-                22 */4 * * * /lagoon/cronjob.sh "/remove-exited.sh"
-                */15 * * * * /lagoon/cronjob.sh "/update-push-images.sh"
+                22 1 * * * /lagoobernetes/cronjob.sh "/prune-images.sh"
+                22 */4 * * * /lagoobernetes/cronjob.sh "/remove-exited.sh"
+                */15 * * * * /lagoobernetes/cronjob.sh "/update-push-images.sh"
           ports:
           - containerPort: 2375
             protocol: TCP
@@ -68,7 +68,7 @@ spec:
       - name: docker-lib
       {{- if .Values.dockerHost.storage.create }}
         persistentVolumeClaim:
-          claimName: {{ include "lagoon-remote.dockerHost.fullname" . }}
+          claimName: {{ include "lagoobernetes-remote.dockerHost.fullname" . }}
       {{- else }}
         emptyDir: {}
       {{- end -}}

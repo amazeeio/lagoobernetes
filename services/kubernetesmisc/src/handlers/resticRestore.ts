@@ -1,8 +1,8 @@
 import * as R from 'ramda';
-import { getOpenShiftInfoForProject, updateTask } from '@lagoon/commons/src/api';
-import { BaaS } from '@lagoon/commons/src/openshiftApi';
-import { logger } from "@lagoon/commons/src/local-logging";
-import { sendToLagoonLogs } from '@lagoon/commons/src/logs';
+import { getOpenShiftInfoForProject, updateTask } from '@lagoobernetes/commons/src/api';
+import { BaaS } from '@lagoobernetes/commons/src/openshiftApi';
+import { logger } from "@lagoobernetes/commons/src/local-logging";
+import { sendToLagoobernetesLogs } from '@lagoobernetes/commons/src/logs';
 import { promisify } from 'util';
 
 const ocsafety = string => string.toLocaleLowerCase().replace(/[^0-9a-z-]/g, '-');
@@ -102,7 +102,7 @@ async function resticRestore (data: any) {
 
   logger.verbose(`${namespace}: Creating restore: ${backup.backupId}`);
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'start',
     project.name,
     '',

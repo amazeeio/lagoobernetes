@@ -22,7 +22,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      priorityClassName: {{ include "node.lagoonPriority" . }}
+      priorityClassName: {{ include "node.lagoobernetesPriority" . }}
       enableServiceLinks: false
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -47,16 +47,16 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 10
           env:
-            ## LAGOON_GIT_SHA is injected directly and not loaded via `lagoon-env` config
+            ## LAGOOBERNETES_GIT_SHA is injected directly and not loaded via `lagoobernetes-env` config
             ## This will cause the pod to redeploy on every deployment, even the files have not changed
-            - name: LAGOON_GIT_SHA
+            - name: LAGOOBERNETES_GIT_SHA
               value: {{ .Values.gitSha | quote }}
             - name: CRONJOBS
               value: |
                 {{- toYaml .Values.inPodCronjobs | nindent 16 }}
           envFrom:
             - configMapRef:
-                name: lagoon-env
+                name: lagoobernetes-env
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

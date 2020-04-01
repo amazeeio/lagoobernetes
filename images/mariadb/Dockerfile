@@ -1,14 +1,14 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM alpine:3.8
 
 LABEL maintainer="amazee.io"
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /sbin/tini /sbin/
 COPY --from=commons /home /home
@@ -26,9 +26,9 @@ ENV TMPDIR=/tmp \
 
 ENV BACKUPS_DIR="/var/lib/mysql/backup"
 
-ENV MARIADB_DATABASE=lagoon \
-    MARIADB_USER=lagoon \
-    MARIADB_PASSWORD=lagoon \
+ENV MARIADB_DATABASE=lagoobernetes \
+    MARIADB_USER=lagoobernetes \
+    MARIADB_PASSWORD=lagoobernetes \
     MARIADB_ROOT_PASSWORD=Lag00n
 
 RUN \
@@ -46,8 +46,8 @@ RUN \
     rm -rf /var/lib/mysql/* /etc/mysql/; \
     curl -sSL http://mysqltuner.pl/ -o mysqltuner.pl
 
-COPY entrypoints/ /lagoon/entrypoints/
-COPY mysql-backup.sh /lagoon/
+COPY entrypoints/ /lagoobernetes/entrypoints/
+COPY mysql-backup.sh /lagoobernetes/
 COPY my.cnf /etc/mysql/my.cnf
 
 RUN for i in /var/run/mysqld /var/lib/mysql /etc/mysql/conf.d /docker-entrypoint-initdb.d/ "${BACKUPS_DIR}"; \
@@ -72,5 +72,5 @@ WORKDIR /var/lib/mysql
 VOLUME /var/lib/mysql
 EXPOSE 3306
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.bash"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.bash"]
 CMD ["mysqld"]

@@ -1,5 +1,5 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/mariadb-galera
+FROM ${IMAGE_REPO:-lagoobernetes}/mariadb-galera
 
 ENV MARIADB_DATABASE=keycloak \
     MARIADB_USER=keycloak \

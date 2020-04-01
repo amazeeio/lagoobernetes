@@ -1,7 +1,7 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/oc
+FROM ${IMAGE_REPO:-lagoobernetes}/oc
 
-ENV LAGOON=storage-calculator
+ENV LAGOOBERNETES=storage-calculator
 
 RUN apk add --no-cache tini jq openssl bash curl nodejs nodejs-npm \
     && npm config set unsafe-perm true \
@@ -13,5 +13,5 @@ ENV JWTSECRET=super-secret-string \
     JWTAUDIENCE=api.dev \
     PROJECT_REGEX=".+"
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]
 CMD ["/bin/docker-sleep"]

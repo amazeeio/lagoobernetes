@@ -1,14 +1,14 @@
 {
   "name": "api",
   "version": "3.0.0",
-  "description": "Lagoon GraphQL API",
+  "description": "Lagoobernetes GraphQL API",
   "main": "./dist/index.js",
   "engines": {
     "node": ">=10.16.3"
   },
   "scripts": {
     "format": "prettier-eslint --write '**/*.js'",
-    "lint": "../../node-packages/eslint-config-lagoon-node/node_modules/.bin/eslint .",
+    "lint": "../../node-packages/eslint-config-lagoobernetes-node/node_modules/.bin/eslint .",
     "test": "jest --forceExit --detectOpenHandles --maxWorkers=10",
     "test:watch": "jest --forceExit --detectOpenHandles --maxWorkers=10 --watch",
     "build": "tsc --pretty",
@@ -25,7 +25,7 @@
   "author": "amazee.io <hello@amazee.io> (http://www.amazee.io)",
   "license": "MIT",
   "dependencies": {
-    "@lagoon/commons": "4.0.0",
+    "@lagoobernetes/commons": "4.0.0",
     "apollo-server-express": "^2.2.5",
     "aws-sdk": "^2.378.0",
     "body-parser": "^1.18.2",

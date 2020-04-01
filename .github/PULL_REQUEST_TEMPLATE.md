@@ -15,7 +15,7 @@ Explain the **details** for making this change. What existing problem does the p
 
 <!--
 # Changelog Entry
-Lagoon is using "Release Drafter" to create changelogs using PR titles and labels
+Lagoobernetes is using "Release Drafter" to create changelogs using PR titles and labels
 
 Please ensure that this PR has a concise and descriptive title - they can be edited after merging, but not after release.
 Please ensure that this PR has the correct [0-9]-subsystem label(s) attached - this can be edited after merging if needed.

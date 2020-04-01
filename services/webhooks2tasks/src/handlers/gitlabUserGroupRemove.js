@@ -1,7 +1,7 @@
 // @flow
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { removeUserFromGroup, sanitizeGroupName } = require('@lagoon/commons/src/api');
-const { getGroup } = require('@lagoon/commons/src/gitlabApi');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { removeUserFromGroup, sanitizeGroupName } = require('@lagoobernetes/commons/src/api');
+const { getGroup } = require('@lagoobernetes/commons/src/gitlabApi');
 
 import type { WebhookRequestData } from '../types';
 
@@ -32,7 +32,7 @@ async function gitlabUserGroupRemove(webhook: WebhookRequestData) {
 
     await removeUserFromGroup(userEmail, sanitizeGroupName(group.full_path));
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -43,7 +43,7 @@ async function gitlabUserGroupRemove(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

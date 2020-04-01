@@ -37,7 +37,7 @@ SERVICE_NAME=mariadb
 SERVICE_NAME_UPPERCASE=$(echo $SERVICE_NAME | tr [:lower:] [:upper:])
 SERVICE_TYPE=mariadb-shared
 
-ENVIRONMENT_TYPE=$(oc -n $1 get configmap lagoon-env -o json | jq -r '.data.LAGOON_ENVIRONMENT_TYPE')
+ENVIRONMENT_TYPE=$(oc -n $1 get configmap lagoobernetes-env -o json | jq -r '.data.LAGOOBERNETES_ENVIRONMENT_TYPE')
 
 MARIADB_REPLICAS=$(oc -n $1 get dc/mariadb -o json | jq -r '.spec.replicas')
 
@@ -67,7 +67,7 @@ oc -n $1 scale dc/cli --replicas=0
 ## taken from build-deploy-docker-compose.sh
 
 OPENSHIFT_TEMPLATE="$(git rev-parse --show-toplevel)/images/oc-build-deploy-dind/openshift-templates/${SERVICE_TYPE}/servicebroker.yml"
-SERVICEBROKER_CLASS="lagoon-dbaas-mariadb-apb"
+SERVICEBROKER_CLASS="lagoobernetes-dbaas-mariadb-apb"
 SERVICEBROKER_PLAN="${ENVIRONMENT_TYPE}"
 OPENSHIFT_PROJECT=$1
 . $(git rev-parse --show-toplevel)/images/oc-build-deploy-dind/scripts/exec-openshift-create-servicebroker.sh
@@ -93,13 +93,13 @@ echo "*** Transfering 'drupal' database from $OLD_POD to $DB_HOST"
 # transfer database between from old to new
 oc -n $1 exec $OLD_POD -- bash -eo pipefail -c "{ mysqldump --max-allowed-packet=500M --events --routines --quick --add-locks --no-autocommit --single-transaction --no-create-db drupal || mysqldump --max-allowed-packet=500M --events --routines --quick --add-locks --no-autocommit --single-transaction --no-create-db -S /tmp/mysql.sock -u \$MYSQL_USER -p\$MYSQL_PASSWORD \$MYSQL_DATABASE; } | sed -e 's/DEFINER[ ]*=[ ]*[^*]*\*/\*/' | mysql -h $DB_HOST -u $DB_USER -p${DB_PASSWORD} -P $DB_PORT $DB_NAME"
 
-CONFIG_BAK="/tmp/${PROJECT_NAME}-$(date +%F-%T)-lagoon-env.yaml"
+CONFIG_BAK="/tmp/${PROJECT_NAME}-$(date +%F-%T)-lagoobernetes-env.yaml"
 echo "*** Backing up configmap in case we need to revert: ${CONFIG_BAK}"
-oc -n $1 get configmap lagoon-env -o yaml > $CONFIG_BAK
+oc -n $1 get configmap lagoobernetes-env -o yaml > $CONFIG_BAK
 
 echo "*** updating configmap to point to ${DB_HOST}."
 # Add credentials to our configmap, prefixed with the name of the servicename of this servicebroker
-oc -n $1 patch --insecure-skip-tls-verify configmap lagoon-env \
+oc -n $1 patch --insecure-skip-tls-verify configmap lagoobernetes-env \
    -p "{\"data\":{\"${SERVICE_NAME_UPPERCASE}_HOST\":\"${DB_HOST}\", \"${SERVICE_NAME_UPPERCASE}_USERNAME\":\"${DB_USER}\", \"${SERVICE_NAME_UPPERCASE}_PASSWORD\":\"${DB_PASSWORD}\", \"${SERVICE_NAME_UPPERCASE}_DATABASE\":\"${DB_NAME}\", \"${SERVICE_NAME_UPPERCASE}_PORT\":\"${DB_PORT}\"}}"
 
 

@@ -1,5 +1,5 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/rabbitmq
+FROM ${IMAGE_REPO:-lagoobernetes}/rabbitmq
 
 RUN rabbitmq-plugins --offline enable rabbitmq_peer_discovery_k8s
 

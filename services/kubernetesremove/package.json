@@ -13,7 +13,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@lagoon/commons": "4.0.0",
+    "@lagoobernetes/commons": "4.0.0",
     "kubernetes-client": "^4.0.0",
     "ramda": "^0.26.1"
   },

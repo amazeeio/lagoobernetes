@@ -1,6 +1,6 @@
 # lagu
 
-> lagoon Command Line Interface
+> lagoobernetes Command Line Interface
 
 ## Installation
 
@@ -8,15 +8,15 @@ Install the CLI with either `npm` or `yarn`.
 
 ```sh
 # Either npm...
-npm install --global @lagoon/lagu
+npm install --global @lagoobernetes/lagu
 
 # ...or Yarn
-yarn global add @lagoon/lagu
+yarn global add @lagoobernetes/lagu
 ```
 
 ## Setup
 
-The CLI needs a configuration file at `<project directory>/.lagoon.yml`, which can be created with [the `init` command](#lagu-init):
+The CLI needs a configuration file at `<project directory>/.lagoobernetes.yml`, which can be created with [the `init` command](#lagu-init):
 
 ```sh
 # Initialize project configuration
@@ -31,7 +31,7 @@ For more options, see the [`lagu init` documentation](#lagu-init).
 
 ```text
 $ lagu init --help
-lagu init - Create a .lagoon.yml config file in the current working directory
+lagu init - Create a .lagoobernetes.yml config file in the current working directory
 
 Options:
   --version      Show version number                                   [boolean]
@@ -41,7 +41,7 @@ Options:
 
 Examples:
   lagu init                                 Create a config file at
-                                            ./.lagoon.yml. This will confirm
+                                            ./.lagoobernetes.yml. This will confirm
                                             with the user whether to overwrite
                                             the config if it already exists and
                                             also prompt for a project name to
@@ -67,14 +67,14 @@ Examples:
 ```text
 $ lagu init
 ? Enter the name of the project to configure. example
-Creating file '/Users/you/git/.lagoon.yml'...
+Creating file '/Users/you/git/.lagoobernetes.yml'...
 Configuration file created!
 ```
 
 This will generate the following file:
 
 ```text
-$ cat .lagoon.yml
+$ cat .lagoobernetes.yml
 project: example
 ```
 
@@ -82,7 +82,7 @@ project: example
 
 ```text
 $ lagu login --help
-lagu login - Authenticate with lagoon via an SSH key
+lagu login - Authenticate with lagoobernetes via an SSH key
 
 Options:
   --version   Show version number                                  [boolean]
@@ -134,7 +134,7 @@ Login successful
 
 The `execute <cli command>` yarn script can be used to run CLI commands during development.
 
-Additionally the following parameters should be set in the `.lagoon.yml` file. They can also be configured with the `init` command.
+Additionally the following parameters should be set in the `.lagoobernetes.yml` file. They can also be configured with the `init` command.
 
 ```yaml
 api: http://localhost:3000

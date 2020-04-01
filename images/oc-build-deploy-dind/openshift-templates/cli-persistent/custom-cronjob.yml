@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: lagoon-openshift-template-cli-cronjob
+  name: lagoobernetes-openshift-template-cli-cronjob
 parameters:
   - name: SERVICE_NAME
     description: Name of this service
@@ -19,7 +19,7 @@ parameters:
   - name: PROJECT
     description: Which project this belongs to, original value
     required: true
-  - name: LAGOON_GIT_SHA
+  - name: LAGOOBERNETES_GIT_SHA
     description: git hash sha of the current deployment
     required: true
   - name: SERVICE_ROUTER_URL
@@ -96,37 +96,37 @@ objects:
                 operator: Equal
                 value: 'true'
               - effect: NoSchedule
-                key: lagoon/build
+                key: lagoobernetes/build
                 operator: Exists
             volumes:
               - name: ${PERSISTENT_STORAGE_NAME}
                 persistentVolumeClaim:
                   claimName: ${PERSISTENT_STORAGE_NAME}
-              - name: lagoon-sshkey
+              - name: lagoobernetes-sshkey
                 secret:
                   defaultMode: 420
-                  secretName: lagoon-sshkey
+                  secretName: lagoobernetes-sshkey
             containers:
               - image: ${SERVICE_IMAGE}
                 command:
-                  - /lagoon/cronjob.sh
+                  - /lagoobernetes/cronjob.sh
                   - "${CRONJOB_COMMAND}"
                 name: cronjob-${SERVICE_NAME}-${CRONJOB_NAME}
                 envFrom:
                   - configMapRef:
-                      name: lagoon-env
+                      name: lagoobernetes-env
                 env:
-                  ## LAGOON_GIT_SHA is injected directly and not loaded via `lagoon-env` config
+                  ## LAGOOBERNETES_GIT_SHA is injected directly and not loaded via `lagoobernetes-env` config
                   ## This will cause the cli to redeploy on every deployment, even the files have not changed
-                  - name: LAGOON_GIT_SHA
-                    value: ${LAGOON_GIT_SHA}
+                  - name: LAGOOBERNETES_GIT_SHA
+                    value: ${LAGOOBERNETES_GIT_SHA}
                   - name: SERVICE_NAME
                     value: ${SERVICE_NAME}
                 volumeMounts:
                   - name: ${PERSISTENT_STORAGE_NAME}
                     mountPath: ${PERSISTENT_STORAGE_PATH}
-                  - mountPath: /var/run/secrets/lagoon/sshkey/
-                    name: lagoon-sshkey
+                  - mountPath: /var/run/secrets/lagoobernetes/sshkey/
+                    name: lagoobernetes-sshkey
                     readOnly: true
                 resources:
                   requests:

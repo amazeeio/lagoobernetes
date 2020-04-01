@@ -28,7 +28,7 @@ spec:
         - name: {{ .Values.persistentStorage.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistentStorage.name }}
-      priorityClassName: {{ include "solr.lagoonPriority" . }}
+      priorityClassName: {{ include "solr.lagoobernetesPriority" . }}
       enableServiceLinks: false
       securityContext:
         fsGroup: 0
@@ -54,7 +54,7 @@ spec:
             runAsGroup: 0
           envFrom:
             - configMapRef:
-                name: lagoon-env
+                name: lagoobernetes-env
           env:
             - name: CRONJOBS
               value: {{ .Values.inPodCronjobs | quote }}

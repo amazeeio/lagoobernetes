@@ -1,21 +1,21 @@
 // @flow
 
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 const {
-  sendToLagoonLogs,
-  initSendToLagoonLogs
-} = require('@lagoon/commons/src/logs');
+  sendToLagoobernetesLogs,
+  initSendToLagoobernetesLogs
+} = require('@lagoobernetes/commons/src/logs');
 const {
   consumeTasks,
-  initSendToLagoonTasks,
+  initSendToLagoobernetesTasks,
   createTaskMonitor
-} = require('@lagoon/commons/src/tasks');
+} = require('@lagoobernetes/commons/src/tasks');
 const resticRestore = require('./handlers/resticRestore');
 const openshiftBuildCancel = require('./handlers/openshiftBuildCancel');
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const messageConsumer = async msg => {
   const { key, data, data: { project } } = JSON.parse(msg.content.toString());
@@ -37,7 +37,7 @@ const messageConsumer = async msg => {
       const meta = {
         msg: JSON.parse(msg.content.toString()),
       };
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'info',
         project.name,
         '',
@@ -51,7 +51,7 @@ const messageConsumer = async msg => {
 const deathHandler = async (msg, lastError) => {
   const { key, data: { project } } = JSON.parse(msg.content.toString());
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'error',
     project.name,
     '',
@@ -67,7 +67,7 @@ ${lastError}
 const retryHandler = async (msg, error, retryCount, retryExpirationSecs) => {
   const { key, data: { project } } = JSON.parse(msg.content.toString());
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'warn',
     project,
     '',

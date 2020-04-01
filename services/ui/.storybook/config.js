@@ -6,11 +6,11 @@ import { withA11y } from '@storybook/addon-a11y';
 import { withKnobs } from '@storybook/addon-knobs';
 import withApiConnection from './decorators/ApiConnection';
 import withGlobalStyles from './decorators/GlobalStyles';
-import lagoonTheme from './lagoonTheme';
+import lagoobernetesTheme from './lagoobernetesTheme';
 
 addParameters({
   options: {
-    theme: lagoonTheme,
+    theme: lagoobernetesTheme,
     showRoots: true,
     storySort: (a, b) => {
       // Debug.

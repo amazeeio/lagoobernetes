@@ -27,7 +27,7 @@ DB_PORT=$(kubectl --insecure-skip-tls-verify -n ${NAMESPACE} get mariadbconsumer
 # Add credentials to our configmap, prefixed with the name of the servicename of this servicebroker
 kubectl patch --insecure-skip-tls-verify \
     -n ${NAMESPACE} \
-    configmap lagoon-env \
+    configmap lagoobernetes-env \
     -p "{\"data\":{\"${SERVICE_NAME_UPPERCASE}_HOST\":\"${DB_HOST}\", \"${SERVICE_NAME_UPPERCASE}_USERNAME\":\"${DB_USER}\", \"${SERVICE_NAME_UPPERCASE}_PASSWORD\":\"${DB_PASSWORD}\", \"${SERVICE_NAME_UPPERCASE}_DATABASE\":\"${DB_NAME}\", \"${SERVICE_NAME_UPPERCASE}_PORT\":\"${DB_PORT}\"}}"
 
 # only add the DB_READREPLICA_HOSTS variable if it exists in the consumer spec
@@ -36,7 +36,7 @@ if DB_READREPLICA_HOSTS=$(kubectl --insecure-skip-tls-verify -n ${NAMESPACE} get
     DB_READREPLICA_HOSTS=$(echo $DB_READREPLICA_HOSTS | cut -c 3- | rev | cut -c 1- | rev | sed 's/^\|$//g' | paste -sd, -)
     kubectl patch --insecure-skip-tls-verify \
         -n ${NAMESPACE} \
-        configmap lagoon-env \
+        configmap lagoobernetes-env \
         -p "{\"data\":{\"${SERVICE_NAME_UPPERCASE}_READREPLICA_HOSTS\":\"${DB_READREPLICA_HOSTS}\"}}"
 fi
 

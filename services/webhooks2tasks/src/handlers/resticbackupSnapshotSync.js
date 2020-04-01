@@ -1,12 +1,12 @@
 // @flow
 
 const uuid4 = require('uuid4');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 const {
   deleteBackup,
   getEnvironmentBackups
-} = require('@lagoon/commons/src/api');
+} = require('@lagoobernetes/commons/src/api');
 const R = require('ramda');
 
 import type { WebhookRequestData, ChannelWrapper } from '../types';
@@ -64,15 +64,15 @@ async function resticbackupSnapshotSync(webhook: WebhookRequestData, channelWrap
 
       try {
         const buffer = new Buffer(JSON.stringify(webhookData));
-        await channelWrapperWebhooks.publish(`lagoon-webhooks`, '', buffer, { persistent: true });
+        await channelWrapperWebhooks.publish(`lagoobernetes-webhooks`, '', buffer, { persistent: true });
       } catch(error) {
-        logger.error(`Error queuing lagoon-webhooks resticbackup:snapshot:finished, error: ${error}`);
+        logger.error(`Error queuing lagoobernetes-webhooks resticbackup:snapshot:finished, error: ${error}`);
       }
     }
 
     return;
   } catch (err) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

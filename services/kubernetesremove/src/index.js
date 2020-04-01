@@ -1,22 +1,22 @@
 const promisify = require('util').promisify;
 const R = require('ramda');
 const KubernetesClient = require('kubernetes-client');
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 const {
-  sendToLagoonLogs,
-  initSendToLagoonLogs
-} = require('@lagoon/commons/src/logs');
+  sendToLagoobernetesLogs,
+  initSendToLagoobernetesLogs
+} = require('@lagoobernetes/commons/src/logs');
 const {
   consumeTasks,
-  initSendToLagoonTasks
-} = require('@lagoon/commons/src/tasks');
+  initSendToLagoobernetesTasks
+} = require('@lagoobernetes/commons/src/tasks');
 const {
   getOpenShiftInfoForProject,
   deleteEnvironment
-} = require('@lagoon/commons/src/api');
+} = require('@lagoobernetes/commons/src/api');
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const ocsafety = string =>
   string.toLocaleLowerCase().replace(/[^0-9a-z-]/g, '-');
@@ -102,7 +102,7 @@ const messageConsumer = async function(msg) {
       logger.info(
         `${openshiftProject} does not exist, assuming it was removed`
       );
-      sendToLagoonLogs(
+      sendToLagoobernetesLogs(
         'success',
         projectName,
         '',
@@ -127,7 +127,7 @@ const messageConsumer = async function(msg) {
   // Project exists, let's remove it
   try {
     /**
-     * TODO: When lagoon-k8s gets it's own operator or uses ServiceCatalog, remove
+     * TODO: When lagoobernetes-k8s gets it's own operator or uses ServiceCatalog, remove
      * any of those project dependencies first (see service catalog examples
      * in openshiftremove).
      */
@@ -143,7 +143,7 @@ const messageConsumer = async function(msg) {
       }
     });
     logger.info(`${openshiftProject}: Project deleted`);
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'success',
       projectName,
       '',
@@ -177,7 +177,7 @@ const deathHandler = async (msg, lastError) => {
     `${projectName}-${branch || pullrequestNumber}`
   );
 
-  sendToLagoonLogs(
+  sendToLagoobernetesLogs(
     'error',
     projectName,
     '',

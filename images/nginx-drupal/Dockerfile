@@ -1,8 +1,8 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/nginx
+FROM ${IMAGE_REPO:-lagoobernetes}/nginx
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=nginx
+ENV LAGOOBERNETES=nginx
 
 RUN mkdir -p /etc/nginx/conf.d/drupal
 

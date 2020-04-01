@@ -28,8 +28,8 @@ async function waitForKeycloak() {
     try {
       keycloakAdminClient = await getKeycloakAdminClient();
 
-      if (!(await keycloakAdminClient.realms.findOne({ realm: 'lagoon' }))) {
-        throw new Error('The "lagoon" realm has not been created yet.');
+      if (!(await keycloakAdminClient.realms.findOne({ realm: 'lagoobernetes' }))) {
+        throw new Error('The "lagoobernetes" realm has not been created yet.');
       }
 
       const clients = await keycloakAdminClient.clients.find({ clientId: 'api' });

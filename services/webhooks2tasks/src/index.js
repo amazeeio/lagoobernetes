@@ -1,9 +1,9 @@
 // @flow
 
 const amqp = require('amqp-connection-manager');
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { sendToLagoonLogs, initSendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { sendToLagoonTasks, initSendToLagoonTasks } = require('@lagoon/commons/src/tasks');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { sendToLagoobernetesLogs, initSendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { sendToLagoobernetesTasks, initSendToLagoobernetesTasks } = require('@lagoobernetes/commons/src/tasks');
 
 const processQueue = require('./processQueue');
 
@@ -11,8 +11,8 @@ import type { ChannelWrapper } from './types';
 
 
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const rabbitmqHost = process.env.RABBITMQ_HOST || "broker"
 const rabbitmqUsername = process.env.RABBITMQ_USERNAME || "guest"
@@ -27,21 +27,21 @@ const channelWrapperWebhooks: ChannelWrapper = connection.createChannel({
 	setup: channel => {
 		return Promise.all([
 
-			// Our main Exchange for all lagoon-webhooks
-			channel.assertExchange('lagoon-webhooks', 'direct', { durable: true }),
+			// Our main Exchange for all lagoobernetes-webhooks
+			channel.assertExchange('lagoobernetes-webhooks', 'direct', { durable: true }),
 
 			// Queue which is bound to the exachange
-			channel.assertQueue('lagoon-webhooks:queue', { durable: true }),
-			channel.bindQueue('lagoon-webhooks:queue', 'lagoon-webhooks', ''),
+			channel.assertQueue('lagoobernetes-webhooks:queue', { durable: true }),
+			channel.bindQueue('lagoobernetes-webhooks:queue', 'lagoobernetes-webhooks', ''),
 
 			// delay exchnage
-			channel.assertExchange('lagoon-webhooks-delay', 'x-delayed-message', { durable: true, arguments: { 'x-delayed-type': 'fanout' }}),
-			channel.bindExchange('lagoon-webhooks', 'lagoon-webhooks-delay', ''),
+			channel.assertExchange('lagoobernetes-webhooks-delay', 'x-delayed-message', { durable: true, arguments: { 'x-delayed-type': 'fanout' }}),
+			channel.bindExchange('lagoobernetes-webhooks', 'lagoobernetes-webhooks-delay', ''),
 
 			// handle up to four messages at the same time
 			channel.prefetch(4),
 
-			channel.consume('lagoon-webhooks:queue', msg => {processQueue(msg, channelWrapperWebhooks)}, {noAck: false}),
+			channel.consume('lagoobernetes-webhooks:queue', msg => {processQueue(msg, channelWrapperWebhooks)}, {noAck: false}),
 
 		]);
 	}

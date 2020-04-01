@@ -1,6 +1,6 @@
 const {
   Transport: LokkaTransportHttp,
-} = require('@lagoon/lokka-transport-http');
+} = require('@lagoobernetes/lokka-transport-http');
 const fetchUrl = require('node-fetch');
 
 class NetworkError extends Error {}

@@ -7,7 +7,7 @@ import { sync as spawnSync } from 'execa';
 
 const CLI_PATH = path.join(__dirname, '..', '..', 'bin', 'lagu.js');
 const cwd = path.join(__dirname, 'fixtures');
-const tokenPath = path.join(cwd, '.lagoon-token');
+const tokenPath = path.join(cwd, '.lagoobernetes-token');
 
 const stripCreatedDates = R.replace(
   /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/g,
@@ -89,7 +89,7 @@ describe('lagu', () => {
     expect(stripCreatedDates(results.stdout)).toMatchSnapshot();
   });
 
-  it('should show customer details (project read from .lagoon.yml)', async () => {
+  it('should show customer details (project read from .lagoobernetes.yml)', async () => {
     const results = spawnSync(CLI_PATH, ['customer'], {
       cwd,
     });
@@ -133,13 +133,13 @@ describe('lagu', () => {
     expect(stripCreatedDates(results.stdout)).toMatchSnapshot();
   });
 
-  it('should list all environments for a project (project read from .lagoon.yml)', async () => {
+  it('should list all environments for a project (project read from .lagoobernetes.yml)', async () => {
     const results = spawnSync(CLI_PATH, ['environments'], { cwd });
     expect(results.code).toBe(0);
     expect(stripCreatedDates(results.stdout)).toMatchSnapshot();
   });
 
-  it('should show project details (read from .lagoon.yml)', async () => {
+  it('should show project details (read from .lagoobernetes.yml)', async () => {
     const results = spawnSync(CLI_PATH, ['project'], {
       cwd,
     });

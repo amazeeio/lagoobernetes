@@ -2,12 +2,12 @@
 
 const R = require('ramda');
 const getFieldNames = require('graphql-list-fields');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
 const {
   createDeployTask,
   createPromoteTask,
   createMiscTask,
-} = require('@lagoon/commons/src/tasks');
+} = require('@lagoobernetes/commons/src/tasks');
 const esClient = require('../../clients/esClient');
 const {
   pubSub,
@@ -52,7 +52,7 @@ const injectBuildLog = async deployment => {
 
   try {
     const result = await esClient.search({
-      index: 'lagoon-logs-*',
+      index: 'lagoobernetes-logs-*',
       sort: '@timestamp:desc',
       body: {
         query: {
@@ -172,11 +172,11 @@ const getDeploymentUrl = async (
   { sqlClient, hasPermission },
 ) => {
 
-  const lagoonUiRoute = R.compose(
+  const lagoobernetesUiRoute = R.compose(
     R.defaultTo('http://localhost:8888'),
     R.find(R.test(/\/ui-/)),
     R.split(','),
-    R.propOr('', 'LAGOON_ROUTES'),
+    R.propOr('', 'LAGOOBERNETES_ROUTES'),
   )(process.env);
 
   const { name: project, openshiftProjectName  } = await projectHelpers(sqlClient).getProjectByEnvironmentId(
@@ -186,7 +186,7 @@ const getDeploymentUrl = async (
   const rows = await query(sqlClient, knex('deployment').where('id', '=', id).toString());
   const deployment = R.prop(0, rows);
 
-  return `${lagoonUiRoute}/projects/${project}/${openshiftProjectName}/deployments/${deployment.name}`;
+  return `${lagoobernetesUiRoute}/projects/${project}/${openshiftProjectName}/deployments/${deployment.name}`;
 };
 
 const addDeployment = async (
@@ -352,7 +352,7 @@ const cancelDeployment = async (
     await createMiscTask({ key: 'build:cancel', data });
     return 'success';
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       '',
@@ -472,7 +472,7 @@ const deployEnvironmentLatest = async (
   try {
     await taskFunction(deployData);
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       deployData.projectName,
       '',
@@ -487,7 +487,7 @@ const deployEnvironmentLatest = async (
   } catch (error) {
     switch (error.name) {
       case 'NoNeedToDeployBranch':
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'info',
           deployData.projectName,
           '',
@@ -500,7 +500,7 @@ const deployEnvironmentLatest = async (
         return `Skipped: ${error.message}`;
 
       default:
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'error',
           deployData.projectName,
           '',
@@ -547,7 +547,7 @@ const deployEnvironmentBranch = async (
   try {
     await createDeployTask(deployData);
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       deployData.projectName,
       '',
@@ -562,7 +562,7 @@ const deployEnvironmentBranch = async (
   } catch (error) {
     switch (error.name) {
       case 'NoNeedToDeployBranch':
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'info',
           deployData.projectName,
           '',
@@ -575,7 +575,7 @@ const deployEnvironmentBranch = async (
         return `Skipped: ${error.message}`;
 
       default:
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'error',
           deployData.projectName,
           '',
@@ -638,7 +638,7 @@ const deployEnvironmentPullrequest = async (
   try {
     await createDeployTask(deployData);
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       deployData.projectName,
       '',
@@ -653,7 +653,7 @@ const deployEnvironmentPullrequest = async (
   } catch (error) {
     switch (error.name) {
       case 'NoNeedToDeployBranch':
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'info',
           deployData.projectName,
           '',
@@ -666,7 +666,7 @@ const deployEnvironmentPullrequest = async (
         return `Skipped: ${error.message}`;
 
       default:
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'error',
           deployData.projectName,
           '',
@@ -738,7 +738,7 @@ const deployEnvironmentPromote = async (
   try {
     await createPromoteTask(deployData);
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       deployData.projectName,
       '',
@@ -753,7 +753,7 @@ const deployEnvironmentPromote = async (
   } catch (error) {
     switch (error.name) {
       case 'NoNeedToDeployBranch':
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'info',
           deployData.projectName,
           '',
@@ -766,7 +766,7 @@ const deployEnvironmentPromote = async (
         return `Skipped: ${error.message}`;
 
       default:
-        sendToLagoonLogs(
+        sendToLagoobernetesLogs(
           'error',
           deployData.projectName,
           '',

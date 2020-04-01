@@ -15,7 +15,7 @@ export const TOKEN: 'token' = 'token';
 
 export const globalOptionDefaults = {
   [FORMAT]: FORMAT_CHOICE_TABLE,
-  [TOKEN]: path.join(os.homedir(), '.lagoon-token'),
+  [TOKEN]: path.join(os.homedir(), '.lagoobernetes-token'),
 };
 
 export const globalOptions = {

@@ -1,7 +1,7 @@
 // @flow
 
 const amqp = require('amqp-connection-manager');
-const { logger } = require('@lagoon/commons/src/local-logging');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
 const readFromRabbitMQ = require('./readFromRabbitMQ');
 
 import type { ChannelWrapper } from './types';
@@ -18,11 +18,11 @@ connection.on('disconnect', params => logger.error('Not connected, error: %s', p
 const channelWrapperLogs: ChannelWrapper = connection.createChannel({
 	setup: channel => {
 		return Promise.all([
-			channel.assertExchange('lagoon-logs', 'direct', {durable: true}),
-			channel.assertQueue('lagoon-logs:email', {durable: true}),
-			channel.bindQueue('lagoon-logs:email', 'lagoon-logs', ''),
+			channel.assertExchange('lagoobernetes-logs', 'direct', {durable: true}),
+			channel.assertQueue('lagoobernetes-logs:email', {durable: true}),
+			channel.bindQueue('lagoobernetes-logs:email', 'lagoobernetes-logs', ''),
 			channel.prefetch(1),
-			channel.consume('lagoon-logs:email', msg => readFromRabbitMQ(msg, channelWrapperLogs), {noAck: false}),
+			channel.consume('lagoobernetes-logs:email', msg => readFromRabbitMQ(msg, channelWrapperLogs), {noAck: false}),
 		]);
 	}
 });

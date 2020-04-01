@@ -202,7 +202,7 @@ CREATE OR REPLACE PROCEDURE
       ALTER TABLE `project`
       ADD `active_systems_promote` varchar(300);
       UPDATE project
-      SET active_systems_promote = 'lagoon_openshiftBuildDeploy';
+      SET active_systems_promote = 'lagoobernetes_openshiftBuildDeploy';
     END IF;
   END;
 $$
@@ -629,7 +629,7 @@ CREATE OR REPLACE PROCEDURE
       ALTER TABLE `project`
       ADD `active_systems_task` varchar(300);
       UPDATE project
-      SET active_systems_task = 'lagoon_openshiftJob';
+      SET active_systems_task = 'lagoobernetes_openshiftJob';
     END IF;
   END;
 $$
@@ -649,7 +649,7 @@ CREATE OR REPLACE PROCEDURE
       ALTER TABLE `project`
       ADD `active_systems_misc` varchar(300);
       UPDATE project
-      SET active_systems_misc = 'lagoon_openshiftMisc';
+      SET active_systems_misc = 'lagoobernetes_openshiftMisc';
     END IF;
   END;
 $$

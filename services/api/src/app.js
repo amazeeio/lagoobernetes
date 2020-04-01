@@ -27,7 +27,7 @@ app.use(
   }),
 );
 
-// TODO: Restrict requests to lagoon domains?
+// TODO: Restrict requests to lagoobernetes domains?
 app.use(cors());
 
 // $FlowFixMe

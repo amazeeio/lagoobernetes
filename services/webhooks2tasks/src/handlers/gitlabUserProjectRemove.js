@@ -1,6 +1,6 @@
 // @flow
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { removeUserFromGroup } = require('@lagoon/commons/src/api');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { removeUserFromGroup } = require('@lagoobernetes/commons/src/api');
 
 import type { WebhookRequestData } from '../types';
 
@@ -17,12 +17,12 @@ async function gitlabUserProjectRemove(webhook: WebhookRequestData) {
       userEmail
     };
 
-    // In Gitlab you can add/remove Users to Projects, in Lagoon this is not directly possible, but instead
-    // Lagoon automatically creates a group for each project in this form: `project-$projectname`
+    // In Gitlab you can add/remove Users to Projects, in Lagoobernetes this is not directly possible, but instead
+    // Lagoobernetes automatically creates a group for each project in this form: `project-$projectname`
     // So if a User is removed from a Project in Gitlab, we remove the user from this group
     await removeUserFromGroup(userEmail, `project-${projectName}`);
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -33,7 +33,7 @@ async function gitlabUserProjectRemove(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

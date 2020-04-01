@@ -22,7 +22,7 @@
   serial: 1
   vars:
     url: "{{ check_url }}"
-    expected_content: "LAGOON_ENVIRONMENT_TYPE={{ environment_type }}"
+    expected_content: "LAGOOBERNETES_ENVIRONMENT_TYPE={{ environment_type }}"
   tasks:
   - include: ../../checks/check-url-content.yaml
 

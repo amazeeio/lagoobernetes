@@ -5,21 +5,21 @@ const R = require('ramda');
 const sha1 = require('sha1');
 const crypto = require('crypto');
 const moment = require('moment');
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { getOpenShiftInfoForProject, addOrUpdateEnvironment, getEnvironmentByName, addDeployment } = require('@lagoon/commons/src/api');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { getOpenShiftInfoForProject, addOrUpdateEnvironment, getEnvironmentByName, addDeployment } = require('@lagoobernetes/commons/src/api');
 
-const { sendToLagoonLogs, initSendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { consumeTasks, initSendToLagoonTasks, createTaskMonitor } = require('@lagoon/commons/src/tasks');
+const { sendToLagoobernetesLogs, initSendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { consumeTasks, initSendToLagoobernetesTasks, createTaskMonitor } = require('@lagoobernetes/commons/src/tasks');
 
-initSendToLagoonLogs();
-initSendToLagoonTasks();
+initSendToLagoobernetesLogs();
+initSendToLagoobernetesTasks();
 
 const CI = process.env.CI || "false"
-const lagoonGitSafeBranch = process.env.LAGOON_GIT_SAFE_BRANCH || "master"
-const lagoonVersion = process.env.LAGOON_VERSION
+const lagoobernetesGitSafeBranch = process.env.LAGOOBERNETES_GIT_SAFE_BRANCH || "master"
+const lagoobernetesVersion = process.env.LAGOOBERNETES_VERSION
 const overwriteKubectlBuildDeployDindImage = process.env.OVERWRITE_KUBECTL_BUILD_DEPLOY_DIND_IMAGE
-const registry = process.env.REGISTRY || "registry.lagoon.svc:5000"
-const lagoonEnvironmentType = process.env.LAGOON_ENVIRONMENT_TYPE || "development"
+const registry = process.env.REGISTRY || "registry.lagoobernetes.svc:5000"
+const lagoobernetesEnvironmentType = process.env.LAGOOBERNETES_ENVIRONMENT_TYPE || "development"
 const jwtSecret = process.env.JWTSECRET || "super-secret-string"
 
 const messageConsumer = async msg => {
@@ -76,7 +76,7 @@ const messageConsumer = async msg => {
     var graphqlEnvironmentType = environmentType.toUpperCase()
     var graphqlGitType = buildType.toUpperCase()
     var openshiftPromoteSourceProject = promoteSourceEnvironment ? `${projectName}-${ocsafety(promoteSourceEnvironment)}` : ""
-    // A secret which is the same across all Environments of this Lagoon Project
+    // A secret which is the same across all Environments of this Lagoobernetes Project
     var projectSecret = crypto.createHash('sha256').update(`${projectName}-${jwtSecret}`).digest('hex');
   } catch(error) {
     logger.error(`Error while loading information for project ${projectName}`)
@@ -116,16 +116,16 @@ const messageConsumer = async msg => {
     let buildImage = {}
     // During CI we want to use the OpenShift Registry for our build Image and use the OpenShift registry for the base Images
     if (CI == "true") {
-      buildImage = "172.17.0.1:5000/lagoon/kubectl-build-deploy-dind:latest"
+      buildImage = "172.17.0.1:5000/lagoobernetes/kubectl-build-deploy-dind:latest"
     } else if (overwriteKubectlBuildDeployDindImage) {
       // allow to overwrite the image we use via OVERWRITE_OC_BUILD_DEPLOY_DIND_IMAGE env variable
       buildImage = overwriteKubectlBuildDeployDindImage
-    } else if (lagoonEnvironmentType == 'production') {
-      // we are a production environment, use the amazeeio/ image with our current lagoon version
-      buildImage = `amazeeio/kubectl-build-deploy-dind:${lagoonVersion}`
+    } else if (lagoobernetesEnvironmentType == 'production') {
+      // we are a production environment, use the amazeeio/ image with our current lagoobernetes version
+      buildImage = `amazeeio/kubectl-build-deploy-dind:${lagoobernetesVersion}`
     } else {
-      // we are a development enviornment, use the amazeeiolagoon image with the same branch name
-      buildImage = `amazeeiolagoon/oc-build-deploy-dind:${lagoonGitSafeBranch}`
+      // we are a development enviornment, use the amazeeiolagoobernetes image with the same branch name
+      buildImage = `amazeeiolagoobernetes/oc-build-deploy-dind:${lagoobernetesGitSafeBranch}`
     }
 
     let jobconfig = {
@@ -149,28 +149,28 @@ const messageConsumer = async msg => {
                 }
               },
               {
-                name: "lagoon-sshkey",
+                name: "lagoobernetes-sshkey",
                 secret: {
-                  secretName: "lagoon-sshkey",
+                  secretName: "lagoobernetes-sshkey",
                   defaultMode: 420
                 }
               }
             ],
             "tolerations": [
               {
-                 "key": "lagoon/build",
+                 "key": "lagoobernetes/build",
                  "effect": "NoSchedule",
                  "operator": "Exists"
               },
               {
-                 "key": "lagoon/build",
+                 "key": "lagoobernetes/build",
                  "effect": "PreferNoSchedule",
                  "operator": "Exists"
               }
             ],
             "containers": [
               {
-                "name": "lagoon-build",
+                "name": "lagoobernetes-build",
                 "image": buildImage,
                 "imagePullPolicy": "Always",
                 "env": [
@@ -227,12 +227,12 @@ const messageConsumer = async msg => {
                   {
                     name: secret,
                     readOnly: true,
-                    mountPath: "/var/run/secrets/lagoon/deployer"
+                    mountPath: "/var/run/secrets/lagoobernetes/deployer"
                   },
                   {
-                    name: "lagoon-sshkey",
+                    name: "lagoobernetes-sshkey",
                     readOnly: true,
-                    mountPath: "/var/run/secrets/lagoon/ssh"
+                    mountPath: "/var/run/secrets/lagoobernetes/ssh"
                   }
                 ]
               }
@@ -257,10 +257,10 @@ const messageConsumer = async msg => {
       jobconfig.spec.template.spec.containers[0].env.push({"name": "PROMOTION_SOURCE_NAMESPACE","value": openshiftPromoteSourceProject})
     }
     if (!R.isEmpty(projectOpenShift.envVariables)) {
-      jobconfig.spec.template.spec.containers[0].env.push({"name": "LAGOON_PROJECT_VARIABLES", "value": JSON.stringify(projectOpenShift.envVariables)})
+      jobconfig.spec.template.spec.containers[0].env.push({"name": "LAGOOBERNETES_PROJECT_VARIABLES", "value": JSON.stringify(projectOpenShift.envVariables)})
     }
     if (!R.isEmpty(environment.envVariables)) {
-      jobconfig.spec.template.spec.containers[0].env.push({"name": "LAGOON_ENVIRONMENT_VARIABLES", "value": JSON.stringify(environment.envVariables)})
+      jobconfig.spec.template.spec.containers[0].env.push({"name": "LAGOOBERNETES_ENVIRONMENT_VARIABLES", "value": JSON.stringify(environment.envVariables)})
     }
     return jobconfig
   }
@@ -333,17 +333,17 @@ const messageConsumer = async msg => {
 
   // Create ServiceAccount if it does not exist yet.
   try {
-    logger.info(`${openshiftProject}: Check if ServiceAccount lagoon-deployer already exists`)
-    const serviceaccountsGet = promisify(kubernetes.ns(openshiftProject).serviceaccounts('lagoon-deployer').get)
+    logger.info(`${openshiftProject}: Check if ServiceAccount lagoobernetes-deployer already exists`)
+    const serviceaccountsGet = promisify(kubernetes.ns(openshiftProject).serviceaccounts('lagoobernetes-deployer').get)
     projectStatus = await serviceaccountsGet()
-    logger.info(`${openshiftProject}: ServiceAccount lagoon-deployer already exists, continuing`)
+    logger.info(`${openshiftProject}: ServiceAccount lagoobernetes-deployer already exists, continuing`)
   } catch (err) {
     if (err.code == 404) {
-      logger.info(`${openshiftProject}: ServiceAccount lagoon-deployer does not exists, creating`)
+      logger.info(`${openshiftProject}: ServiceAccount lagoobernetes-deployer does not exists, creating`)
       const serviceaccountsPost = promisify(kubernetes.ns(openshiftProject).serviceaccounts.post)
-      await serviceaccountsPost({ body: {"kind":"ServiceAccount","apiVersion":"v1","metadata":{"name":"lagoon-deployer"} }})
+      await serviceaccountsPost({ body: {"kind":"ServiceAccount","apiVersion":"v1","metadata":{"name":"lagoobernetes-deployer"} }})
       await sleep(2000); // sleep a bit after creating the ServiceAccount for Kubernetes to create all the secrets
-      const serviceaccountsRolebindingsBody = {"kind":"RoleBinding","apiVersion":"rbac.authorization.k8s.io/v1","metadata":{"name":"lagoon-deployer-admin","namespace":openshiftProject},"roleRef":{"name":"admin","kind":"ClusterRole","apiGroup":"rbac.authorization.k8s.io"},"subjects":[{"name":"lagoon-deployer","kind":"ServiceAccount","namespace":openshiftProject}]};
+      const serviceaccountsRolebindingsBody = {"kind":"RoleBinding","apiVersion":"rbac.authorization.k8s.io/v1","metadata":{"name":"lagoobernetes-deployer-admin","namespace":openshiftProject},"roleRef":{"name":"admin","kind":"ClusterRole","apiGroup":"rbac.authorization.k8s.io"},"subjects":[{"name":"lagoobernetes-deployer","kind":"ServiceAccount","namespace":openshiftProject}]};
       const serviceaccountsRolebindingsPost = promisify(kubernetesApi.group(serviceaccountsRolebindingsBody).ns(openshiftProject).rolebindings.post)
       await serviceaccountsRolebindingsPost({ body: serviceaccountsRolebindingsBody })
     } else {
@@ -355,28 +355,28 @@ const messageConsumer = async msg => {
   // // Give the ServiceAccount access to the Promotion Source Project, it needs two roles: 'view' and 'system:image-puller'
   // if (buildType == "promote") {
   //   try {
-  //     const promotionSourcRolebindingsGet = promisify(openshift.ns(openshiftPromoteSourceProject).rolebindings(`${openshiftProject}-lagoon-deployer-view`).get)
+  //     const promotionSourcRolebindingsGet = promisify(openshift.ns(openshiftPromoteSourceProject).rolebindings(`${openshiftProject}-lagoobernetes-deployer-view`).get)
   //     await promotionSourcRolebindingsGet()
-  //     logger.info(`${openshiftProject}: RoleBinding ${openshiftProject}-lagoon-deployer-view in ${openshiftPromoteSourceProject} does already exist, continuing`)
+  //     logger.info(`${openshiftProject}: RoleBinding ${openshiftProject}-lagoobernetes-deployer-view in ${openshiftPromoteSourceProject} does already exist, continuing`)
   //   } catch (err) {
   //     if (err.code == 404) {
-  //       logger.info(`${openshiftProject}: RoleBinding ${openshiftProject}-lagoon-deployer-view in ${openshiftPromoteSourceProject} does not exists, creating`)
+  //       logger.info(`${openshiftProject}: RoleBinding ${openshiftProject}-lagoobernetes-deployer-view in ${openshiftPromoteSourceProject} does not exists, creating`)
   //       const promotionSourceRolebindingsPost = promisify(openshift.ns(openshiftPromoteSourceProject).rolebindings.post)
-  //       await promotionSourceRolebindingsPost({ body: {"kind":"RoleBinding","apiVersion":"v1","metadata":{"name":`${openshiftProject}-lagoon-deployer-view`,"namespace":openshiftPromoteSourceProject},"roleRef":{"name":"view"},"subjects":[{"name":"lagoon-deployer","kind":"ServiceAccount","namespace":openshiftProject}]}})
+  //       await promotionSourceRolebindingsPost({ body: {"kind":"RoleBinding","apiVersion":"v1","metadata":{"name":`${openshiftProject}-lagoobernetes-deployer-view`,"namespace":openshiftPromoteSourceProject},"roleRef":{"name":"view"},"subjects":[{"name":"lagoobernetes-deployer","kind":"ServiceAccount","namespace":openshiftProject}]}})
   //     } else {
   //       logger.error(err)
   //       throw new Error
   //     }
   //   }
   //   try {
-  //     const promotionSourceRolebindingsGet = promisify(openshift.ns(openshiftPromoteSourceProject).rolebindings(`${openshiftProject}-lagoon-deployer-image-puller`).get)
+  //     const promotionSourceRolebindingsGet = promisify(openshift.ns(openshiftPromoteSourceProject).rolebindings(`${openshiftProject}-lagoobernetes-deployer-image-puller`).get)
   //     await promotionSourceRolebindingsGet()
-  //     logger.info(`${openshiftProject}: RoleBinding ${openshiftProject}-lagoon-deployer-image-puller in ${openshiftPromoteSourceProject} does already exist, continuing`)
+  //     logger.info(`${openshiftProject}: RoleBinding ${openshiftProject}-lagoobernetes-deployer-image-puller in ${openshiftPromoteSourceProject} does already exist, continuing`)
   //   } catch (err) {
   //     if (err.code == 404) {
-  //       logger.info(`${openshiftProject}: RoleBinding ${openshiftProject}-lagoon-deployer-image-puller in ${openshiftPromoteSourceProject} does not exists, creating`)
+  //       logger.info(`${openshiftProject}: RoleBinding ${openshiftProject}-lagoobernetes-deployer-image-puller in ${openshiftPromoteSourceProject} does not exists, creating`)
   //       const promotionSourceRolebindingsPost = promisify(openshift.ns(openshiftPromoteSourceProject).rolebindings.post)
-  //       await promotionSourceRolebindingsPost({ body: {"kind":"RoleBinding","apiVersion":"v1","metadata":{"name":`${openshiftProject}-lagoon-deployer-image-puller`,"namespace":openshiftPromoteSourceProject},"roleRef":{"name":"system:image-puller"},"subjects":[{"name":"lagoon-deployer","kind":"ServiceAccount","namespace":openshiftProject}]}})
+  //       await promotionSourceRolebindingsPost({ body: {"kind":"RoleBinding","apiVersion":"v1","metadata":{"name":`${openshiftProject}-lagoobernetes-deployer-image-puller`,"namespace":openshiftPromoteSourceProject},"roleRef":{"name":"system:image-puller"},"subjects":[{"name":"lagoobernetes-deployer","kind":"ServiceAccount","namespace":openshiftProject}]}})
   //     } else {
   //       logger.error(err)
   //       throw new Error
@@ -388,17 +388,17 @@ const messageConsumer = async msg => {
   let sshKey = {}
   const sshKeyBase64 = new Buffer(deployPrivateKey.replace(/\\n/g, "\n")).toString('base64')
   try {
-    logger.info(`${openshiftProject}: Check if secret lagoon-sshkey exists`)
-    const secretsGet = promisify(kubernetes.ns(openshiftProject).secrets('lagoon-sshkey').get)
+    logger.info(`${openshiftProject}: Check if secret lagoobernetes-sshkey exists`)
+    const secretsGet = promisify(kubernetes.ns(openshiftProject).secrets('lagoobernetes-sshkey').get)
     sshKey = await secretsGet()
-    logger.info(`${openshiftProject}: Secret lagoon-sshkey already exists, updating`)
-    const secretsPut = promisify(kubernetes.ns(openshiftProject).secrets('lagoon-sshkey').put)
-    await secretsPut({ body: {"apiVersion":"v1","kind":"Secret","metadata":{"name":"lagoon-sshkey", "resourceVersion": sshKey.metadata.resourceVersion },"buildType":"kubernetes.io/ssh-auth","data":{"ssh-privatekey":sshKeyBase64}}})
+    logger.info(`${openshiftProject}: Secret lagoobernetes-sshkey already exists, updating`)
+    const secretsPut = promisify(kubernetes.ns(openshiftProject).secrets('lagoobernetes-sshkey').put)
+    await secretsPut({ body: {"apiVersion":"v1","kind":"Secret","metadata":{"name":"lagoobernetes-sshkey", "resourceVersion": sshKey.metadata.resourceVersion },"buildType":"kubernetes.io/ssh-auth","data":{"ssh-privatekey":sshKeyBase64}}})
   } catch (err) {
     if (err.code == 404) {
-      logger.info(`${openshiftProject}: Secret lagoon-sshkey does not exists, creating`)
+      logger.info(`${openshiftProject}: Secret lagoobernetes-sshkey does not exists, creating`)
       const secretsPost = promisify(kubernetes.ns(openshiftProject).secrets.post)
-      await secretsPost({ body: {"apiVersion":"v1","kind":"Secret","metadata":{"name":"lagoon-sshkey"},"buildType":"kubernetes.io/ssh-auth","data":{"ssh-privatekey":sshKeyBase64}}})
+      await secretsPost({ body: {"apiVersion":"v1","kind":"Secret","metadata":{"name":"lagoobernetes-sshkey"},"buildType":"kubernetes.io/ssh-auth","data":{"ssh-privatekey":sshKeyBase64}}})
     } else {
       logger.error(err)
       throw new Error
@@ -406,23 +406,23 @@ const messageConsumer = async msg => {
   }
 
   // Load the Token Secret Name for our created ServiceAccount
-  const serviceaccountsGet = promisify(kubernetes.ns(openshiftProject).serviceaccounts("lagoon-deployer").get)
+  const serviceaccountsGet = promisify(kubernetes.ns(openshiftProject).serviceaccounts("lagoobernetes-deployer").get)
   serviceaccount = await serviceaccountsGet()
-  // a ServiceAccount can have multiple secrets, we are interested in one that has starts with 'lagoon-deployer-token'
+  // a ServiceAccount can have multiple secrets, we are interested in one that has starts with 'lagoobernetes-deployer-token'
   let serviceaccountTokenSecret = '';
   for (var key in serviceaccount.secrets) {
-    if(/^lagoon-deployer-token/.test(serviceaccount.secrets[key].name)) {
+    if(/^lagoobernetes-deployer-token/.test(serviceaccount.secrets[key].name)) {
       serviceaccountTokenSecret = serviceaccount.secrets[key].name
       break;
     }
   }
   if (serviceaccountTokenSecret == '') {
-    throw new Error(`${openshiftProject}: Could not find token secret for ServiceAccount lagoon-deployer`)
+    throw new Error(`${openshiftProject}: Could not find token secret for ServiceAccount lagoobernetes-deployer`)
   }
 
   // @TODO: generate names with incremential numbers from the previous build number
   const randBuildId = Math.random().toString(36).substring(7);
-  const buildName = `lagoon-build-${randBuildId}`;
+  const buildName = `lagoobernetes-build-${randBuildId}`;
   const jobConfig = generateJobConfig(buildName, serviceaccountTokenSecret, buildType, environment.addOrUpdateEnvironment)
 
   let deployment;
@@ -455,7 +455,7 @@ const messageConsumer = async msg => {
     logMessage = `\`${branch}\``
   }
 
-  sendToLagoonLogs('start', projectName, "", "task:builddeploy-kubernetes:start", {},
+  sendToLagoobernetesLogs('start', projectName, "", "task:builddeploy-kubernetes:start", {},
     `*[${projectName}]* ${logMessage}`
   )
 
@@ -475,7 +475,7 @@ const deathHandler = async (msg, lastError) => {
     logMessage = `\`${branch}\``
   }
 
-  sendToLagoonLogs('error', projectName, "", "task:builddeploy-kubernetes:error",  {},
+  sendToLagoobernetesLogs('error', projectName, "", "task:builddeploy-kubernetes:error",  {},
 `*[${projectName}]* ${logMessage} ERROR:
 \`\`\`
 ${lastError}
@@ -498,7 +498,7 @@ const retryHandler = async (msg, error, retryCount, retryExpirationSecs) => {
     logMessage = `\`${branch}\``
   }
 
-  sendToLagoonLogs('warn', projectName, "", "task:builddeploy-kubernetes:retry", {error: error.message, msg: JSON.parse(msg.content.toString()), retryCount: retryCount},
+  sendToLagoobernetesLogs('warn', projectName, "", "task:builddeploy-kubernetes:retry", {error: error.message, msg: JSON.parse(msg.content.toString()), retryCount: retryCount},
 `*[${projectName}]* ${logMessage} ERROR:
 \`\`\`
 ${error}

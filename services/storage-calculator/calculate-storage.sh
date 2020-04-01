@@ -77,8 +77,8 @@ do
       ${OC} run --generator=deploymentconfig/v1 --image amazeeio/alpine-mysql-client storage-calc -- sh -c "while sleep 3600; do :; done"
       ${OC} rollout pause deploymentconfig/storage-calc
 
-      # Copy environment variable from lagoon-env configmap.
-      ${OC} set env --from=configmap/lagoon-env deploymentconfig/storage-calc
+      # Copy environment variable from lagoobernetes-env configmap.
+      ${OC} set env --from=configmap/lagoobernetes-env deploymentconfig/storage-calc
 
       PVCS=($(${OC} get pvc -o name | sed 's/persistentvolumeclaim\///'))
 
@@ -134,8 +134,8 @@ do
             curl -s -XPOST -H 'Content-Type: application/json' -H "$BEARER" api:3000/graphql -d "{\"query\": \"$query\"}"
 
             # Update namespace labels
-            if [ ! -z "$LAGOON_STORAGE_LABEL_NAMESPACE"]; then
-              ${OC} label namespace $ENVIRONMENT_OPENSHIFT_PROJECTNAME lagoon/storage-${PVC}=${STORAGE_BYTES} --overwrite
+            if [ ! -z "$LAGOOBERNETES_STORAGE_LABEL_NAMESPACE"]; then
+              ${OC} label namespace $ENVIRONMENT_OPENSHIFT_PROJECTNAME lagoobernetes/storage-${PVC}=${STORAGE_BYTES} --overwrite
             fi
 
         done

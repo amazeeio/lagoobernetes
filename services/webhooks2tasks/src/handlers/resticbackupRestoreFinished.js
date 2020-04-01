@@ -1,12 +1,12 @@
 // @flow
 
 const {
-  sendToLagoonLogs
-} = require('@lagoon/commons/src/logs');
+  sendToLagoobernetesLogs
+} = require('@lagoobernetes/commons/src/logs');
 const {
   updateRestore,
   getEnvironmentByOpenshiftProjectName
-} = require('@lagoon/commons/src/api');
+} = require('@lagoobernetes/commons/src/api');
 const R = require('ramda');
 
 import type {
@@ -34,7 +34,7 @@ async function resticbackupRestoreFinished(webhook: WebhookRequestData) {
       restoreLocation: R.prop('restore_location', body)
     });
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -45,7 +45,7 @@ async function resticbackupRestoreFinished(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

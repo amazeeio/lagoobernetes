@@ -1,7 +1,7 @@
 {
   "name": "openshiftjobs",
   "version": "0.9.0",
-  "description": "Run lagoon tasks as openshift jobs",
+  "description": "Run lagoobernetes tasks as openshift jobs",
   "main": "build/index.js",
   "scripts": {
     "start": "flow-node build/index.js",
@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@lagoon/commons": "4.0.0",
+    "@lagoobernetes/commons": "4.0.0",
     "flow-remove-types": "^1.2.1",
     "openshift-client": "^3.10.8",
     "ramda": "^0.25.0"

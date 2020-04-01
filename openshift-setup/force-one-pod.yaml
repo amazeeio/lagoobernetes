@@ -1,5 +1,5 @@
-# This file contains HorizontalPodAutoscaler with max 1 pod for all Lagoon Services that usually are scaled to 2 pods
-# In some cases Lagoon is not needed to be running with 2 pods, so instead of forking Lagoon and change all templates
+# This file contains HorizontalPodAutoscaler with max 1 pod for all Lagoobernetes Services that usually are scaled to 2 pods
+# In some cases Lagoobernetes is not needed to be running with 2 pods, so instead of forking Lagoobernetes and change all templates
 # you can just apply this file with "oc apply -f openshift-setup/force-one-pod.yaml" and the HPA will automatically
 # scale the DeploymentConfigs to 1 instead of 2.
 ---

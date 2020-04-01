@@ -41,7 +41,7 @@ export function builder(yargs: Yargs): Yargs {
     })
     .example(
       `$0 ${command}`,
-      'Show details for the project configured in .lagoon.yml',
+      'Show details for the project configured in .lagoobernetes.yml',
     )
     .example(
       `$0 ${command} --${PROJECT} myproject`,

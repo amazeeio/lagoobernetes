@@ -1,6 +1,6 @@
 import * as R from 'ramda';
 import { parsePrivateKey } from 'sshpk';
-import { logger } from '@lagoon/commons/src/local-logging';
+import { logger } from '@lagoobernetes/commons/src/local-logging';
 import { getKeycloakAdminClient } from '../../clients/keycloak-admin';
 import { getSqlClient } from '../../clients/sqlClient';
 import { query, prepare } from '../../util/db';
@@ -51,7 +51,7 @@ const generatePrivateKeyEd25519 = R.partial(generatePrivateKey, ['ed25519']);
         attributes: {
           ...existingGroup.attributes,
           type: ['project-default-group'],
-          'lagoon-projects': [project.id],
+          'lagoobernetes-projects': [project.id],
         },
       });
     } catch (err) {
@@ -61,7 +61,7 @@ const generatePrivateKeyEd25519 = R.partial(generatePrivateKey, ['ed25519']);
             name: projectGroupName,
             attributes: {
               type: ['project-default-group'],
-              'lagoon-projects': [project.id],
+              'lagoobernetes-projects': [project.id],
             },
           });
         } catch (err) {

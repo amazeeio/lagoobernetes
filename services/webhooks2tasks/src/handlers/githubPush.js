@@ -1,8 +1,8 @@
 // @flow
 
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { createDeployTask } = require('@lagoon/commons/src/tasks');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { createDeployTask } = require('@lagoobernetes/commons/src/tasks');
 const R = require('ramda');
 
 import type { WebhookRequestData, deployData, ChannelWrapper, Project  } from '../types';
@@ -48,7 +48,7 @@ async function githubPush(webhook: WebhookRequestData, project: Project) {
     }
 
     if (skip_deploy) {
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:skipped`, meta,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:skipped`, meta,
         `*[${project.name}]* ${logMessage} pushed in <${body.repository.html_url}|${body.repository.full_name}> *deployment skipped*`
       )
       return;
@@ -56,7 +56,7 @@ async function githubPush(webhook: WebhookRequestData, project: Project) {
 
     try {
       const taskResult = await createDeployTask(data);
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handled`, meta,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handled`, meta,
         `*[${project.name}]* ${logMessage} pushed in <${body.repository.html_url}|${body.repository.full_name}>`
       )
       return;
@@ -67,7 +67,7 @@ async function githubPush(webhook: WebhookRequestData, project: Project) {
         case "UnknownActiveSystem":
         case "NoNeedToDeployBranch":
           // These are not real errors and also they will happen many times. We just log them locally but not throw an error
-          sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+          sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
             `*[${project.name}]* ${logMessage}. No deploy task created, reason: ${error}`
           )
           return;

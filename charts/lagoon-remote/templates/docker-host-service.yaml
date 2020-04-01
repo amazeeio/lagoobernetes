@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "lagoon-remote.dockerHost.fullname" . }}
+  name: {{ include "lagoobernetes-remote.dockerHost.fullname" . }}
   labels:
-    {{- include "lagoon-remote.dockerHost.labels" . | nindent 4 }}
+    {{- include "lagoobernetes-remote.dockerHost.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.dockerHost.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: docker-daemon-tcp
   selector:
-    {{- include "lagoon-remote.dockerHost.selectorLabels" . | nindent 4 }}
+    {{- include "lagoobernetes-remote.dockerHost.selectorLabels" . | nindent 4 }}

@@ -20,7 +20,7 @@ parameters:
   - name: PROJECT
     description: Which project this belongs to, original value
     required: true
-  - name: LAGOON_GIT_SHA
+  - name: LAGOOBERNETES_GIT_SHA
     description: git hash sha of the current deployment
     required: true
   - name: SERVICE_ROUTER_URL
@@ -80,7 +80,7 @@ objects:
       branch: ${SAFE_BRANCH}
       project: ${SAFE_PROJECT}
   spec:
-    accessModes: 
+    accessModes:
       - ReadWriteOnce
     resources:
       requests:
@@ -171,7 +171,7 @@ objects:
             subPath: config.yml
           - name: job-logs
             mountPath: /var/log/jobs
-            subPath: 
+            subPath:
         volumes:
         - name: jobservice-config
           configMap:

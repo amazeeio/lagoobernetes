@@ -248,27 +248,27 @@ const addProject = async (
         ${
   input.activeSystemsDeploy
     ? ':active_systems_deploy'
-    : '"lagoon_openshiftBuildDeploy"'
+    : '"lagoobernetes_openshiftBuildDeploy"'
 },
         ${
   input.activeSystemsPromote
     ? ':active_systems_promote'
-    : '"lagoon_openshiftBuildDeploy"'
+    : '"lagoobernetes_openshiftBuildDeploy"'
 },
         ${
   input.activeSystemsRemove
     ? ':active_systems_remove'
-    : '"lagoon_openshiftRemove"'
+    : '"lagoobernetes_openshiftRemove"'
 },
         ${
   input.activeSystemsTask
     ? ':active_systems_task'
-    : '"lagoon_openshiftJob"'
+    : '"lagoobernetes_openshiftJob"'
 },
         ${
   input.activeSystemsMisc
     ? ':active_systems_misc'
-    : '"lagoon_openshiftMisc"'
+    : '"lagoobernetes_openshiftMisc"'
 },
         ${input.branches ? ':branches' : '"true"'},
         ${input.pullrequests ? ':pullrequests' : '"true"'},
@@ -297,7 +297,7 @@ const addProject = async (
       name: `project-${project.name}`,
       attributes: {
         type: ['project-default-group'],
-        'lagoon-projects': [project.id],
+        'lagoobernetes-projects': [project.id],
       },
     });
   } catch (err) {

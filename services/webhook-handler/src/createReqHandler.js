@@ -4,10 +4,10 @@ const bl = require('bl');
 const { bufferEq } = require('buffer-equal-constant-time');
 const extractWebhookData = require('./extractWebhookData');
 
-const sendToLagoonWebhooks = require('./sendToLagoonWebhooks');
-const { sendToLagoonLogs, initSendToLagoonLogs } = require('@lagoon/commons/src/logs');
+const sendToLagoobernetesWebhooks = require('./sendToLagoobernetesWebhooks');
+const { sendToLagoobernetesLogs, initSendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
 
-import type { Logger } from '@lagoon/commons/src/local-logging';
+import type { Logger } from '@lagoobernetes/commons/src/local-logging';
 import type { ChannelWrapper } from './types';
 
 type Req = http$IncomingMessage;
@@ -22,7 +22,7 @@ type Options = {
 
 type Handler = (req: Req, res: Res, logger: Logger, cb: Cb) => void;
 
-initSendToLagoonLogs();
+initSendToLagoobernetesLogs();
 
 function createReqHandler(options: Options): Handler {
   const {
@@ -70,11 +70,11 @@ function createReqHandler(options: Options): Handler {
           giturl: giturl,
           rawbody: data.toString(),
         }
-        sendToLagoonLogs('info', "", uuid, "webhooks:receive",  meta,
+        sendToLagoobernetesLogs('info', "", uuid, "webhooks:receive",  meta,
           `Received new ${webhooktype} webhook,  event: ${event}, giturl: ${giturl}`
         )
 
-        sendToLagoonWebhooks(webhookData, channelWrapperWebhooks);
+        sendToLagoobernetesWebhooks(webhookData, channelWrapperWebhooks);
 
         res.writeHead(200, { 'content-type': 'application/json' });
 

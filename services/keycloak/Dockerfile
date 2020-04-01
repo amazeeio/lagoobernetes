@@ -1,5 +1,5 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM jboss/keycloak:7.0.1
 
 USER root
@@ -9,10 +9,10 @@ RUN microdnf install -y nc python2 \
     && rm -rf /var/cache/yum
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=keycloak
+ENV LAGOOBERNETES=keycloak
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /home /home
 
@@ -39,14 +39,14 @@ ENV TMPDIR=/tmp \
     BASH_ENV=/home/.bashrc \
     KEYCLOAK_ADMIN_USER=admin \
     KEYCLOAK_ADMIN_PASSWORD=admin \
-    KEYCLOAK_REALM=lagoon \
+    KEYCLOAK_REALM=lagoobernetes \
     KEYCLOAK_REALM_ROLES=admin \
     DB_ADDR=keycloak-db \
     DB_USER=keycloak \
     DB_PASSWORD=keycloak \
     DB_DATABASE=keycloak \
-    KEYCLOAK_LAGOON_ADMIN_USERNAME=lagoonadmin \
-    KEYCLOAK_LAGOON_ADMIN_PASSWORD=lagoonadmin \
+    KEYCLOAK_LAGOOBERNETES_ADMIN_USERNAME=lagoobernetesadmin \
+    KEYCLOAK_LAGOOBERNETES_ADMIN_PASSWORD=lagoobernetesadmin \
     PROXY_ADDRESS_FORWARDING=true \
     KEYCLOAK_API_CLIENT_SECRET=39d5282d-3684-4026-b4ed-04bbc034b61a \
     KEYCLOAK_AUTH_SERVER_CLIENT_SECRET=f605b150-7636-4447-abd3-70988786b330 \
@@ -55,8 +55,8 @@ ENV TMPDIR=/tmp \
 VOLUME /opt/jboss/keycloak/standalone/data
 
 COPY start.sh /opt/jboss/tools/start.sh
-COPY wait-for-mariadb.sh /lagoon/entrypoints/99-wait-for-mariadb.sh
+COPY wait-for-mariadb.sh /lagoobernetes/entrypoints/99-wait-for-mariadb.sh
 COPY profile.properties /opt/jboss/keycloak/standalone/configuration/profile.properties
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.bash"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.bash"]
 CMD ["/opt/jboss/tools/start.sh"]

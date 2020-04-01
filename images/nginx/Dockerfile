@@ -1,16 +1,16 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 # alpine 3.11 per https://github.com/openresty/docker-openresty/blob/master/alpine/Dockerfile
 FROM openresty/openresty:1.15.8.2-alpine
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=nginx
+ENV LAGOOBERNETES=nginx
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /sbin/tini /sbin/
 COPY --from=commons /home /home
@@ -42,14 +42,14 @@ RUN mkdir -p /app \
     && fix-permissions /usr/local/openresty/nginx \
     && fix-permissions /var/run/
 
-COPY docker-entrypoint /lagoon/entrypoints/70-nginx-entrypoint
+COPY docker-entrypoint /lagoobernetes/entrypoints/70-nginx-entrypoint
 
 WORKDIR /app
 
 EXPOSE 8080
 
 # tells the local development environment on which port we are running
-ENV LAGOON_LOCALDEV_HTTP_PORT=8080
+ENV LAGOOBERNETES_LOCALDEV_HTTP_PORT=8080
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]
 CMD ["nginx", "-g", "daemon off;"]

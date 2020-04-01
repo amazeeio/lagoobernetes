@@ -8,9 +8,9 @@ services:
       context: .
       dockerfile: Dockerfile
     labels:
-      lagoon.type: node-persistent
-      lagoon.persistent: /files
-      lagoon.template: .lagoon.node.yml
+      lagoobernetes.type: node-persistent
+      lagoobernetes.persistent: /files
+      lagoobernetes.template: .lagoobernetes.node.yml
     volumes:
       - ./index.js:/app/index.js:delegated
     expose:

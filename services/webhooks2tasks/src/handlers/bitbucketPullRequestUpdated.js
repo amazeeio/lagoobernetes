@@ -1,9 +1,9 @@
 // @flow
 
 const R = require('ramda');
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { createDeployTask } = require('@lagoon/commons/src/tasks');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { createDeployTask } = require('@lagoobernetes/commons/src/tasks');
 
 import type { WebhookRequestData, removeData, ChannelWrapper, Project } from '../types';
 
@@ -35,7 +35,7 @@ async function bitbucketPullRequestUpdated(webhook: WebhookRequestData, project:
 
     // Don't trigger deploy if the head and base repos are different
     if (!R.equals(headRepoId, baseRepoId)) {
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
         `*[${project.name}]* PR ${body.number}. No deploy task created, reason: Source/Destination not same repo`
       )
       return;
@@ -58,7 +58,7 @@ async function bitbucketPullRequestUpdated(webhook: WebhookRequestData, project:
 
     try {
       const taskResult = await createDeployTask(data);
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:opened:handled`, data,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:opened:handled`, data,
         `*[${project.name}]* PR <${body.pullrequest.destination.repository.links.html.href}|#${body.pullrequest.id} (${body.title})> updated in <${body.pullrequest.destination.repository.links.html.href}|${body.pullrequest.destination.branch.name}>`
       )
       return;
@@ -68,7 +68,7 @@ async function bitbucketPullRequestUpdated(webhook: WebhookRequestData, project:
         case "NoActiveSystemsDefined":
         case "UnknownActiveSystem":
           // These are not real errors and also they will happen many times. We just log them locally but not throw an error
-          sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+          sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
             `*[${project.name}]* PR ${body.object_attributes.id} updated. No deploy task created, reason: ${error}`
           )
           return;

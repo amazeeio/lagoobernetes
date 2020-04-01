@@ -25,16 +25,16 @@ NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 REGISTRY_REPOSITORY=$NAMESPACE
 
 if [ "$CI" == "true" ]; then
-  CI_OVERRIDE_IMAGE_REPO=${REGISTRY}/lagoon
+  CI_OVERRIDE_IMAGE_REPO=${REGISTRY}/lagoobernetes
 else
   CI_OVERRIDE_IMAGE_REPO=""
 fi
 
-if [ ! -f .lagoon.yml ]; then
-  echo "no .lagoon.yml file found"; exit 1;
+if [ ! -f .lagoobernetes.yml ]; then
+  echo "no .lagoobernetes.yml file found"; exit 1;
 fi
 
-DEPLOYER_TOKEN=$(cat /var/run/secrets/lagoon/deployer/token)
+DEPLOYER_TOKEN=$(cat /var/run/secrets/lagoobernetes/deployer/token)
 
 oc login --insecure-skip-tls-verify --token="${DEPLOYER_TOKEN}" https://kubernetes.default.svc
 

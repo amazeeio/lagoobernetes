@@ -1,14 +1,14 @@
 ARG PYTHON_VERSION
 ARG IMAGE_REPO
 ARG ALPINE_VERSION
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=python
+ENV LAGOOBERNETES=python
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /sbin/tini /sbin/
 COPY --from=commons /home /home
@@ -40,8 +40,8 @@ RUN apk update \
       esac
 
 # Make sure shells are not running forever
-COPY 80-shell-timeout.sh /lagoon/entrypoints/
-RUN echo "source /lagoon/entrypoints/80-shell-timeout.sh" >> /home/.bashrc
+COPY 80-shell-timeout.sh /lagoobernetes/entrypoints/
+RUN echo "source /lagoobernetes/entrypoints/80-shell-timeout.sh" >> /home/.bashrc
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]
 CMD ["python"]

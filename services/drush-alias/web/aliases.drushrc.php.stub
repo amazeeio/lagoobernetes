@@ -5,36 +5,36 @@ global $ssh_port_timeout;
 
 use Symfony\Component\Yaml\Yaml;
 
-// For CI: allow to completely disable lagoon alias loading
-if (getenv('LAGOON_DISABLE_ALIASES')) {
-  drush_log('LAGOON_DISABLE_ALIASES is set, bailing out of loading lagoon aliases');
+// For CI: allow to completely disable lagoobernetes alias loading
+if (getenv('LAGOOBERNETES_DISABLE_ALIASES')) {
+  drush_log('LAGOOBERNETES_DISABLE_ALIASES is set, bailing out of loading lagoobernetes aliases');
   return;
 }
 
 // Allow to override project via environment variable
-if (getenv('LAGOON_PROJECT')) {
-  $project_name = getenv('LAGOON_PROJECT');
-  drush_log("LAGOON_PROJECT is set, using '$project_name' as project");
+if (getenv('LAGOOBERNETES_PROJECT')) {
+  $project_name = getenv('LAGOOBERNETES_PROJECT');
+  drush_log("LAGOOBERNETES_PROJECT is set, using '$project_name' as project");
 }
 
-if (getenv('LAGOON_OVERRIDE_SSH')) {
-  $ssh = getenv('LAGOON_OVERRIDE_SSH');
-  drush_log("LAGOON_OVERRIDE_SSH is set, using '$ssh' as ssh");
+if (getenv('LAGOOBERNETES_OVERRIDE_SSH')) {
+  $ssh = getenv('LAGOOBERNETES_OVERRIDE_SSH');
+  drush_log("LAGOOBERNETES_OVERRIDE_SSH is set, using '$ssh' as ssh");
 }
 
 // sometimes ssh port may not available, so we should be able to fail sooner
-if (getenv('LAGOON_OVERRIDE_SSH_TIMEOUT')) {
-  $ssh_port_timeout = getenv('LAGOON_OVERRIDE_SSH_TIMEOUT');
-  drush_log("LAGOON_OVERRIDE_SSH_TIMEOUT is set, using '$ssh_port_timeout' as endpoint timeout");
+if (getenv('LAGOOBERNETES_OVERRIDE_SSH_TIMEOUT')) {
+  $ssh_port_timeout = getenv('LAGOOBERNETES_OVERRIDE_SSH_TIMEOUT');
+  drush_log("LAGOOBERNETES_OVERRIDE_SSH_TIMEOUT is set, using '$ssh_port_timeout' as endpoint timeout");
 }
 
-if (getenv('LAGOON_OVERRIDE_API')) {
-  $api = getenv('LAGOON_OVERRIDE_API');
-  drush_log("LAGOON_OVERRIDE_API is set, using '$api' as endpoint");
+if (getenv('LAGOOBERNETES_OVERRIDE_API')) {
+  $api = getenv('LAGOOBERNETES_OVERRIDE_API');
+  drush_log("LAGOOBERNETES_OVERRIDE_API is set, using '$api' as endpoint");
 }
 
 // You know nothing, John Snow
-$lagoonyml_path = $lagoonyml = FALSE;
+$lagoobernetesyml_path = $lagoobernetesyml = FALSE;
 
 drush_log('Finding Drupal Root');
 
@@ -54,8 +54,8 @@ if ( DRUSH_VERSION >= 9 ) {
 
 $drupal_path = realpath($path);
 
-// No project name could be found, let's search for it via the .lagoon.yml file
-drush_log("Starting to search for .lagoon.yml file to extract project name within '$path' and parent directories");
+// No project name could be found, let's search for it via the .lagoobernetes.yml file
+drush_log("Starting to search for .lagoobernetes.yml file to extract project name within '$path' and parent directories");
 
 // Borrowed from drush_locate_root() - thank you
 foreach (array(TRUE, FALSE) as $follow_symlinks) {
@@ -63,8 +63,8 @@ foreach (array(TRUE, FALSE) as $follow_symlinks) {
     $path = realpath($path);
   }
   // Check the start path.
-  if (file_exists("$path/.lagoon.yml")) {
-    $lagoonyml_path = "$path/.lagoon.yml";
+  if (file_exists("$path/.lagoobernetes.yml")) {
+    $lagoobernetesyml_path = "$path/.lagoobernetes.yml";
     break;
   }
   else {
@@ -73,63 +73,63 @@ foreach (array(TRUE, FALSE) as $follow_symlinks) {
       if ($follow_symlinks && is_link($path)) {
         $path = realpath($path);
       }
-      if (file_exists("$path/.lagoon.yml")) {
-        $lagoonyml_path = "$path/.lagoon.yml";
+      if (file_exists("$path/.lagoobernetes.yml")) {
+        $lagoobernetesyml_path = "$path/.lagoobernetes.yml";
         break 2;
       }
     }
   }
 }
 
-// An .lagoon.yml file has been found, let's try to load the project from it.
-if ($lagoonyml_path) {
-  drush_log("Using .lagoon.yml file at: '$lagoonyml_path'");
+// An .lagoobernetes.yml file has been found, let's try to load the project from it.
+if ($lagoobernetesyml_path) {
+  drush_log("Using .lagoobernetes.yml file at: '$lagoobernetesyml_path'");
 
-  $lagoonyml = Yaml::parse( file_get_contents($lagoonyml_path) );
+  $lagoobernetesyml = Yaml::parse( file_get_contents($lagoobernetesyml_path) );
 
 
   if (empty($project_name)) {
-    if ($lagoonyml['project']) {
-      $project_name = $lagoonyml['project'];
-      drush_log("Discovered project name '$project_name' from .lagoon.yml file");
+    if ($lagoobernetesyml['project']) {
+      $project_name = $lagoobernetesyml['project'];
+      drush_log("Discovered project name '$project_name' from .lagoobernetes.yml file");
     } else {
-      drush_log('ERROR: Could not discover project name from .lagoon.yml file', 'warning');
+      drush_log('ERROR: Could not discover project name from .lagoobernetes.yml file', 'warning');
       return;
     }
   }
 
   if (empty($ssh)) {
-    if ($lagoonyml['ssh']) {
-      $ssh = $lagoonyml['ssh'];
-      drush_log("Discovered ssh '$ssh' from .lagoon.yml file");
-    } else if ($lagoonyml['endpoint']) {
-      $ssh = $lagoonyml['endpoint'];
-      drush_log("Discovered ssh from old `endpoint` key as '$endpoint' from .lagoon.yml file");
+    if ($lagoobernetesyml['ssh']) {
+      $ssh = $lagoobernetesyml['ssh'];
+      drush_log("Discovered ssh '$ssh' from .lagoobernetes.yml file");
+    } else if ($lagoobernetesyml['endpoint']) {
+      $ssh = $lagoobernetesyml['endpoint'];
+      drush_log("Discovered ssh from old `endpoint` key as '$endpoint' from .lagoobernetes.yml file");
     }
   }
 
   if (empty($api)) {
-    if ($lagoonyml['api']) {
-      $api = $lagoonyml['api'];
-      drush_log("Discovered api '$api' from .lagoon.yml file");
+    if ($lagoobernetesyml['api']) {
+      $api = $lagoobernetesyml['api'];
+      drush_log("Discovered api '$api' from .lagoobernetes.yml file");
     }
   }
 
   // sometimes ssh port may not reachable, so we should be able to fail sooner
   if (empty($ssh_port_timeout)) {
-    if ($lagoonyml['ssh_port_timeout']) {
-      $ssh_port_timeout = $lagoonyml['ssh_port_timeout'];
-      drush_log("Discovered ssh_port_timeout '$ssh_port_timeout' from .lagoon.yml file");
+    if ($lagoobernetesyml['ssh_port_timeout']) {
+      $ssh_port_timeout = $lagoobernetesyml['ssh_port_timeout'];
+      drush_log("Discovered ssh_port_timeout '$ssh_port_timeout' from .lagoobernetes.yml file");
     }
   }
 
 } else {
-  drush_log('Could not find .lagoon.yml file.');
+  drush_log('Could not find .lagoobernetes.yml file.');
 }
 
 // Project still not defined, throw a warning.
 if ($project_name === FALSE) {
-  drush_log('ERROR: Could not discover project name, you should define it inside your .lagoon.yml file', 'warning');
+  drush_log('ERROR: Could not discover project name, you should define it inside your .lagoobernetes.yml file', 'warning');
   return;
 }
 
@@ -141,8 +141,8 @@ if (!empty($ssh)) {
     return;
   }
 } else {
-  drush_log("Using default SSH Endpoint 'ssh.lagoon.amazeeio.cloud:32222'");
-  $ssh_host = 'ssh.lagoon.amazeeio.cloud';
+  drush_log("Using default SSH Endpoint 'ssh.lagoobernetes.amazeeio.cloud:32222'");
+  $ssh_host = 'ssh.lagoobernetes.amazeeio.cloud';
   $ssh_port = 32222;
 }
 
@@ -155,22 +155,22 @@ if (!empty($api)) {
     $api_url = "$api/graphql";
   }
 } else {
-  drush_log("Using default API 'https://api.lagoon.amazeeio.cloud/graphql'");
-  $api_url = 'https://api.lagoon.amazeeio.cloud/graphql';
+  drush_log("Using default API 'https://api.lagoobernetes.amazeeio.cloud/graphql'");
+  $api_url = 'https://api.lagoobernetes.amazeeio.cloud/graphql';
 }
 
-$cid = "lagoon_aliases_$project_name";
+$cid = "lagoobernetes_aliases_$project_name";
 
 // Try to pull the aliases from the cache.
 $cache = drush_cache_get($cid);
 
 // Drush does not respect the cache expire, so we need to check it ourselves.
-// If `LAGOON_IGNORE_DRUSHCACHE` is set or we are on Drush 9, we skip the cache all together
-if (isset($cache->data) && time() < $cache->expire && getenv('LAGOON_IGNORE_DRUSHCACHE') === FALSE && DRUSH_MAJOR_VERSION !== "9") {
-  drush_log('Hit lagoon project cache');
+// If `LAGOOBERNETES_IGNORE_DRUSHCACHE` is set or we are on Drush 9, we skip the cache all together
+if (isset($cache->data) && time() < $cache->expire && getenv('LAGOOBERNETES_IGNORE_DRUSHCACHE') === FALSE && DRUSH_MAJOR_VERSION !== "9") {
+  drush_log('Hit lagoobernetes project cache');
   $aliases = $cache->data;
 
-  if (getenv('LAGOON_DEBUG')) {
+  if (getenv('LAGOOBERNETES_DEBUG')) {
     drush_log("Aliases found in cache: " . var_export($aliases, true));
   }
 
@@ -178,7 +178,7 @@ if (isset($cache->data) && time() < $cache->expire && getenv('LAGOON_IGNORE_DRUS
 }
 
 // sometimes ssh port may not available, so we should be able to fail sooner
-// can set an env var `LAGOON_OVERRIDE_SSH_TIMEOUT=<val>` or define `ssh_port_timeout: <val>` in `.lagoon.yml` to a time in seconds to fail sooner and let user know why
+// can set an env var `LAGOOBERNETES_OVERRIDE_SSH_TIMEOUT=<val>` or define `ssh_port_timeout: <val>` in `.lagoobernetes.yml` to a time in seconds to fail sooner and let user know why
 // if there is no defined timeout further up, set a value
 if (empty($ssh_port_timeout)) {
   $ssh_port_timeout = 30; //default timeout
@@ -192,28 +192,28 @@ if (is_resource($ssh_port_check))
     return;
 }
 
-$jwttoken_cache = drush_cache_get("lagoon_jwttoken");
+$jwttoken_cache = drush_cache_get("lagoobernetes_jwttoken");
 
-if (getenv('LAGOON_OVERRIDE_JWT_TOKEN')) {
-  $jwt_token = getenv('LAGOON_OVERRIDE_JWT_TOKEN');
-} else if (isset($jwttoken_cache->data) && time() < $jwttoken_cache->expire && getenv('LAGOON_IGNORE_DRUSHCACHE') === FALSE) {
-  drush_log('Hit lagoon jwttoken cache');
+if (getenv('LAGOOBERNETES_OVERRIDE_JWT_TOKEN')) {
+  $jwt_token = getenv('LAGOOBERNETES_OVERRIDE_JWT_TOKEN');
+} else if (isset($jwttoken_cache->data) && time() < $jwttoken_cache->expire && getenv('LAGOOBERNETES_IGNORE_DRUSHCACHE') === FALSE) {
+  drush_log('Hit lagoobernetes jwttoken cache');
   $jwt_token = $cache->data;
 
-  if (getenv('LAGOON_DEBUG')) {
+  if (getenv('LAGOOBERNETES_DEBUG')) {
     drush_log("JWT Token found in cache: " . var_export($jwt_token, true));
   }
 
 } else {
   // if ssh takes too long to get a token, timeout with the same ssh port timeout used to check the port status
   // this could be because the API is unavailable
-  exec("timeout $ssh_port_timeout ssh -p $ssh_port -o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no lagoon@$ssh_host token 2>&1", $token_array, $rc);
+  exec("timeout $ssh_port_timeout ssh -p $ssh_port -o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no lagoobernetes@$ssh_host token 2>&1", $token_array, $rc);
   if ($rc !== 0) {
     drush_log("Could not load API JWT Token, error was: '" . implode(",", $token_array), 'warning');
     return;
   }
 
-  if (getenv('LAGOON_DEBUG')) {
+  if (getenv('LAGOOBERNETES_DEBUG')) {
     drush_log("JWT Token loaded via ssh: " . $token_array[0]);
   }
   $jwt_token = $token_array[0];
@@ -232,7 +232,7 @@ $query = sprintf('{
 }
 ', $project_name);
 
-drush_log("Using $api_url as lagoon API endpoint");
+drush_log("Using $api_url as lagoobernetes API endpoint");
 
 $curl = curl_init($api_url);
 
@@ -250,13 +250,13 @@ curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array(
   'query' => $query,
 )));
 
-if (getenv('LAGOON_DEBUG')) {
+if (getenv('LAGOOBERNETES_DEBUG')) {
   drush_log("Sending to api: " . $query);
 }
 
 $response = curl_exec($curl);
 
-if (getenv('LAGOON_DEBUG')) {
+if (getenv('LAGOOBERNETES_DEBUG')) {
   drush_log("Response from api: " . var_export($response, true));
 }
 
@@ -275,7 +275,7 @@ if ($response === FALSE) {
 curl_close($curl);
 $response = json_decode($response);
 
-if (getenv('LAGOON_DEBUG')) {
+if (getenv('LAGOOBERNETES_DEBUG')) {
   drush_log("Decoded response from api: " . var_export($response, true));
 }
 
@@ -304,7 +304,7 @@ $aliases = array_reduce($environments, function ($carry, $environment) use ($def
 
   // Drush 9 needs aliases prefixed with a group name in order to be able to convert them correctly
   if (DRUSH_MAJOR_VERSION == "9") {
-    $site_name = 'lagoon.' . $site_name;
+    $site_name = 'lagoobernetes.' . $site_name;
   }
 
   $alias[$site_name] = [
@@ -318,7 +318,7 @@ $aliases = array_reduce($environments, function ($carry, $environment) use ($def
   return $carry + $alias;
 }, []);
 
-if (getenv('LAGOON_DEBUG')) {
+if (getenv('LAGOOBERNETES_DEBUG')) {
   drush_log("Generated aliases: " . var_export($aliases, true));
 }
 

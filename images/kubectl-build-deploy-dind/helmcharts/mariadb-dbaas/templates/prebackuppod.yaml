@@ -28,7 +28,7 @@ spec:
             - '3600'
           envFrom:
             - configMapRef:
-                name: lagoon-env
+                name: lagoobernetes-env
           image: amazeeio/alpine-mysql-client
           imagePullPolicy: Always
           name: {{ include "mariadb-dbaas.fullname" . }}-prebackuppod

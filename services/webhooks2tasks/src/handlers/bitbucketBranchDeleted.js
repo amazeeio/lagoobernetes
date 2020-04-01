@@ -1,8 +1,8 @@
 // @flow
 
-const { logger } = require('@lagoon/commons/src/local-logging');
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { createRemoveTask } = require('@lagoon/commons/src/tasks');
+const { logger } = require('@lagoobernetes/commons/src/local-logging');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { createRemoveTask } = require('@lagoobernetes/commons/src/tasks');
 
 import type { WebhookRequestData, removeData, ChannelWrapper, Project  } from '../types';
 
@@ -33,7 +33,7 @@ async function bitbucketBranchDeleted(webhook: WebhookRequestData, project: Proj
     try {
       const taskResult = await createRemoveTask(data);
       // setting the event type manually so that further systems know that it is a delete
-      sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:delete:handled`, meta,
+      sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:delete:handled`, meta,
         `*[${project.name}]* \`${meta.branch}\` deleted in <${body.repository.links.html.href}|${body.repository.full_name}>`
       )
       return;
@@ -44,14 +44,14 @@ async function bitbucketBranchDeleted(webhook: WebhookRequestData, project: Proj
         case "NoActiveSystemsDefined":
         case "UnknownActiveSystem":
           // These are not real errors and also they will happen many times. We just log them locally but not throw an error
-          sendToLagoonLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
+          sendToLagoobernetesLogs('info', project.name, uuid, `${webhooktype}:${event}:handledButNoTask`, meta,
             `*[${project.name}]* \`${meta.branch}\` deleted. No remove task created, reason: ${error}`
           )
           return;
 
         case "CannotDeleteProductionEnvironment":
           // These are not real errors and also they will happen many times. We just log them locally but not throw an error
-          sendToLagoonLogs('warning', project.name, uuid, `${webhooktype}:${event}:CannotDeleteProductionEnvironment`, meta,
+          sendToLagoobernetesLogs('warning', project.name, uuid, `${webhooktype}:${event}:CannotDeleteProductionEnvironment`, meta,
             `*[${project.name}]* \`${meta.branch}\` not deleted. ${error}`
           )
           return;

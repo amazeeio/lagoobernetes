@@ -12,8 +12,8 @@ Project \\"e2e-test-project\\" created successfully:
 Name                   e2e-test-project
 Customer               ci-customer
 Git URL                ssh://git@172.17.0.1:2222/git/e2e-test-project.git
-Active Systems Deploy  lagoon_openshiftBuildDeploy
-Active Systems Remove  lagoon_openshiftRemove
+Active Systems Deploy  lagoobernetes_openshiftBuildDeploy
+Active Systems Remove  lagoobernetes_openshiftRemove
 Branches               true
 Pull Requests          true
 Openshift              ci-local
@@ -27,12 +27,12 @@ exports[`lagu should init 1`] = `
 ! Set \\"project\\" option to \\"ci-github\\" from arguments or config
 ! Set \\"api\\" option to \\"http://localhost:3000\\" from arguments or config
 ! Set \\"ssh\\" option to \\"localhost:2020\\" from arguments or config
-! Set \\"token\\" option to \\"/Users/k/p/lagoon/cli/src/__tests__/fixtures/.lagoon-token\\" from arguments or config
-Creating file '/Users/k/p/lagoon/cli/src/__tests__/fixtures/.lagoon.yml'...
+! Set \\"token\\" option to \\"/Users/k/p/lagoobernetes/cli/src/__tests__/fixtures/.lagoobernetes-token\\" from arguments or config
+Creating file '/Users/k/p/lagoobernetes/cli/src/__tests__/fixtures/.lagoobernetes.yml'...
 Configuration file created!"
 `;
 
-exports[`lagu should list all environments for a project (project read from .lagoon.yml) 1`] = `
+exports[`lagu should list all environments for a project (project read from .lagoobernetes.yml) 1`] = `
 "Name              master
 Environment Type  production
 Deploy Type       branch
@@ -92,7 +92,7 @@ e2e-test-project       ssh://git@172.17.0.1:2222/git/e2e-test-project.git    tru
 exports[`lagu should log an error for a non-existent project (using --project option) 1`] = `"No project 'non-existent-project' found."`;
 
 exports[`lagu should log in 1`] = `
-"Logging in to lagoon at lagoon@localhost:2020...
+"Logging in to lagoobernetes at lagoobernetes@localhost:2020...
 Logged in successfully."
 `;
 
@@ -102,7 +102,7 @@ exports[`lagu should not error on logout when not logged in 1`] = `"Logged out s
 
 exports[`lagu should not show deleted project details (using --project option) 1`] = `"No project 'e2e-test-project' found."`;
 
-exports[`lagu should show customer details (project read from .lagoon.yml) 1`] = `
+exports[`lagu should show customer details (project read from .lagoobernetes.yml) 1`] = `
 "Customer details for project 'ci-github':
 Name                ci-customer
 Comment             null
@@ -124,20 +124,20 @@ exports[`lagu should show newly-created project details (using --project option)
 "Name                   e2e-test-project
 Customer               ci-customer
 Git URL                ssh://git@172.17.0.1:2222/git/e2e-test-project.git
-Active Systems Deploy  lagoon_openshiftBuildDeploy
-Active Systems Remove  lagoon_openshiftRemove
+Active Systems Deploy  lagoobernetes_openshiftBuildDeploy
+Active Systems Remove  lagoobernetes_openshiftRemove
 Branches               true
 Pull Requests          true
 Openshift              ci-local
 Created                                   "
 `;
 
-exports[`lagu should show project details (read from .lagoon.yml) 1`] = `
+exports[`lagu should show project details (read from .lagoobernetes.yml) 1`] = `
 "Name                   ci-github
 Customer               ci-customer
 Git URL                ssh://git@172.17.0.1:2222/git/github.git
-Active Systems Deploy  lagoon_openshiftBuildDeploy
-Active Systems Remove  lagoon_openshiftRemove
+Active Systems Deploy  lagoobernetes_openshiftBuildDeploy
+Active Systems Remove  lagoobernetes_openshiftRemove
 Branches               true
 Pull Requests          true
 Openshift              ci-local

@@ -1,8 +1,8 @@
 // @flow
 
-const { sendToLagoonLogs } = require('@lagoon/commons/src/logs');
-const { getGroup } = require('@lagoon/commons/src/gitlabApi');
-const { updateGroup, sanitizeGroupName } = require('@lagoon/commons/src/api');
+const { sendToLagoobernetesLogs } = require('@lagoobernetes/commons/src/logs');
+const { getGroup } = require('@lagoobernetes/commons/src/gitlabApi');
+const { updateGroup, sanitizeGroupName } = require('@lagoobernetes/commons/src/api');
 
 import type { WebhookRequestData } from '../types';
 
@@ -23,7 +23,7 @@ async function gitlabGroupUpdate(webhook: WebhookRequestData) {
       name: sanitizeGroupName(full_path)
     });
 
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'info',
       '',
       uuid,
@@ -34,7 +34,7 @@ async function gitlabGroupUpdate(webhook: WebhookRequestData) {
 
     return;
   } catch (error) {
-    sendToLagoonLogs(
+    sendToLagoobernetesLogs(
       'error',
       '',
       uuid,

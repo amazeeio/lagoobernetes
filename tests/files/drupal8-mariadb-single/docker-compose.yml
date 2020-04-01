@@ -6,11 +6,11 @@ services:
       dockerfile: builder.dockerfile
     image: builder
     labels:
-      lagoon.type: cli-persistent
-      lagoon.persistent: /app/web/sites/default/files/
-      lagoon.persistent.name: nginx
+      lagoobernetes.type: cli-persistent
+      lagoobernetes.persistent: /app/web/sites/default/files/
+      lagoobernetes.persistent.name: nginx
     environment:
-      LAGOON_PROJECT: ci-drupal
+      LAGOOBERNETES_PROJECT: ci-drupal
     volumes:
       - ./web:/app/web:delegated
     depends_on:
@@ -23,8 +23,8 @@ services:
       context: .
       dockerfile: varnish.dockerfile
     labels:
-      lagoon.type: varnish
-      lagoon.name: varnish
+      lagoobernetes.type: varnish
+      lagoobernetes.name: varnish
     depends_on:
       - nginx
   nginx-myname:
@@ -35,10 +35,10 @@ services:
       context: .
       dockerfile: nginx.dockerfile
     labels:
-      lagoon.type: nginx-php-persistent
-      lagoon.persistent: /app/web/sites/default/files/
-      lagoon.name: nginx
-      lagoon.deployment.servicetype: nginx
+      lagoobernetes.type: nginx-php-persistent
+      lagoobernetes.persistent: /app/web/sites/default/files/
+      lagoobernetes.name: nginx
+      lagoobernetes.deployment.servicetype: nginx
     volumes:
       - ./web:/app/web:delegated
     depends_on:
@@ -52,10 +52,10 @@ services:
       context: .
       dockerfile: php.dockerfile
     labels:
-      lagoon.type: nginx-php-persistent
-      lagoon.persistent: /app/web/sites/default/files/
-      lagoon.name: nginx
-      lagoon.deployment.servicetype: php
+      lagoobernetes.type: nginx-php-persistent
+      lagoobernetes.persistent: /app/web/sites/default/files/
+      lagoobernetes.name: nginx
+      lagoobernetes.deployment.servicetype: php
     volumes:
       - ./web:/app/web:delegated
     depends_on:
@@ -65,13 +65,13 @@ services:
       context: .
       dockerfile: mariadb.dockerfile
     labels:
-      lagoon.type: mariadb-single
+      lagoobernetes.type: mariadb-single
   redis:
     build:
       context: .
       dockerfile: redis.dockerfile
     labels:
-      lagoon.type: redis
+      lagoobernetes.type: redis
   solr:
     networks:
       - amazeeio-network
@@ -80,7 +80,7 @@ services:
       context: .
       dockerfile: solr.dockerfile
     labels:
-      lagoon.type: solr
+      lagoobernetes.type: solr
 networks:
   amazeeio-network:
     external: true

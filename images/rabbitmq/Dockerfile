@@ -1,10 +1,10 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 # alpine 3.11 as per https://github.com/docker-library/rabbitmq/blob/master/3.8/alpine/Dockerfile
 FROM rabbitmq:3.8-management-alpine
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 ENV RABBITMQ_DEFAULT_USER='guest' \
     RABBITMQ_DEFAULT_PASS='guest'\

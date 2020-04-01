@@ -212,7 +212,7 @@ const typeDefs = gql`
   union Notification = NotificationRocketChat | NotificationSlack | NotificationMicrosoftTeams | NotificationEmail
 
   """
-  Lagoon Project (like a git repository)
+  Lagoobernetes Project (like a git repository)
   """
   type Project {
     """
@@ -243,8 +243,8 @@ const typeDefs = gql`
     """
     privateKey: String
     """
-    Set if the .lagoon.yml should be found in a subfolder
-    Usefull if you have multiple Lagoon projects per Git Repository
+    Set if the .lagoobernetes.yml should be found in a subfolder
+    Usefull if you have multiple Lagoobernetes projects per Git Repository
     """
     subfolder: String
     """
@@ -252,28 +252,28 @@ const typeDefs = gql`
     """
     notifications(type: NotificationType): [Notification]
     """
-    Which internal Lagoon System is responsible for deploying
-    Currently only 'lagoon_openshiftBuildDeploy' exists
+    Which internal Lagoobernetes System is responsible for deploying
+    Currently only 'lagoobernetes_openshiftBuildDeploy' exists
     """
     activeSystemsDeploy: String
     """
-    Which internal Lagoon System is responsible for promoting
-    Currently only 'lagoon_openshiftBuildDeploy' exists
+    Which internal Lagoobernetes System is responsible for promoting
+    Currently only 'lagoobernetes_openshiftBuildDeploy' exists
     """
     activeSystemsPromote: String
     """
-    Which internal Lagoon System is responsible for promoting
-    Currently only 'lagoon_openshiftRemove' exists
+    Which internal Lagoobernetes System is responsible for promoting
+    Currently only 'lagoobernetes_openshiftRemove' exists
     """
     activeSystemsRemove: String
     """
-    Which internal Lagoon System is responsible for tasks
-    'lagoon_openshiftJob' or 'lagoon_kubernetesJob'
+    Which internal Lagoobernetes System is responsible for tasks
+    'lagoobernetes_openshiftJob' or 'lagoobernetes_kubernetesJob'
     """
     activeSystemsTask: String
     """
-    Which internal Lagoon System is responsible for miscellaneous tasks
-    'lagoon_openshiftMisc' or 'lagoon_kubernetesMisc'
+    Which internal Lagoobernetes System is responsible for miscellaneous tasks
+    'lagoobernetes_openshiftMisc' or 'lagoobernetes_kubernetesMisc'
     """
     activeSystemsMisc: String
     """
@@ -343,7 +343,7 @@ const typeDefs = gql`
   }
 
   """
-  Lagoon Environment (for each branch, pullrequest there is an individual environment)
+  Lagoobernetes Environment (for each branch, pullrequest there is an individual environment)
   """
   type Environment {
     """
@@ -483,7 +483,7 @@ const typeDefs = gql`
     remoteId: String
     buildLog: String
     """
-    The Lagoon URL
+    The Lagoobernetes URL
     """
     uiLink: String
   }

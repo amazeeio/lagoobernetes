@@ -1,1 +1,1 @@
-module github.com/amazeeio/lagoon
+module github.com/amazeeio/lagoobernetes

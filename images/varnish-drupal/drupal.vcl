@@ -48,30 +48,30 @@ sub vcl_recv {
 
 
 
-  if (req.http.X-LAGOON-VARNISH ) {
+  if (req.http.X-LAGOOBERNETES-VARNISH ) {
     ## Pass all Requests which are handled via an upstream Varnish
-    set req.http.X-LAGOON-VARNISH = "${HOSTNAME}-${LAGOON_GIT_BRANCH:-undef}-${LAGOON_PROJECT}, " + req.http.X-LAGOON-VARNISH;
-    set req.http.X-LAGOON-VARNISH-BYPASS = "true";
+    set req.http.X-LAGOOBERNETES-VARNISH = "${HOSTNAME}-${LAGOOBERNETES_GIT_BRANCH:-undef}-${LAGOOBERNETES_PROJECT}, " + req.http.X-LAGOOBERNETES-VARNISH;
+    set req.http.X-LAGOOBERNETES-VARNISH-BYPASS = "true";
   } else if (req.http.Fastly-FF) {
     ## Pass all Requests which are handled via Fastly
-    set req.http.X-LAGOON-VARNISH = "${HOSTNAME}-${LAGOON_GIT_BRANCH:-undef}-${LAGOON_PROJECT}, fastly";
-    set req.http.X-LAGOON-VARNISH-BYPASS = "true";
+    set req.http.X-LAGOOBERNETES-VARNISH = "${HOSTNAME}-${LAGOOBERNETES_GIT_BRANCH:-undef}-${LAGOOBERNETES_PROJECT}, fastly";
+    set req.http.X-LAGOOBERNETES-VARNISH-BYPASS = "true";
     set req.http.X-Forwarded-For = req.http.Fastly-Client-IP;
   } else if (req.http.CF-RAY) {
     ## Pass all Requests which are handled via CloudFlare
-    set req.http.X-LAGOON-VARNISH = "${HOSTNAME}-${LAGOON_GIT_BRANCH:-undef}-${LAGOON_PROJECT}, cloudflare";
-    set req.http.X-LAGOON-VARNISH-BYPASS = "true";
+    set req.http.X-LAGOOBERNETES-VARNISH = "${HOSTNAME}-${LAGOOBERNETES_GIT_BRANCH:-undef}-${LAGOOBERNETES_PROJECT}, cloudflare";
+    set req.http.X-LAGOOBERNETES-VARNISH-BYPASS = "true";
     set req.http.X-Forwarded-For = req.http.CF-Connecting-IP;
   } else if (req.http.X-Pull) {
     ## Pass all Requests which are handled via KeyCDN
-    set req.http.X-LAGOON-VARNISH = "${HOSTNAME}-${LAGOON_GIT_BRANCH:-undef}-${LAGOON_PROJECT}, keycdn";
-    set req.http.X-LAGOON-VARNISH-BYPASS = "true";
+    set req.http.X-LAGOOBERNETES-VARNISH = "${HOSTNAME}-${LAGOOBERNETES_GIT_BRANCH:-undef}-${LAGOOBERNETES_PROJECT}, keycdn";
+    set req.http.X-LAGOOBERNETES-VARNISH-BYPASS = "true";
   } else {
     ## We set a header to let a Varnish Chain know that it already has been varnishcached
-    set req.http.X-LAGOON-VARNISH = "${HOSTNAME}-${LAGOON_GIT_BRANCH:-undef}-${LAGOON_PROJECT}";
+    set req.http.X-LAGOOBERNETES-VARNISH = "${HOSTNAME}-${LAGOOBERNETES_GIT_BRANCH:-undef}-${LAGOOBERNETES_PROJECT}";
 
     ## Allow to bypass based on env variable `VARNISH_BYPASS`
-    set req.http.X-LAGOON-VARNISH-BYPASS = "${VARNISH_BYPASS:-false}";
+    set req.http.X-LAGOOBERNETES-VARNISH-BYPASS = "${VARNISH_BYPASS:-false}";
   }
 
   # Websockets are piped
@@ -79,7 +79,7 @@ sub vcl_recv {
       return (pipe);
   }
 
-  if (req.http.X-LAGOON-VARNISH-BYPASS == "true" || req.http.X-LAGOON-VARNISH-BYPASS == "TRUE") {
+  if (req.http.X-LAGOOBERNETES-VARNISH-BYPASS == "true" || req.http.X-LAGOOBERNETES-VARNISH-BYPASS == "TRUE") {
     return (pass);
   }
 
@@ -294,8 +294,8 @@ sub vcl_backend_response {
   set beresp.http.X-Url = bereq.url;
   set beresp.http.X-Host = bereq.http.host;
 
-  # If the backend sends a X-LAGOON-VARNISH-BACKEND-BYPASS header we directly deliver
-  if(beresp.http.X-LAGOON-VARNISH-BACKEND-BYPASS == "TRUE") {
+  # If the backend sends a X-LAGOOBERNETES-VARNISH-BACKEND-BYPASS header we directly deliver
+  if(beresp.http.X-LAGOOBERNETES-VARNISH-BACKEND-BYPASS == "TRUE") {
     return (deliver);
   }
 
@@ -354,7 +354,7 @@ sub vcl_deliver {
   if (req.http.grace) {
     set resp.http.X-Varnish-Grace = req.http.grace;
   }
-  set resp.http.X-LAGOON = "${HOSTNAME}-${LAGOON_GIT_BRANCH:-undef}-${LAGOON_PROJECT}>" + resp.http.X-LAGOON;
+  set resp.http.X-LAGOOBERNETES = "${HOSTNAME}-${LAGOOBERNETES_GIT_BRANCH:-undef}-${LAGOOBERNETES_PROJECT}>" + resp.http.X-LAGOOBERNETES;
   return (deliver);
 }
 

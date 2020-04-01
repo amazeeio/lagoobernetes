@@ -1,16 +1,16 @@
 ARG SOLR_MAJ_MIN_VERSION
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM solr:${SOLR_MAJ_MIN_VERSION}-alpine
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=solr
+ENV LAGOOBERNETES=solr
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /sbin/tini /sbin/
 COPY --from=commons /home/.bashrc /home/.bashrc
@@ -36,13 +36,13 @@ RUN fix-permissions /var/solr \
 # solr really doesn't like to be run as root, so we define the default user agin
 USER solr
 
-COPY 10-solr-port.sh /lagoon/entrypoints/
-COPY 20-solr-datadir.sh /lagoon/entrypoints/
+COPY 10-solr-port.sh /lagoobernetes/entrypoints/
+COPY 20-solr-datadir.sh /lagoobernetes/entrypoints/
 
 
 # Define Volume so locally we get persistent cores
 VOLUME /var/solr
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]
 
 CMD ["solr-precreate", "mycore"]

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Template
 metadata:
   creationTimestamp: null
-  name: lagoon-remote-openshift-template-logs-collector
+  name: lagoobernetes-remote-openshift-template-logs-collector
 parameters:
   - name: SERVICE_NAME
     description: Name of this service
@@ -19,7 +19,7 @@ parameters:
   - name: PROJECT
     description: Which project this belongs to, original value
     required: true
-  - name: LAGOON_GIT_SHA
+  - name: LAGOOBERNETES_GIT_SHA
     description: git hash sha of the current deployment
     required: true
   - name: SERVICE_ROUTER_URL
@@ -110,7 +110,7 @@ objects:
             value: secret
           envFrom:
           - configMapRef:
-              name: lagoon-env
+              name: lagoobernetes-env
           image: registry.access.redhat.com/openshift3/logging-fluentd:v3.6
           name: ${SERVICE_NAME}
           resources:
@@ -161,7 +161,7 @@ objects:
             operator: Equal
             value: 'true'
           - effect: NoSchedule
-            key: lagoon/build
+            key: lagoobernetes/build
             operator: Exists
         volumes:
         - hostPath:

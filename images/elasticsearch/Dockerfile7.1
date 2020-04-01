@@ -1,22 +1,22 @@
 ARG IMAGE_REPO
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 # Definig Versions https://www.elastic.co/guide/en/elasticsearch/reference/7.1/docker.html
 FROM docker.elastic.co/elasticsearch/elasticsearch:7.1.1
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=elasticsearch
+ENV LAGOOBERNETES=elasticsearch
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /home /home
 
 RUN curl -sL https://github.com/krallin/tini/releases/download/v0.18.0/tini -o /sbin/tini && chmod a+x /sbin/tini
 
-COPY docker-entrypoint.sh.7 /lagoon/entrypoints/90-elasticsearch.sh
+COPY docker-entrypoint.sh.7 /lagoobernetes/entrypoints/90-elasticsearch.sh
 
 RUN chmod g+w /etc/passwd \
     && mkdir -p /home
@@ -61,6 +61,6 @@ ENV ES_JAVA_OPTS="-Xms400m -Xmx400m" \
 
 VOLUME [ "/usr/share/elasticsearch/data" ]
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.bash"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.bash"]
 
 CMD ["/usr/local/bin/docker-entrypoint.sh"]

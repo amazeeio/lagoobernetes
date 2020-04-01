@@ -25,14 +25,14 @@ rm -f /tmp/k8up-archive-initiate.yml;
 
 echo "${OPENSHIFT_PROJECT}: starting =================================================================="
 
-# Fill environment variables which are needed by exec-openshift-resources.sh and the lagoon templates
-CONFIGMAP=$($OC -n $OPENSHIFT_PROJECT get configmap lagoon-env -o json)
-PROJECT=$(echo "$CONFIGMAP" | jq -r '.data.LAGOON_PROJECT')
-SAFE_PROJECT=$(echo "$CONFIGMAP" | jq -r '.data.LAGOON_SAFE_PROJECT')
-BRANCH=$(echo "$CONFIGMAP" | jq -r '.data.LAGOON_GIT_BRANCH')
-SAFE_BRANCH=$(echo "$CONFIGMAP" | jq -r '.data.LAGOON_GIT_SAFE_BRANCH')
-ENVIRONMENT_TYPE=$(echo "$CONFIGMAP" | jq -r '.data.LAGOON_ENVIRONMENT_TYPE')
-LAGOON_GIT_SHA="00000000000000000000000000000000000000000"
+# Fill environment variables which are needed by exec-openshift-resources.sh and the lagoobernetes templates
+CONFIGMAP=$($OC -n $OPENSHIFT_PROJECT get configmap lagoobernetes-env -o json)
+PROJECT=$(echo "$CONFIGMAP" | jq -r '.data.LAGOOBERNETES_PROJECT')
+SAFE_PROJECT=$(echo "$CONFIGMAP" | jq -r '.data.LAGOOBERNETES_SAFE_PROJECT')
+BRANCH=$(echo "$CONFIGMAP" | jq -r '.data.LAGOOBERNETES_GIT_BRANCH')
+SAFE_BRANCH=$(echo "$CONFIGMAP" | jq -r '.data.LAGOOBERNETES_GIT_SAFE_BRANCH')
+ENVIRONMENT_TYPE=$(echo "$CONFIGMAP" | jq -r '.data.LAGOOBERNETES_ENVIRONMENT_TYPE')
+LAGOOBERNETES_GIT_SHA="00000000000000000000000000000000000000000"
 OPENSHIFT_REGISTRY="docker-registry.default.svc:5000"
 ROUTER_URL=""
 SERVICE_NAME="none"

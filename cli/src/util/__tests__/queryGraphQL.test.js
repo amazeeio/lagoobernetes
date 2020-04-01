@@ -39,7 +39,7 @@ describe('queryGraphQL', () => {
 
       expect(err).toEqual(
         new Error(
-          'API URL configured under the "api" key in .lagoon.yml doesn\'t contain a valid hostname.',
+          'API URL configured under the "api" key in .lagoobernetes.yml doesn\'t contain a valid hostname.',
         ),
       );
     }
@@ -66,7 +66,7 @@ describe('queryGraphQL', () => {
     const call = mockedRequest.mock.calls[0][0];
 
     expect(call).toEqual({
-      hostname: 'api.lagoon.amazeeio.cloud',
+      hostname: 'api.lagoobernetes.amazeeio.cloud',
       path: '/graphql',
       port: 443,
       protocol: 'https:',

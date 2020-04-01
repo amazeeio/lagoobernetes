@@ -72,7 +72,7 @@ QLQueryArgs): Object {
       R.propEq('message', 'socket hang up'),
       // ...print a nicer error message...
       R.always(
-        `Could not connect to Lagoon API at ${protocol}//${hostname}:${port}/graphql.`,
+        `Could not connect to Lagoobernetes API at ${protocol}//${hostname}:${port}/graphql.`,
       ),
       // ...otherwise just return the error message
       R.prop('message'),

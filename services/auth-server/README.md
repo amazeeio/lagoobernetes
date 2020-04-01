@@ -1,6 +1,6 @@
 Auth-Server
 
-This service serves as a authentication backend for the lagoon API and
+This service serves as a authentication backend for the lagoobernetes API and
 auth-ssh server. Make sure to not expose it to untrusted consumers.
 
 # `/login` #

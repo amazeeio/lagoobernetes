@@ -1,17 +1,17 @@
 ARG IMAGE_REPO
 ARG ALPINE_VERSION
-FROM ${IMAGE_REPO:-lagoon}/commons as commons
+FROM ${IMAGE_REPO:-lagoobernetes}/commons as commons
 FROM redis:5.0-alpine${ALPINE_VERSION}
 
 LABEL maintainer="amazee.io"
-ENV LAGOON=redis
+ENV LAGOOBERNETES=redis
 ENV FLAVOR=ephemeral
 
-ARG LAGOON_VERSION
-ENV LAGOON_VERSION=$LAGOON_VERSION
+ARG LAGOOBERNETES_VERSION
+ENV LAGOOBERNETES_VERSION=$LAGOOBERNETES_VERSION
 
 # Copy commons files
-COPY --from=commons /lagoon /lagoon
+COPY --from=commons /lagoobernetes /lagoobernetes
 COPY --from=commons /bin/fix-permissions /bin/ep /bin/docker-sleep /bin/
 COPY --from=commons /sbin/tini /sbin/
 COPY --from=commons /home /home
@@ -28,10 +28,10 @@ ENV TMPDIR=/tmp \
     BASH_ENV=/home/.bashrc
 
 COPY conf /etc/redis/
-COPY docker-entrypoint /lagoon/entrypoints/70-redis-entrypoint
+COPY docker-entrypoint /lagoobernetes/entrypoints/70-redis-entrypoint
 
 RUN fix-permissions /etc/redis \
     fix-permissions /data
 
-ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/lagoobernetes/entrypoints.sh"]
 CMD ["redis-server", "/etc/redis/redis.conf"]
