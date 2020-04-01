@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/amazeeio/lagoobernetes/happy-1st-april/docs/images/lagoobernetes-logo.png" alt="The Lagooberntes Logo" width="40%">
+  <img src="https://raw.githubusercontent.com/amazeeio/lagoobernetes/happy-1st-april/docs/images/lagoobernetes-logo.png" alt="The Lagooberntes Logo" width="70%">
 </p>
 
 # amazee.io Lagoobernetes - Docker Build and Deploy System for OpenShift & Kubernetes
